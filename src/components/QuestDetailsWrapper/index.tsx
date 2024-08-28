@@ -456,7 +456,7 @@ export function QuestDetailsWrapper({
 
     const ctaDisabled =
       !flags.questsOverlayClaimCtaEnabled ||
-      (!isEligible() && !showResyncButton) ||
+      (!isEligible() && !showResyncButton && isSignedIn) ||
       isClaiming ||
       !isRewardTypeClaimable
 
