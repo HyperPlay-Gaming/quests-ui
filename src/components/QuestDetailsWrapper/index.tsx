@@ -388,7 +388,7 @@ export function QuestDetailsWrapper({
             await completeTaskMutation.mutateAsync(reward_i)
             break
           default:
-            console.error(`unknown reward type ${reward_i.reward_type}`)
+            logError(`unknown reward type ${reward_i.reward_type}`)
             break
         }
       } catch (err) {
@@ -472,7 +472,6 @@ export function QuestDetailsWrapper({
       not eligible ${!isEligible() && !showResyncButton && isSignedIn}, 
       claiming: ${isClaiming}, 
       is reward claimable ${isRewardTypeClaimable}`
-    console.log(logMsg)
     logInfo(logMsg)
 
     let alertProps: InfoAlertProps | undefined
