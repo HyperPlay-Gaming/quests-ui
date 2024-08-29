@@ -462,11 +462,14 @@ export function QuestDetailsWrapper({
       isClaiming ||
       !isRewardTypeClaimable
 
-    if (ctaDisabled) {
-      console.log(
-        `cta is disabled. flag: ${flags.questsOverlayClaimCtaEnabled}, not eligible ${!isEligible() && !showResyncButton && isSignedIn}, claiming: ${isClaiming}, is reward claimable ${isRewardTypeClaimable}`
-      )
-    }
+    console.log(
+      `cta is disabled: ${ctaDisabled}. 
+      isClaiming: ${isClaiming} 
+      flag: ${flags.questsOverlayClaimCtaEnabled}, 
+      not eligible ${!isEligible() && !showResyncButton && isSignedIn}, 
+      claiming: ${isClaiming}, 
+      is reward claimable ${isRewardTypeClaimable}`
+    )
 
     let alertProps: InfoAlertProps | undefined
 
