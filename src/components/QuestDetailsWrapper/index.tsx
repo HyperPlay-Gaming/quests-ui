@@ -10,7 +10,7 @@ import styles from './index.module.scss'
 import useGetQuest from '../../hooks/useGetQuest'
 import useGetSteamGame from '../../hooks/useGetSteamGame'
 import { useTranslation } from 'react-i18next'
-import { useAccount, useSwitchChain, useWriteContract } from 'wagmi'
+import { useAccount, useConnect, useSwitchChain, useWriteContract } from 'wagmi'
 import {
   Reward,
   RewardClaimSignature,
@@ -31,6 +31,7 @@ import { useTrackQuestViewed } from '../../hooks/useTrackQuestViewed'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
 import { createPublicClient, http } from 'viem'
+import { injected } from 'wagmi/connectors'
 
 class ClaimError extends Error {
   properties: any
@@ -112,6 +113,7 @@ export function QuestDetailsWrapper({
   useTrackQuestViewed(selectedQuestId, trackEvent)
 
   const account = useAccount()
+  const { connectAsync } = useConnect()
   const [showWarning, setShowWarning] = useState(false)
   const { t } = useTranslation()
   const questResult = useGetQuest(selectedQuestId, getQuest)
@@ -285,8 +287,8 @@ export function QuestDetailsWrapper({
     }
 
     if (account.address === undefined) {
-      setWarningMessage('Please connect your wallet to claim rewards.')
-      return
+      logInfo('connecting to wallet...')
+      await connectAsync({ connector: injected() })
     }
 
     await switchChainAsync({ chainId: reward.chain_id })
