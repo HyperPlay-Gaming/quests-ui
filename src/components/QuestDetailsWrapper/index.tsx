@@ -24,13 +24,13 @@ import useGetUserPlayStreak from '../../hooks/useGetUserPlayStreak'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { getPlaystreakArgsFromQuestData } from '../../helpers/getPlaystreakArgsFromQuestData'
 import { useGetRewards } from '../../hooks/useGetRewards'
-import { chainMap } from '@hyperplay/chains'
+import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
 import { useSyncPlaySession } from '../../hooks/useSyncInterval'
 import { useTrackQuestViewed } from '../../hooks/useTrackQuestViewed'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
-import { getBalance } from 'viem/actions'
+import { createPublicClient, http } from 'viem'
 
 class ClaimError extends Error {
   properties: any
@@ -70,7 +70,6 @@ export interface QuestDetailsWrapperProps {
   logInfo: (message: string) => void
   openDiscordLink: () => void
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
-  config: any
 }
 
 export function QuestDetailsWrapper({
@@ -94,8 +93,7 @@ export function QuestDetailsWrapper({
   syncPlaySession,
   logInfo,
   openDiscordLink,
-  getDepositContracts,
-  config
+  getDepositContracts
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -294,7 +292,13 @@ export function QuestDetailsWrapper({
     await switchChainAsync({ chainId: reward.chain_id })
 
     const gasNeeded = await getRewardClaimGasEstimation(reward, logInfo)
-    const walletBalance = await getBalance(config, {
+    const chainMetadata = chainMap[reward.chain_id]
+    const viemChain = parseChainMetadataToViemChain(chainMetadata)
+    const publicClient = createPublicClient({
+      chain: viemChain,
+      transport: http()
+    })
+    const walletBalance = await publicClient.getBalance({
       address: account.address
     })
     const hasEnoughBalance = walletBalance >= gasNeeded
