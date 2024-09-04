@@ -8,7 +8,8 @@ import { QuestReward } from '@hyperplay/ui'
 export function useGetRewards(
   questId: number | null,
   getQuest: (questId: number) => Promise<Quest>,
-  getExternalTaskCredits: (rewardId: string) => Promise<string>
+  getExternalTaskCredits: (rewardId: string) => Promise<string>,
+  logError: (msg: string) => void
 ) {
   const questResult = useGetQuest(questId, getQuest)
   const questMeta = questResult.data.data
@@ -40,13 +41,19 @@ export function useGetRewards(
         }
 
         if (reward_i.reward_type === 'EXTERNAL-TASKS') {
-          const taskAmountToClaim = await getExternalTaskCredits(
-            reward_i.id.toString()
-          )
-          numToClaim = getDecimalNumberFromAmount(
-            taskAmountToClaim,
-            0
-          ).toString()
+          try {
+            const taskAmountToClaim = await getExternalTaskCredits(
+              reward_i.id.toString()
+            )
+            numToClaim = getDecimalNumberFromAmount(
+              taskAmountToClaim,
+              0
+            ).toString()
+          } catch (e) {
+            logError(
+              `Error getting external task credits for reward id ${reward_i}: ${e}`
+            )
+          }
         }
 
         if (

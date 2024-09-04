@@ -123,7 +123,8 @@ export function QuestDetailsWrapper({
   const rewardsQuery = useGetRewards(
     selectedQuestId,
     getQuest,
-    getExternalTaskCredits
+    getExternalTaskCredits,
+    logError
   )
   const questRewards = rewardsQuery.data.data
   const queryClient = useQueryClient()
