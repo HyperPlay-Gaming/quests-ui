@@ -32,6 +32,7 @@ import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
 import { createPublicClient, http } from 'viem'
 import { injected } from 'wagmi/connectors'
+import { TrackEventFn } from '@/types/analytics'
 
 class ClaimError extends Error {
   properties: any
@@ -53,7 +54,7 @@ export interface QuestDetailsWrapperProps {
   getUserPlayStreak: (questId: number) => any
   getSteamGameMetadata: (id: number) => any
   isSignedIn: boolean
-  trackEvent: (event: any) => Promise<void>
+  trackEvent: TrackEventFn
   signInWithSteamAccount: () => void
   openSignInModal: () => void
   logError: (msg: string) => void

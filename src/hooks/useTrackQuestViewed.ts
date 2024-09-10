@@ -1,8 +1,9 @@
+import { TrackEventFn } from '@/types/analytics'
 import { useEffect } from 'react'
 
 export function useTrackQuestViewed(
   selectedQuestId: number | null,
-  trackEvent: (payload: any) => Promise<void>
+  trackEvent: TrackEventFn
 ) {
   useEffect(() => {
     if (selectedQuestId !== null) {
