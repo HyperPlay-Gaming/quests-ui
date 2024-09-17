@@ -121,7 +121,7 @@ export function QuestDetailsWrapper({
   const [showWarning, setShowWarning] = useState(false)
   const { t: tOriginal } = useTranslation()
   let t = tOriginal
-  if (tOverride){
+  if (tOverride) {
     t = tOverride
   }
   const questResult = useGetQuest(selectedQuestId, getQuest)
@@ -309,7 +309,7 @@ export function QuestDetailsWrapper({
       chain: viemChain,
       transport: http()
     })
-    if (account.address === undefined){
+    if (account.address === undefined) {
       return
     }
     const walletBalance = await publicClient.getBalance({
