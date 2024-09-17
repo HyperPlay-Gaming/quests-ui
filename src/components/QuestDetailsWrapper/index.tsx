@@ -33,6 +33,7 @@ import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimati
 import { createPublicClient, http } from 'viem'
 import { injected } from 'wagmi/connectors'
 import { TrackEventFn } from '@/types/analytics'
+import { TFunction } from 'i18next'
 
 class ClaimError extends Error {
   properties: any
@@ -72,6 +73,7 @@ export interface QuestDetailsWrapperProps {
   logInfo: (message: string) => void
   openDiscordLink: () => void
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
+  tOverride?: TFunction<any, string>
 }
 
 export function QuestDetailsWrapper({
@@ -95,7 +97,8 @@ export function QuestDetailsWrapper({
   syncPlaySession,
   logInfo,
   openDiscordLink,
-  getDepositContracts
+  getDepositContracts,
+  tOverride
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -116,7 +119,11 @@ export function QuestDetailsWrapper({
   const account = useAccount()
   const { connectAsync } = useConnect()
   const [showWarning, setShowWarning] = useState(false)
-  const { t } = useTranslation()
+  const { t: tOriginal } = useTranslation()
+  let t = tOriginal
+  if (tOverride) {
+    t = tOverride
+  }
   const questResult = useGetQuest(selectedQuestId, getQuest)
   const [warningMessage, setWarningMessage] = useState<string>()
   const questMeta = questResult.data.data
@@ -302,6 +309,9 @@ export function QuestDetailsWrapper({
       chain: viemChain,
       transport: http()
     })
+    if (account.address === undefined) {
+      return
+    }
     const walletBalance = await publicClient.getBalance({
       address: account.address
     })
