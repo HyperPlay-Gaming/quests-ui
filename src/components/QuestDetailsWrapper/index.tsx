@@ -534,7 +534,13 @@ export function QuestDetailsWrapper({
 
     let alertProps: InfoAlertProps | undefined
 
-    if (writeContractError || claimRewardsMutation.error || switchChainError || resyncMutation.error || completeTaskMutation.error) {
+    if (
+      writeContractError ||
+      claimRewardsMutation.error ||
+      switchChainError ||
+      resyncMutation.error ||
+      completeTaskMutation.error
+    ) {
       alertProps = {
         showClose: false,
         title: t('quest.claimFailed', 'Claim failed'),
