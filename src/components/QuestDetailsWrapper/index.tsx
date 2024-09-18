@@ -74,6 +74,8 @@ export interface QuestDetailsWrapperProps {
   openDiscordLink: () => void
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
   tOverride?: TFunction<any, string>
+  sessionEmail?: string
+  checkG7ConnectionStatus: () => Promise<boolean>
 }
 
 export function QuestDetailsWrapper({
@@ -98,7 +100,9 @@ export function QuestDetailsWrapper({
   logInfo,
   openDiscordLink,
   getDepositContracts,
-  tOverride
+  tOverride,
+  sessionEmail,
+  checkG7ConnectionStatus
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -145,6 +149,21 @@ export function QuestDetailsWrapper({
 
   const resyncMutation = useMutation({
     mutationFn: async (rewards: Reward[]) => {
+      const isConnectedToG7 = await checkG7ConnectionStatus()
+
+      if (!isConnectedToG7) {
+        setWarningMessage(
+          t(
+            'quest.noG7ConnectionSync',
+            `You need to have a Game7 account linked to ${
+              sessionEmail ?? 'your email'
+            } to resync your tasks.`,
+            { email: sessionEmail ?? 'your email' }
+          )
+        )
+        return
+      }
+
       const result = await resyncExternalTasksHelper(
         rewards,
         resyncExternalTask
@@ -153,6 +172,9 @@ export function QuestDetailsWrapper({
       queryClient.invalidateQueries({ queryKey: [queryKey] })
       return result
     },
+    onError: (error) => {
+      logError(`Error resyncing tasks: ${error}`)
+    },
     onSuccess: async () => {
       await questPlayStreakResult.invalidateQuery()
     }
@@ -160,10 +182,28 @@ export function QuestDetailsWrapper({
 
   const completeTaskMutation = useMutation({
     mutationFn: async (reward: Reward) => {
+      const isConnectedToG7 = await checkG7ConnectionStatus()
+
+      if (!isConnectedToG7) {
+        setWarningMessage(
+          t(
+            'quest.noG7ConnectionClaim',
+            `You need to have a Game7 account linked to ${
+              sessionEmail ?? 'your email'
+            } to claim your rewards.`,
+            { email: sessionEmail ?? 'your email' }
+          )
+        )
+        return
+      }
+
       const result = await completeExternalTask(reward)
       const queryKey = `useGetG7UserCredits`
       queryClient.invalidateQueries({ queryKey: [queryKey] })
       return result
+    },
+    onError: (error) => {
+      logError(`Error resyncing tasks: ${error}`)
     },
     onSuccess: async () => {
       await questPlayStreakResult.invalidateQuery()
@@ -176,6 +216,9 @@ export function QuestDetailsWrapper({
       const queryKey = `getPointsBalancesForProject:${projectId}`
       queryClient.invalidateQueries({ queryKey: [queryKey] })
       return result
+    },
+    onError: (error) => {
+      logError(`Error claiming points: ${error}`)
     },
     onSuccess: async () => {
       await questPlayStreakResult.invalidateQuery()
@@ -389,6 +432,7 @@ export function QuestDetailsWrapper({
       })
 
       try {
+        setWarningMessage(undefined)
         switch (reward_i.reward_type) {
           case 'ERC1155':
           case 'ERC721':
@@ -490,7 +534,13 @@ export function QuestDetailsWrapper({
 
     let alertProps: InfoAlertProps | undefined
 
-    if (writeContractError || claimRewardsMutation.error || switchChainError) {
+    if (
+      writeContractError ||
+      claimRewardsMutation.error ||
+      switchChainError ||
+      resyncMutation.error ||
+      completeTaskMutation.error
+    ) {
       alertProps = {
         showClose: false,
         title: t('quest.claimFailed', 'Claim failed'),
