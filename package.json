@@ -1,6 +1,6 @@
 {
   "name": "@hyperplay/quests-ui",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -57,5 +57,8 @@
     "react-i18next": "^15.0.1",
     "viem": "^2.19.4",
     "wagmi": "^2.12.5"
+  },
+  "dependencies": {
+    "classnames": "^2.5.1"
   }
 }
