@@ -629,7 +629,7 @@ export function QuestDetailsWrapper({
         />
         <QuestDetails
           {...questDetailsProps}
-          className={cn(questDetailsProps.className, styles.questDetails)}
+          className={cn(styles.questDetails, questDetailsProps.className)}
           key={`questDetailsLoadedId${
             questMeta.id
           }streak${!!questPlayStreakData}isSignedIn${!!isSignedIn}`}
@@ -674,7 +674,7 @@ export function QuestDetailsWrapper({
     questDetails = (
       <QuestDetails
         {...emptyQuestDetailsProps}
-        className={cn(emptyQuestDetailsProps.className, styles.questDetails)}
+        className={cn(styles.questDetails, emptyQuestDetailsProps.className)}
         ctaDisabled={true}
         key={'questDetailsLoading'}
       />
