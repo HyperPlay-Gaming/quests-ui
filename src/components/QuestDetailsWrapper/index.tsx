@@ -34,6 +34,7 @@ import { createPublicClient, http } from 'viem'
 import { injected } from 'wagmi/connectors'
 import { TrackEventFn } from '@/types/analytics'
 import { TFunction } from 'i18next'
+import cn from 'classnames'
 
 class ClaimError extends Error {
   properties: any
@@ -45,6 +46,7 @@ class ClaimError extends Error {
 }
 
 export interface QuestDetailsWrapperProps {
+  className?: string
   selectedQuestId: number | null
   projectId: string
   flags: {
@@ -79,6 +81,7 @@ export interface QuestDetailsWrapperProps {
 }
 
 export function QuestDetailsWrapper({
+  className,
   selectedQuestId,
   projectId,
   flags,
@@ -566,6 +569,7 @@ export function QuestDetailsWrapper({
     )
 
     const questDetailsProps: QuestDetailsProps = {
+      className,
       alertProps,
       questType: questMeta.type,
       title: questMeta.name,
@@ -625,7 +629,7 @@ export function QuestDetailsWrapper({
         />
         <QuestDetails
           {...questDetailsProps}
-          className={styles.questDetails}
+          className={cn(questDetailsProps.className, styles.questDetails)}
           key={`questDetailsLoadedId${
             questMeta.id
           }streak${!!questPlayStreakData}isSignedIn${!!isSignedIn}`}
@@ -638,6 +642,7 @@ export function QuestDetailsWrapper({
     rewardsQuery?.data.isLoading
   ) {
     const emptyQuestDetailsProps: QuestDetailsProps = {
+      className,
       questType: 'PLAYSTREAK',
       title: '',
       description: '',
@@ -669,7 +674,7 @@ export function QuestDetailsWrapper({
     questDetails = (
       <QuestDetails
         {...emptyQuestDetailsProps}
-        className={styles.questDetails}
+        className={cn(emptyQuestDetailsProps.className, styles.questDetails)}
         ctaDisabled={true}
         key={'questDetailsLoading'}
       />
