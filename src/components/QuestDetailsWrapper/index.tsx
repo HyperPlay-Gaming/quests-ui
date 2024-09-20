@@ -78,6 +78,7 @@ export interface QuestDetailsWrapperProps {
   tOverride?: TFunction<any, string>
   sessionEmail?: string
   checkG7ConnectionStatus: () => Promise<boolean>
+  isQuestsPage?: boolean
 }
 
 export function QuestDetailsWrapper({
@@ -105,7 +106,8 @@ export function QuestDetailsWrapper({
   getDepositContracts,
   tOverride,
   sessionEmail,
-  checkG7ConnectionStatus
+  checkG7ConnectionStatus,
+  isQuestsPage
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -613,7 +615,8 @@ export function QuestDetailsWrapper({
         resyncMutation.mutateAsync(questMeta.rewards ?? [])
       },
       isSyncing: resyncMutation.isPending,
-      chainTooltips: {}
+      chainTooltips: {},
+      isQuestsPage
     }
     questDetails = (
       <>
@@ -669,7 +672,8 @@ export function QuestDetailsWrapper({
         console.log('connect steam account clicked for ', questMeta?.name),
       collapseIsOpen,
       toggleCollapse: () => setCollapseIsOpen(!collapseIsOpen),
-      isSignedIn
+      isSignedIn,
+      isQuestsPage
     }
     questDetails = (
       <QuestDetails
