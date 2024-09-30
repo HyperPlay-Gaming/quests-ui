@@ -636,7 +636,7 @@ export function QuestDetailsWrapper({
       chainTooltips: {},
       isQuestsPage,
       ...questDetailsParamProps,
-      i18n,
+      i18n
     }
     questDetails = (
       <>
