@@ -45,7 +45,23 @@ class ClaimError extends Error {
   }
 }
 
-export interface QuestDetailsWrapperProps {
+export interface QuestDetailsWrapperProps
+  extends Omit<
+    QuestDetailsProps,
+    | 'i18n'
+    | 'eligibility'
+    | 'rewards'
+    | 'onClaimClick'
+    | 'title'
+    | 'description'
+    | 'claimPoints'
+    | 'completeExternalTask'
+    | 'onSignInClick'
+    | 'onConnectSteamAccountClick'
+    | 'collapseIsOpen'
+    | 'toggleCollapse'
+    | 'questType'
+  > {
   className?: string
   selectedQuestId: number | null
   projectId: string
@@ -79,6 +95,7 @@ export interface QuestDetailsWrapperProps {
   sessionEmail?: string
   checkG7ConnectionStatus: () => Promise<boolean>
   isQuestsPage?: boolean
+  i18n?: Partial<QuestDetailsTranslations>
 }
 
 export function QuestDetailsWrapper({
@@ -107,7 +124,8 @@ export function QuestDetailsWrapper({
   tOverride,
   sessionEmail,
   checkG7ConnectionStatus,
-  isQuestsPage
+  isQuestsPage,
+  ...questDetailsParamProps
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -286,6 +304,7 @@ export function QuestDetailsWrapper({
       ?.length
 
   const i18n: QuestDetailsTranslations = {
+    ...questDetailsParamProps.i18n,
     rewards: t('quest.reward', 'Rewards'),
     associatedGames: t('quest.associatedGames', 'Associated games'),
     linkSteamAccount: t(
@@ -594,7 +613,6 @@ export function QuestDetailsWrapper({
         )
       },
       rewards: questRewards ?? [],
-      i18n,
       onClaimClick: async () => {
         if (isRewardOnChain) {
           setShowWarning(true)
@@ -616,7 +634,9 @@ export function QuestDetailsWrapper({
       },
       isSyncing: resyncMutation.isPending,
       chainTooltips: {},
-      isQuestsPage
+      isQuestsPage,
+      ...questDetailsParamProps,
+      i18n,
     }
     questDetails = (
       <>
@@ -664,7 +684,6 @@ export function QuestDetailsWrapper({
           lastPlaySessionCompletedDateTimeUTC: new Date().toISOString()
         }
       },
-      i18n,
       rewards: [],
       onClaimClick: () => console.log('claim clicked for ', questMeta?.name),
       onSignInClick: () => console.log('sign in clicked for ', questMeta?.name),
@@ -673,7 +692,9 @@ export function QuestDetailsWrapper({
       collapseIsOpen,
       toggleCollapse: () => setCollapseIsOpen(!collapseIsOpen),
       isSignedIn,
-      isQuestsPage
+      isQuestsPage,
+      ...questDetailsParamProps,
+      i18n
     }
     questDetails = (
       <QuestDetails
