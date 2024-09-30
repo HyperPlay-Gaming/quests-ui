@@ -46,22 +46,7 @@ class ClaimError extends Error {
 }
 
 export interface QuestDetailsWrapperProps
-  extends Omit<
-    QuestDetailsProps,
-    | 'i18n'
-    | 'eligibility'
-    | 'rewards'
-    | 'onClaimClick'
-    | 'title'
-    | 'description'
-    | 'claimPoints'
-    | 'completeExternalTask'
-    | 'onSignInClick'
-    | 'onConnectSteamAccountClick'
-    | 'collapseIsOpen'
-    | 'toggleCollapse'
-    | 'questType'
-  > {
+  extends Omit<QuestDetailsProps, 'i18n'> {
   className?: string
   selectedQuestId: number | null
   projectId: string
@@ -590,6 +575,7 @@ export function QuestDetailsWrapper({
     )
 
     const questDetailsProps: QuestDetailsProps = {
+      ...questDetailsParamProps,
       className,
       alertProps,
       questType: questMeta.type,
@@ -635,7 +621,6 @@ export function QuestDetailsWrapper({
       isSyncing: resyncMutation.isPending,
       chainTooltips: {},
       isQuestsPage,
-      ...questDetailsParamProps,
       i18n
     }
     questDetails = (
@@ -665,6 +650,7 @@ export function QuestDetailsWrapper({
     rewardsQuery?.data.isLoading
   ) {
     const emptyQuestDetailsProps: QuestDetailsProps = {
+      ...questDetailsParamProps,
       className,
       questType: 'PLAYSTREAK',
       title: '',
@@ -693,7 +679,6 @@ export function QuestDetailsWrapper({
       toggleCollapse: () => setCollapseIsOpen(!collapseIsOpen),
       isSignedIn,
       isQuestsPage,
-      ...questDetailsParamProps,
       i18n
     }
     questDetails = (
