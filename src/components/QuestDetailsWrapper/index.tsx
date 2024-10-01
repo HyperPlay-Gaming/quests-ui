@@ -45,8 +45,7 @@ class ClaimError extends Error {
   }
 }
 
-export interface QuestDetailsWrapperProps
-  extends Omit<QuestDetailsProps, 'i18n'> {
+export interface QuestDetailsWrapperProps {
   className?: string
   selectedQuestId: number | null
   projectId: string
@@ -70,6 +69,7 @@ export interface QuestDetailsWrapperProps
     tokenId?: number
   ) => Promise<RewardClaimSignature>
   confirmRewardClaim: (params: ConfirmClaimParams) => Promise<void>
+  syncPlayStreak: (questId: number) => Promise<void>
   resyncExternalTask: (rewardId: string) => Promise<void>
   getExternalTaskCredits: (rewardId: string) => Promise<string>
   syncPlaySession: (appName: string, runner: Runner) => Promise<void>
@@ -110,6 +110,7 @@ export function QuestDetailsWrapper({
   sessionEmail,
   checkG7ConnectionStatus,
   isQuestsPage,
+  syncPlayStreak,
   ...questDetailsParamProps
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
@@ -313,6 +314,7 @@ export function QuestDetailsWrapper({
     },
     sync: t('quest.sync', 'Sync'),
     streakProgressI18n: {
+      sync: t('quest.playstreak.sync', 'Sync Progress'),
       streakProgress: t('quest.playstreak.streakProgress', 'Streak Progress'),
       days: t('quest.playstreak.days', 'days'),
       playToStart: t(
@@ -592,11 +594,16 @@ export function QuestDetailsWrapper({
           eligible: false,
           steamAccountLinked: true
         },
-        playStreak: getPlaystreakArgsFromQuestData(
-          questMeta,
-          questPlayStreakData,
-          isSignedIn
-        )
+        playStreak: {
+          ...getPlaystreakArgsFromQuestData(
+            questMeta,
+            questPlayStreakData,
+            isSignedIn
+          ),
+          onSync: () => {
+            syncPlayStreak(questMeta.id)
+          }
+        }
       },
       rewards: questRewards ?? [],
       onClaimClick: async () => {
@@ -663,6 +670,7 @@ export function QuestDetailsWrapper({
           steamAccountLinked: false
         },
         playStreak: {
+          onSync: () => console.log('loading...'),
           currentStreakInDays: 0,
           requiredStreakInDays: 1,
           minimumSessionTimeInSeconds: 100,

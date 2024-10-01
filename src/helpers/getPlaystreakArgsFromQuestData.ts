@@ -8,7 +8,7 @@ export function getPlaystreakArgsFromQuestData(
   questMeta: Quest,
   questPlayStreakData: UserPlayStreak | undefined | null,
   useModuleInitTimeForSessionStartTime?: boolean
-): PlayStreakEligibility {
+): Omit<PlayStreakEligibility, 'onSync'> {
   let sessionStartedTime = undefined
   if (useModuleInitTimeForSessionStartTime) {
     sessionStartedTime = dateTimeCurrentSessionStartedInMsSinceEpoch
