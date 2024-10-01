@@ -7,7 +7,9 @@
     "build": "vite build",
     "lint": "eslint ./src",
     "prettier": "prettier --check .",
-    "prettier-fix": "prettier --write ."
+    "prettier-fix": "prettier --write .",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "keywords": [],
   "author": "",
@@ -24,9 +26,19 @@
   },
   "types": "dist/index.d.ts",
   "devDependencies": {
+    "@chromatic-com/storybook": "^1.9.0",
     "@hyperplay/chains": "^0.3.0",
     "@hyperplay/ui": "^1.7.17",
     "@hyperplay/utils": "^0.2.3",
+    "@mantine/core": "^7.13.1",
+    "@storybook/addon-essentials": "^8.3.4",
+    "@storybook/addon-interactions": "^8.3.4",
+    "@storybook/addon-links": "^8.3.4",
+    "@storybook/addon-onboarding": "^8.3.4",
+    "@storybook/blocks": "^8.3.4",
+    "@storybook/react": "^8.3.4",
+    "@storybook/react-vite": "^8.3.4",
+    "@storybook/test": "^8.3.4",
     "@tanstack/react-query": "^5.51.23",
     "@types/react": "^18.3.3",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
@@ -37,11 +49,17 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-storybook": "^0.9.0",
     "i18next": "^23.12.3",
+    "postcss": "^8.4.47",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.3.3",
+    "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-i18next": "^15.0.1",
     "sass-embedded": "^1.77.8",
+    "storybook": "^8.3.4",
     "viem": "^2.19.4",
     "vite": "^5.4.0",
     "vite-plugin-dts": "^4.0.3",
@@ -60,5 +78,10 @@
   },
   "dependencies": {
     "classnames": "^2.5.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
   }
 }
