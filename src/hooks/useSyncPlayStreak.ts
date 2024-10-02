@@ -1,7 +1,11 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, UseMutationOptions } from '@tanstack/react-query'
+
+type MutationParams = {
+  questId: number
+  address: string
+}
 
 interface UseSyncPlayStreakProps {
-  refreshPlayStreak: () => void
   getCSRFToken: () => Promise<string>
   syncPlayStreakWithExternalSource: (params: {
     quest_id: number
@@ -12,29 +16,21 @@ interface UseSyncPlayStreakProps {
     questId: number
   }) => Promise<boolean>
   signMessage: (message: string) => Promise<string>
-  logInfo?: (message: string) => void
-  logError?: (message: string) => void
+  mutationOptions?: Omit<
+    UseMutationOptions<unknown, Error, MutationParams>,
+    'mutationFn'
+  >
 }
 
 export const useSyncPlayStreak = ({
-  refreshPlayStreak,
   getCSRFToken,
   syncPlayStreakWithExternalSource,
-  logInfo,
-  logError,
   checkPendingSync,
-  signMessage
+  signMessage,
+  mutationOptions = {}
 }: UseSyncPlayStreakProps) => {
   return useMutation({
-    mutationFn: async ({
-      questId,
-      address,
-      questsWithExternalSync
-    }: {
-      questId: number
-      address: string
-      questsWithExternalSync: number[]
-    }) => {
+    mutationFn: async ({ questId, address }: MutationParams) => {
       let hasPendingSync = false
 
       try {
@@ -43,27 +39,19 @@ export const useSyncPlayStreak = ({
         console.error('Error checking pending sync', error)
       }
 
-      if (questsWithExternalSync.includes(questId) && hasPendingSync) {
-        const csrfToken = await getCSRFToken()
-        const message = `Sync play-streak of quest with ID: ${questId} \n\nNonce: ${csrfToken}`
-        const signature = await signMessage(message)
-
-        await syncPlayStreakWithExternalSource({
-          quest_id: questId,
-          signature
-        })
+      if (!hasPendingSync) {
+        return
       }
+
+      const csrfToken = await getCSRFToken()
+      const message = `Sync play-streak of quest with ID: ${questId} \n\nNonce: ${csrfToken}`
+      const signature = await signMessage(message)
+
+      await syncPlayStreakWithExternalSource({
+        quest_id: questId,
+        signature
+      })
     },
-    onSuccess: async () => {
-      refreshPlayStreak()
-      console.log('Playstreak synced with external source')
-      logInfo?.('Playstreak synced with external source')
-    },
-    onError: (error) => {
-      console.error(`Error syncing playstreak with external source`, error)
-      logError?.(
-        `Error syncing playstreak with external source: ${error.message}`
-      )
-    }
+    ...mutationOptions
   })
 }
