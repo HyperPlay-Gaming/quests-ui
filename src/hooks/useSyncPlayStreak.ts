@@ -40,6 +40,7 @@ export const useSyncPlayStreak = ({
       }
 
       if (!hasPendingSync) {
+        console.log('No pending sync found, skipping external sync')
         return
       }
 
