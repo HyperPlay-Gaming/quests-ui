@@ -22,7 +22,7 @@ export interface UseSyncPlayStreakProps {
   >
 }
 
-export const useSyncPlayStreak = ({
+export const useSyncPlayStreakWithExternalSource = ({
   getCSRFToken,
   syncPlayStreakWithExternalSource,
   checkPendingSync,

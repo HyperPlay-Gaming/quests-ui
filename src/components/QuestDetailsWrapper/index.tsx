@@ -596,7 +596,7 @@ export function QuestDetailsWrapper({
           questMeta,
           questPlayStreakData,
           useModuleInitTimeForSessionStartTime: isSignedIn,
-          onSync: async() => {
+          onSync: async () => {
             if (questsWithExternalPlayStreakSync.includes(questMeta.id)) {
               syncPlayStreakWithExternalSource(questMeta.id)
             } else {
