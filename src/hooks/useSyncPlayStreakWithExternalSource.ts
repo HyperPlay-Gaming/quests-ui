@@ -5,7 +5,7 @@ type MutationParams = {
   address: string
 }
 
-interface UseSyncPlayStreakProps {
+export interface UseSyncPlayStreakProps {
   getCSRFToken: () => Promise<string>
   syncPlayStreakWithExternalSource: (params: {
     quest_id: number

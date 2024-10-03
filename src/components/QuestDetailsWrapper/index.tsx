@@ -69,7 +69,8 @@ export interface QuestDetailsWrapperProps {
     tokenId?: number
   ) => Promise<RewardClaimSignature>
   confirmRewardClaim: (params: ConfirmClaimParams) => Promise<void>
-  syncPlayStreak: (questId: number) => Promise<void>
+  questsWithExternalPlayStreakSync: number[]
+  syncPlayStreakWithExternalSource: (questId: number) => Promise<unknown>
   resyncExternalTask: (rewardId: string) => Promise<void>
   getExternalTaskCredits: (rewardId: string) => Promise<string>
   syncPlaySession: (appName: string, runner: Runner) => Promise<void>
@@ -80,7 +81,6 @@ export interface QuestDetailsWrapperProps {
   sessionEmail?: string
   checkG7ConnectionStatus: () => Promise<boolean>
   isQuestsPage?: boolean
-  i18n?: Partial<QuestDetailsTranslations>
 }
 
 export function QuestDetailsWrapper({
@@ -110,8 +110,8 @@ export function QuestDetailsWrapper({
   sessionEmail,
   checkG7ConnectionStatus,
   isQuestsPage,
-  syncPlayStreak,
-  ...questDetailsParamProps
+  syncPlayStreakWithExternalSource,
+  questsWithExternalPlayStreakSync
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -290,7 +290,6 @@ export function QuestDetailsWrapper({
       ?.length
 
   const i18n: QuestDetailsTranslations = {
-    ...questDetailsParamProps.i18n,
     rewards: t('quest.reward', 'Rewards'),
     associatedGames: t('quest.associatedGames', 'Associated games'),
     linkSteamAccount: t(
@@ -577,7 +576,6 @@ export function QuestDetailsWrapper({
     )
 
     const questDetailsProps: QuestDetailsProps = {
-      ...questDetailsParamProps,
       className,
       alertProps,
       questType: questMeta.type,
@@ -594,16 +592,19 @@ export function QuestDetailsWrapper({
           eligible: false,
           steamAccountLinked: true
         },
-        playStreak: {
-          ...getPlaystreakArgsFromQuestData(
-            questMeta,
-            questPlayStreakData,
-            isSignedIn
-          ),
-          onSync: () => {
-            syncPlayStreak(questMeta.id)
+        playStreak: getPlaystreakArgsFromQuestData({
+          questMeta,
+          questPlayStreakData,
+          useModuleInitTimeForSessionStartTime: isSignedIn,
+          onSync: async() => {
+            if (questsWithExternalPlayStreakSync.includes(questMeta.id)) {
+              syncPlayStreakWithExternalSource(questMeta.id)
+            } else {
+              await syncPlaySession(projectId, 'hyperplay')
+              questPlayStreakResult.invalidateQuery()
+            }
           }
-        }
+        })
       },
       rewards: questRewards ?? [],
       onClaimClick: async () => {
@@ -657,7 +658,6 @@ export function QuestDetailsWrapper({
     rewardsQuery?.data.isLoading
   ) {
     const emptyQuestDetailsProps: QuestDetailsProps = {
-      ...questDetailsParamProps,
       className,
       questType: 'PLAYSTREAK',
       title: '',

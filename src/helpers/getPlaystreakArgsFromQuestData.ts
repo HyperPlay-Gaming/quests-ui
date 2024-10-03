@@ -5,15 +5,24 @@ import { Quest, UserPlayStreak } from '@hyperplay/utils'
 let dateTimeCurrentSessionStartedInMsSinceEpoch = Date.now()
 
 export function getPlaystreakArgsFromQuestData(
-  questMeta: Quest,
-  questPlayStreakData: UserPlayStreak | undefined | null,
-  useModuleInitTimeForSessionStartTime?: boolean
-): Omit<PlayStreakEligibility, 'onSync'> {
+  {
+    questMeta,
+    questPlayStreakData,
+    useModuleInitTimeForSessionStartTime,
+    onSync
+  }: {
+    questMeta: Quest;
+    questPlayStreakData: UserPlayStreak | undefined | null;
+    useModuleInitTimeForSessionStartTime?: boolean;
+    onSync: () => void;
+  }
+): PlayStreakEligibility {
   let sessionStartedTime = undefined
   if (useModuleInitTimeForSessionStartTime) {
     sessionStartedTime = dateTimeCurrentSessionStartedInMsSinceEpoch
   }
   return {
+    onSync,
     requiredStreakInDays:
       questMeta?.eligibility?.play_streak.required_playstreak_in_days ?? 0,
     currentStreakInDays: questPlayStreakData?.current_playstreak_in_days ?? 0,
