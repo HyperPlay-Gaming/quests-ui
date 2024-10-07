@@ -16,8 +16,7 @@ import {
   RewardClaimSignature,
   ConfirmClaimParams,
   Runner,
-  DepositContract,
-  wait
+  DepositContract
 } from '@hyperplay/utils'
 import { mintReward } from '../../helpers/mintReward'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
