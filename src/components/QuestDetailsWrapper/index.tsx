@@ -598,7 +598,7 @@ export function QuestDetailsWrapper({
           useModuleInitTimeForSessionStartTime: isSignedIn,
           onSync: async () => {
             if (questsWithExternalPlayStreakSync.includes(questMeta.id)) {
-              syncPlayStreakWithExternalSource(questMeta.id)
+              await syncPlayStreakWithExternalSource(questMeta.id)
             } else {
               await syncPlaySession(projectId, 'hyperplay')
               logInfo(`Synced play session for quest ${questMeta.id}`)
