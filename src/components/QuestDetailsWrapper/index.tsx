@@ -16,13 +16,17 @@ import {
   RewardClaimSignature,
   ConfirmClaimParams,
   Runner,
-  DepositContract
+  DepositContract,
+  wait
 } from '@hyperplay/utils'
 import { mintReward } from '../../helpers/mintReward'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
 import useGetUserPlayStreak from '../../hooks/useGetUserPlayStreak'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPlaystreakArgsFromQuestData } from '../../helpers/getPlaystreakArgsFromQuestData'
+import {
+  getPlaystreakArgsFromQuestData,
+  resetSessionStartedTime
+} from '../../helpers/getPlaystreakArgsFromQuestData'
 import { useGetRewards } from '../../hooks/useGetRewards'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
@@ -601,6 +605,7 @@ export function QuestDetailsWrapper({
               await syncPlayStreakWithExternalSource(questMeta.id)
             } else {
               await syncPlaySession(projectId, 'hyperplay')
+              resetSessionStartedTime()
               logInfo(`Synced play session for quest ${questMeta.id}`)
               console.log(`Synced play session for quest ${questMeta.id}`)
             }
