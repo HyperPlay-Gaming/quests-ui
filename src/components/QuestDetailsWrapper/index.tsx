@@ -22,7 +22,10 @@ import { mintReward } from '../../helpers/mintReward'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
 import useGetUserPlayStreak from '../../hooks/useGetUserPlayStreak'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPlaystreakArgsFromQuestData } from '../../helpers/getPlaystreakArgsFromQuestData'
+import {
+  getPlaystreakArgsFromQuestData,
+  resetSessionStartedTime
+} from '../../helpers/getPlaystreakArgsFromQuestData'
 import { useGetRewards } from '../../hooks/useGetRewards'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
@@ -69,6 +72,8 @@ export interface QuestDetailsWrapperProps {
     tokenId?: number
   ) => Promise<RewardClaimSignature>
   confirmRewardClaim: (params: ConfirmClaimParams) => Promise<void>
+  questsWithExternalPlayStreakSync: number[]
+  syncPlayStreakWithExternalSource: (questId: number) => Promise<unknown>
   resyncExternalTask: (rewardId: string) => Promise<void>
   getExternalTaskCredits: (rewardId: string) => Promise<string>
   syncPlaySession: (appName: string, runner: Runner) => Promise<void>
@@ -107,7 +112,9 @@ export function QuestDetailsWrapper({
   tOverride,
   sessionEmail,
   checkG7ConnectionStatus,
-  isQuestsPage
+  isQuestsPage,
+  syncPlayStreakWithExternalSource,
+  questsWithExternalPlayStreakSync
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -309,6 +316,7 @@ export function QuestDetailsWrapper({
     },
     sync: t('quest.sync', 'Sync'),
     streakProgressI18n: {
+      sync: t('quest.playstreak.sync', 'Sync Progress'),
       streakProgress: t('quest.playstreak.streakProgress', 'Streak Progress'),
       days: t('quest.playstreak.days', 'days'),
       playToStart: t(
@@ -587,14 +595,24 @@ export function QuestDetailsWrapper({
           eligible: false,
           steamAccountLinked: true
         },
-        playStreak: getPlaystreakArgsFromQuestData(
+        playStreak: getPlaystreakArgsFromQuestData({
           questMeta,
           questPlayStreakData,
-          isSignedIn
-        )
+          useModuleInitTimeForSessionStartTime: isSignedIn,
+          onSync: async () => {
+            if (questsWithExternalPlayStreakSync.includes(questMeta.id)) {
+              await syncPlayStreakWithExternalSource(questMeta.id)
+            } else {
+              await syncPlaySession(projectId, 'hyperplay')
+              resetSessionStartedTime()
+              logInfo(`Synced play session for quest ${questMeta.id}`)
+              console.log(`Synced play session for quest ${questMeta.id}`)
+            }
+            questPlayStreakResult.invalidateQuery()
+          }
+        })
       },
       rewards: questRewards ?? [],
-      i18n,
       onClaimClick: async () => {
         if (isRewardOnChain) {
           setShowWarning(true)
@@ -616,7 +634,8 @@ export function QuestDetailsWrapper({
       },
       isSyncing: resyncMutation.isPending,
       chainTooltips: {},
-      isQuestsPage
+      isQuestsPage,
+      i18n
     }
     questDetails = (
       <>
@@ -657,6 +676,7 @@ export function QuestDetailsWrapper({
           steamAccountLinked: false
         },
         playStreak: {
+          onSync: () => console.log('loading...'),
           currentStreakInDays: 0,
           requiredStreakInDays: 1,
           minimumSessionTimeInSeconds: 100,
@@ -664,7 +684,6 @@ export function QuestDetailsWrapper({
           lastPlaySessionCompletedDateTimeUTC: new Date().toISOString()
         }
       },
-      i18n,
       rewards: [],
       onClaimClick: () => console.log('claim clicked for ', questMeta?.name),
       onSignInClick: () => console.log('sign in clicked for ', questMeta?.name),
@@ -673,7 +692,8 @@ export function QuestDetailsWrapper({
       collapseIsOpen,
       toggleCollapse: () => setCollapseIsOpen(!collapseIsOpen),
       isSignedIn,
-      isQuestsPage
+      isQuestsPage,
+      i18n
     }
     questDetails = (
       <QuestDetails

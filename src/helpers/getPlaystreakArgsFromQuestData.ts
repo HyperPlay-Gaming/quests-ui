@@ -4,16 +4,23 @@ import { Quest, UserPlayStreak } from '@hyperplay/utils'
 // this is initialized when the overlay is started for this game
 let dateTimeCurrentSessionStartedInMsSinceEpoch = Date.now()
 
-export function getPlaystreakArgsFromQuestData(
-  questMeta: Quest,
-  questPlayStreakData: UserPlayStreak | undefined | null,
+export function getPlaystreakArgsFromQuestData({
+  questMeta,
+  questPlayStreakData,
+  useModuleInitTimeForSessionStartTime,
+  onSync
+}: {
+  questMeta: Quest
+  questPlayStreakData: UserPlayStreak | undefined | null
   useModuleInitTimeForSessionStartTime?: boolean
-): PlayStreakEligibility {
+  onSync: () => void
+}): PlayStreakEligibility {
   let sessionStartedTime = undefined
   if (useModuleInitTimeForSessionStartTime) {
     sessionStartedTime = dateTimeCurrentSessionStartedInMsSinceEpoch
   }
   return {
+    onSync,
     requiredStreakInDays:
       questMeta?.eligibility?.play_streak.required_playstreak_in_days ?? 0,
     currentStreakInDays: questPlayStreakData?.current_playstreak_in_days ?? 0,
