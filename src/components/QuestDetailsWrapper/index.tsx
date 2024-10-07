@@ -601,10 +601,10 @@ export function QuestDetailsWrapper({
               syncPlayStreakWithExternalSource(questMeta.id)
             } else {
               await syncPlaySession(projectId, 'hyperplay')
-              questPlayStreakResult.invalidateQuery()
               logInfo(`Synced play session for quest ${questMeta.id}`)
               console.log(`Synced play session for quest ${questMeta.id}`)
             }
+            questPlayStreakResult.invalidateQuery()
           }
         })
       },
