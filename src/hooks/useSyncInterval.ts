@@ -10,7 +10,7 @@ export function useSyncPlaySession(
   currentPlayTimeInSeconds?: number
 ) {
   useEffect(() => {
-    async function sync(){
+    async function sync() {
       await syncPlaySession(projectId, 'hyperplay')
       // allow for some time before read
       await wait(5000)
@@ -20,13 +20,20 @@ export function useSyncPlaySession(
     const syncTimer = setInterval(sync, 1000 * 60)
 
     let finalSyncTimer: NodeJS.Timeout | undefined = undefined
-    if (minimumRequiredPlayTimeInSeconds && currentPlayTimeInSeconds && currentPlayTimeInSeconds < minimumRequiredPlayTimeInSeconds){
-      finalSyncTimer = setTimeout(sync, minimumRequiredPlayTimeInSeconds - currentPlayTimeInSeconds)
+    if (
+      minimumRequiredPlayTimeInSeconds &&
+      currentPlayTimeInSeconds &&
+      currentPlayTimeInSeconds < minimumRequiredPlayTimeInSeconds
+    ) {
+      finalSyncTimer = setTimeout(
+        sync,
+        minimumRequiredPlayTimeInSeconds - currentPlayTimeInSeconds
+      )
     }
 
     return () => {
       clearInterval(syncTimer)
-      if (finalSyncTimer){
+      if (finalSyncTimer) {
         clearTimeout(finalSyncTimer)
       }
     }
