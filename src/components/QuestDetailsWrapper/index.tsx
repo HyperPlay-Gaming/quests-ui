@@ -84,6 +84,8 @@ export interface QuestDetailsWrapperProps {
   sessionEmail?: string
   checkG7ConnectionStatus: () => Promise<boolean>
   isQuestsPage?: boolean
+  minimumRequiredPlayTimeInSeconds?: number
+  currentPlayTimeInSeconds?: number
 }
 
 export function QuestDetailsWrapper({
@@ -114,7 +116,9 @@ export function QuestDetailsWrapper({
   checkG7ConnectionStatus,
   isQuestsPage,
   syncPlayStreakWithExternalSource,
-  questsWithExternalPlayStreakSync
+  questsWithExternalPlayStreakSync,
+  minimumRequiredPlayTimeInSeconds,
+  currentPlayTimeInSeconds
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -275,7 +279,9 @@ export function QuestDetailsWrapper({
   useSyncPlaySession(
     projectId,
     questPlayStreakResult.invalidateQuery,
-    syncPlaySession
+    syncPlaySession,
+    minimumRequiredPlayTimeInSeconds,
+    currentPlayTimeInSeconds
   )
 
   const [collapseIsOpen, setCollapseIsOpen] = useState(false)
