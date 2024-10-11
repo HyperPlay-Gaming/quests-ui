@@ -26,7 +26,7 @@
   "devDependencies": {
     "@hyperplay/chains": "^0.3.0",
     "@hyperplay/ui": "^1.8.0",
-    "@hyperplay/utils": "^0.2.3",
+    "@hyperplay/utils": "^0.2.6",
     "@tanstack/react-query": "^5.51.23",
     "@types/react": "^18.3.3",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
