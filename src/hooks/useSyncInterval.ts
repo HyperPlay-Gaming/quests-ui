@@ -1,24 +1,31 @@
 import { resetSessionStartedTime } from '@/helpers/getPlaystreakArgsFromQuestData'
-import { Runner, wait } from '@hyperplay/utils'
+import { Runner } from '@hyperplay/utils'
 import { useEffect } from 'react'
+import { useInterval } from './useInterval'
 
-export function useSyncPlaySession(
-  projectId: string,
-  invalidateQuery: () => Promise<void>,
-  syncPlaySession: (appName: string, runner: Runner) => Promise<void>,
-  minimumRequiredPlayTimeInSeconds?: number,
+export function useSyncPlaySession({
+  projectId,
+  invalidateQuery,
+  syncPlaySession,
+  minimumRequiredPlayTimeInSeconds,
+  currentPlayTimeInSeconds,
+  runner
+}: {
+  projectId: string
+  invalidateQuery: () => Promise<void>
+  syncPlaySession: (appName: string, runner: Runner) => Promise<void>
+  minimumRequiredPlayTimeInSeconds?: number
   currentPlayTimeInSeconds?: number
-) {
-  useEffect(() => {
-    async function sync() {
-      await syncPlaySession(projectId, 'hyperplay')
-      // allow for some time before read
-      await wait(5000)
-      await invalidateQuery()
-      resetSessionStartedTime()
-    }
-    const syncTimer = setInterval(sync, 1000 * 60)
+  runner: Runner
+}) {
+  async function sync() {
+    await syncPlaySession(projectId, runner ?? 'hyperplay')
+    await invalidateQuery()
+    resetSessionStartedTime()
+  }
+  useInterval(sync, 60000)
 
+  useEffect(() => {
     let finalSyncTimer: NodeJS.Timeout | undefined = undefined
     if (
       minimumRequiredPlayTimeInSeconds &&
@@ -32,7 +39,6 @@ export function useSyncPlaySession(
     }
 
     return () => {
-      clearInterval(syncTimer)
       if (finalSyncTimer) {
         clearTimeout(finalSyncTimer)
       }

@@ -276,13 +276,14 @@ export function QuestDetailsWrapper({
       loading: val.isLoading || val.isFetching
     })) ?? []
 
-  useSyncPlaySession(
+  useSyncPlaySession({
     projectId,
-    questPlayStreakResult.invalidateQuery,
+    invalidateQuery: questPlayStreakResult.invalidateQuery,
     syncPlaySession,
     minimumRequiredPlayTimeInSeconds,
-    currentPlayTimeInSeconds
-  )
+    currentPlayTimeInSeconds,
+    runner: questMeta?.quest_external_game?.runner ?? 'hyperplay'
+  })
 
   const [collapseIsOpen, setCollapseIsOpen] = useState(false)
 
