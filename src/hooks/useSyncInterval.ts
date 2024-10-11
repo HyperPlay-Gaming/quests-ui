@@ -24,7 +24,7 @@ export function useSyncPlaySession({
     resetSessionStartedTime()
   }
   useInterval(sync, 60000)
-  
+
   useEffect(() => {
     let finalSyncTimer: NodeJS.Timeout | undefined = undefined
     if (
