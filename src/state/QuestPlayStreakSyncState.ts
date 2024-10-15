@@ -3,6 +3,13 @@ import { makeAutoObservable } from 'mobx'
 import { QueryCache, QueryClient } from '@tanstack/query-core'
 import { resetSessionStartedTime } from '@/helpers/getPlaystreakArgsFromQuestData'
 
+const defaultQueryOptions = {
+  queries: {
+    staleTime: 1000 * 60 * 5, // Cache the data for 5 minutes
+    retry: 1 // Retry failed request once
+  }
+}
+
 class QuestPlayStreakSyncState {
   // @ts-expect-error not assigned in constructor since this is a singleton
   getQuests: (projectId?: string | undefined) => Promise<Quest[]>
@@ -31,12 +38,7 @@ class QuestPlayStreakSyncState {
     makeAutoObservable(this)
     this.queryClient = new QueryClient({
       queryCache: new QueryCache(),
-      defaultOptions: {
-        queries: {
-          staleTime: 1000 * 60 * 5, // Cache the data for 5 minutes
-          retry: 1 // Retry failed request once
-        }
-      }
+      defaultOptions: defaultQueryOptions
     })
   }
 
@@ -62,10 +64,9 @@ class QuestPlayStreakSyncState {
     this.invalidateQuestPlayStreak = invalidateQuestPlayStreak
 
     if (queryClient) {
-      const currentOptions = this.queryClient.getDefaultOptions()
       this.queryClient = new QueryClient({
         queryCache: queryClient.getQueryCache(),
-        defaultOptions: currentOptions
+        defaultOptions: defaultQueryOptions
       })
     }
   }
