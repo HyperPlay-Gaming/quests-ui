@@ -79,7 +79,7 @@ class QuestPlayStreakSyncState {
           }
         }
 
-        const syncThisProjectMutation = () =>
+        const syncThisProjectMutation = async () =>
           this.queryClient.fetchQuery({
             queryKey: ['syncPlaysession', projectId],
             queryFn: async () => {
