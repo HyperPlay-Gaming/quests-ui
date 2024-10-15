@@ -2,6 +2,11 @@ import { Quest, Runner, UserPlayStreak } from '@hyperplay/utils'
 import { makeAutoObservable } from 'mobx'
 import { QueryClient } from '@tanstack/query-core'
 import { resetSessionStartedTime } from '@/helpers/getPlaystreakArgsFromQuestData'
+import {
+  getGetQuestQueryKey,
+  getGetUserPlayStreakQueryKey,
+  getSyncPlaysessionQueryKey
+} from '@/helpers/getQueryKeys'
 
 class QuestPlayStreakSyncState {
   // @ts-expect-error not assigned in constructor since this is a singleton
@@ -57,15 +62,13 @@ class QuestPlayStreakSyncState {
     for (const quest of quests) {
       try {
         // get quest
-        const getQuestQueryKey = `getQuest:${quest.id}`
         const questMeta = await this.queryClient.fetchQuery({
-          queryKey: [getQuestQueryKey],
+          queryKey: getGetQuestQueryKey(quest.id),
           queryFn: async () => this.getQuest(quest.id)
         })
         // get user playstreak
-        const getUserPlayStreakQueryKey = ['getUserPlayStreak', quest.id]
         const userPlayStreakData = await this.queryClient.fetchQuery({
-          queryKey: [getUserPlayStreakQueryKey],
+          queryKey: getGetUserPlayStreakQueryKey(quest.id),
           queryFn: async () => this.getUserPlayStreak(quest.id)
         })
 
@@ -78,7 +81,7 @@ class QuestPlayStreakSyncState {
 
         const syncThisProjectMutation = async () =>
           this.queryClient?.fetchQuery({
-            queryKey: ['syncPlaysession', projectId],
+            queryKey: getSyncPlaysessionQueryKey(projectId),
             queryFn: async () => {
               this.syncPlaySession(
                 projectId,
@@ -87,7 +90,9 @@ class QuestPlayStreakSyncState {
               resetSessionStartedTime()
               // all quest user playstreak data needs to be refetched after playsession sync
               for (const questToInvalidate of quests) {
-                const queryKey = ['getUserPlayStreak', questToInvalidate.id]
+                const queryKey = getGetUserPlayStreakQueryKey(
+                  questToInvalidate.id
+                )
                 this.queryClient?.invalidateQueries({ queryKey })
               }
             }
