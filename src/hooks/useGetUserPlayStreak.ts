@@ -6,9 +6,9 @@ export default function useGetUserPlayStreak(
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
 ) {
   const queryClient = useQueryClient()
-  const queryKey = `getUserPlayStreak:${questId}`
+  const queryKey = ['getUserPlayStreak', questId]
   const query = useQuery({
-    queryKey: [queryKey],
+    queryKey,
     queryFn: async () => {
       if (questId === null) {
         return null
@@ -24,7 +24,6 @@ export default function useGetUserPlayStreak(
   return {
     data: query,
     isLoading: query.isLoading || query.isFetching,
-    invalidateQuery: async () =>
-      queryClient.invalidateQueries({ queryKey: [queryKey] })
+    invalidateQuery: async () => queryClient.invalidateQueries({ queryKey })
   }
 }
