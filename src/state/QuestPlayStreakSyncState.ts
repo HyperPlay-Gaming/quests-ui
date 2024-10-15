@@ -12,6 +12,8 @@ class QuestPlayStreakSyncState {
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
   // @ts-expect-error not assigned in constructor since this is a singleton
   syncPlaySession: (appName: string, runner: Runner) => Promise<void>
+  // @ts-expect-error not assigned in constructor since this is a singleton
+  invalidateQuestPlayStreak: (questId: number) => void
 
   projectSyncData: Record<
     string,
@@ -42,17 +44,30 @@ class QuestPlayStreakSyncState {
     getQuests,
     getQuest,
     getUserPlayStreak,
-    syncPlaySession
+    syncPlaySession,
+    invalidateQuestPlayStreak,
+    queryClient
   }: {
     getQuests: (projectId?: string | undefined) => Promise<Quest[]>
     getQuest: (questId: number) => Promise<Quest>
     getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
     syncPlaySession: (appName: string, runner: Runner) => Promise<void>
+    invalidateQuestPlayStreak: (questId: number) => void
+    queryClient?: QueryClient
   }) {
     this.getQuests = getQuests
     this.getQuest = getQuest
     this.getUserPlayStreak = getUserPlayStreak
     this.syncPlaySession = syncPlaySession
+    this.invalidateQuestPlayStreak = invalidateQuestPlayStreak
+
+    if (queryClient) {
+      const currentOptions = this.queryClient.getDefaultOptions()
+      this.queryClient = new QueryClient({
+        queryCache: queryClient.getQueryCache(),
+        defaultOptions: currentOptions
+      })
+    }
   }
 
   async keepProjectQuestsInSync(projectId: string) {
@@ -79,22 +94,17 @@ class QuestPlayStreakSyncState {
           }
         }
 
-        const syncThisProjectMutation = async () =>
-          this.queryClient.fetchQuery({
-            queryKey: ['syncPlaysession', projectId],
-            queryFn: async () => {
-              this.syncPlaySession(
-                projectId,
-                questMeta.quest_external_game?.runner ?? 'hyperplay'
-              )
-              resetSessionStartedTime()
-              // all quest user playstreak data needs to be refetched after playsession sync
-              for (const questToInvalidate of quests) {
-                const queryKey = ['getUserPlayStreak', questToInvalidate.id]
-                this.queryClient.invalidateQueries({ queryKey })
-              }
-            }
-          })
+        const syncThisProjectMutation = async () => {
+          this.syncPlaySession(
+            projectId,
+            questMeta.quest_external_game?.runner ?? 'hyperplay'
+          )
+          resetSessionStartedTime()
+          // all quest user playstreak data needs to be refetched after playsession sync
+          for (const questToInvalidate of quests) {
+            this.invalidateQuestPlayStreak(questToInvalidate.id)
+          }
+        }
 
         // set timeout for when we meet the min time
         const currentPlayTimeInSeconds =
