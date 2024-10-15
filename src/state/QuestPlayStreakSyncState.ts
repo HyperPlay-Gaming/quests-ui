@@ -1,6 +1,6 @@
 import { Quest, Runner, UserPlayStreak } from '@hyperplay/utils'
 import { makeAutoObservable } from 'mobx'
-import { QueryCache, QueryClient } from '@tanstack/query-core'
+import { QueryClient } from '@tanstack/query-core'
 import { resetSessionStartedTime } from '@/helpers/getPlaystreakArgsFromQuestData'
 
 class QuestPlayStreakSyncState {
@@ -21,41 +21,38 @@ class QuestPlayStreakSyncState {
     }
   > = {}
 
-  queryClient: QueryClient
+  queryClient: QueryClient | undefined = undefined
 
   intervalSyncTick = 60000
 
   constructor() {
     makeAutoObservable(this)
-    this.queryClient = new QueryClient({
-      queryCache: new QueryCache(),
-      defaultOptions: {
-        queries: {
-          staleTime: 1000 * 60 * 5, // Cache the data for 5 minutes
-          retry: 1 // Retry failed request once
-        }
-      }
-    })
   }
 
   init({
     getQuests,
     getQuest,
     getUserPlayStreak,
-    syncPlaySession
+    syncPlaySession,
+    queryClient
   }: {
     getQuests: (projectId?: string | undefined) => Promise<Quest[]>
     getQuest: (questId: number) => Promise<Quest>
     getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
     syncPlaySession: (appName: string, runner: Runner) => Promise<void>
+    queryClient: QueryClient
   }) {
     this.getQuests = getQuests
     this.getQuest = getQuest
     this.getUserPlayStreak = getUserPlayStreak
     this.syncPlaySession = syncPlaySession
+    this.queryClient = queryClient
   }
 
   async keepProjectQuestsInSync(projectId: string) {
+    if (this.queryClient === undefined) {
+      throw 'must call init on QuestPlayStreakSyncState first'
+    }
     const quests = await this.getQuests(projectId)
     for (const quest of quests) {
       try {
@@ -80,7 +77,7 @@ class QuestPlayStreakSyncState {
         }
 
         const syncThisProjectMutation = async () =>
-          this.queryClient.fetchQuery({
+          this.queryClient?.fetchQuery({
             queryKey: ['syncPlaysession', projectId],
             queryFn: async () => {
               this.syncPlaySession(
@@ -91,7 +88,7 @@ class QuestPlayStreakSyncState {
               // all quest user playstreak data needs to be refetched after playsession sync
               for (const questToInvalidate of quests) {
                 const queryKey = ['getUserPlayStreak', questToInvalidate.id]
-                this.queryClient.invalidateQueries({ queryKey })
+                this.queryClient?.invalidateQueries({ queryKey })
               }
             }
           })
