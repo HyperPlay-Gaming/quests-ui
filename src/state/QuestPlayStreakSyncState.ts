@@ -17,8 +17,8 @@ class QuestPlayStreakSyncState {
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
   // @ts-expect-error not assigned in constructor since this is a singleton
   syncPlaySession: (appName: string, runner: Runner) => Promise<void>
-  // @ts-expect-error not assigned in constructor since this is a singleton
-  appQueryClient: QueryClient
+  
+  appQueryClient?: QueryClient
 
   projectSyncData: Record<
     string,
@@ -55,7 +55,7 @@ class QuestPlayStreakSyncState {
     getQuest: (questId: number) => Promise<Quest>
     getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
     syncPlaySession: (appName: string, runner: Runner) => Promise<void>
-    appQueryClient: QueryClient
+    appQueryClient?: QueryClient
   }) {
     this.getQuests = getQuests
     this.getQuest = getQuest
@@ -103,7 +103,7 @@ class QuestPlayStreakSyncState {
                 const queryKey = getGetUserPlayStreakQueryKey(
                   questToInvalidate.id
                 )
-                this.appQueryClient.invalidateQueries({ queryKey })
+                this.appQueryClient?.invalidateQueries({ queryKey })
               }
             }
           })
