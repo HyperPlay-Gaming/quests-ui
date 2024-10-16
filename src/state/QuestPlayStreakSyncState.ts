@@ -17,7 +17,7 @@ class QuestPlayStreakSyncState {
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
   // @ts-expect-error not assigned in constructor since this is a singleton
   syncPlaySession: (appName: string, runner: Runner) => Promise<void>
-  
+
   appQueryClient?: QueryClient
 
   projectSyncData: Record<
