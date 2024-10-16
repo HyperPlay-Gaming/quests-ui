@@ -17,6 +17,8 @@ class QuestPlayStreakSyncState {
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
   // @ts-expect-error not assigned in constructor since this is a singleton
   syncPlaySession: (appName: string, runner: Runner) => Promise<void>
+  
+  appQueryClient?: QueryClient
 
   projectSyncData: Record<
     string,
@@ -31,6 +33,14 @@ class QuestPlayStreakSyncState {
   intervalSyncTick = 60000
 
   constructor() {
+    this.queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 1000 * 60 * 5, // Cache the data for 5 minutes
+          retry: 1 // Retry failed request once
+        }
+      }
+    })
     makeAutoObservable(this)
   }
 
@@ -39,19 +49,19 @@ class QuestPlayStreakSyncState {
     getQuest,
     getUserPlayStreak,
     syncPlaySession,
-    queryClient
+    appQueryClient
   }: {
     getQuests: (projectId?: string | undefined) => Promise<Quest[]>
     getQuest: (questId: number) => Promise<Quest>
     getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
     syncPlaySession: (appName: string, runner: Runner) => Promise<void>
-    queryClient: QueryClient
+    appQueryClient?: QueryClient
   }) {
     this.getQuests = getQuests
     this.getQuest = getQuest
     this.getUserPlayStreak = getUserPlayStreak
     this.syncPlaySession = syncPlaySession
-    this.queryClient = queryClient
+    this.appQueryClient = appQueryClient
   }
 
   async keepProjectQuestsInSync(projectId: string) {
@@ -93,7 +103,7 @@ class QuestPlayStreakSyncState {
                 const queryKey = getGetUserPlayStreakQueryKey(
                   questToInvalidate.id
                 )
-                this.queryClient?.invalidateQueries({ queryKey })
+                this.appQueryClient?.invalidateQueries({ queryKey })
               }
             }
           })
