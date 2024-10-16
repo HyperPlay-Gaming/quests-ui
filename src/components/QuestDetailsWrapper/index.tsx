@@ -29,7 +29,6 @@ import {
 import { useGetRewards } from '../../hooks/useGetRewards'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
-import { useSyncPlaySession } from '../../hooks/useSyncInterval'
 import { useTrackQuestViewed } from '../../hooks/useTrackQuestViewed'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
@@ -84,8 +83,6 @@ export interface QuestDetailsWrapperProps {
   sessionEmail?: string
   checkG7ConnectionStatus: () => Promise<boolean>
   isQuestsPage?: boolean
-  minimumRequiredPlayTimeInSeconds?: number
-  currentPlayTimeInSeconds?: number
 }
 
 export function QuestDetailsWrapper({
@@ -116,9 +113,7 @@ export function QuestDetailsWrapper({
   checkG7ConnectionStatus,
   isQuestsPage,
   syncPlayStreakWithExternalSource,
-  questsWithExternalPlayStreakSync,
-  minimumRequiredPlayTimeInSeconds,
-  currentPlayTimeInSeconds
+  questsWithExternalPlayStreakSync
 }: QuestDetailsWrapperProps) {
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -275,15 +270,6 @@ export function QuestDetailsWrapper({
       imageUrl: val.data?.capsule_image ?? '',
       loading: val.isLoading || val.isFetching
     })) ?? []
-
-  useSyncPlaySession({
-    projectId,
-    invalidateQuery: questPlayStreakResult.invalidateQuery,
-    syncPlaySession,
-    minimumRequiredPlayTimeInSeconds,
-    currentPlayTimeInSeconds,
-    runner: questMeta?.quest_external_game?.runner ?? 'hyperplay'
-  })
 
   const [collapseIsOpen, setCollapseIsOpen] = useState(false)
 
