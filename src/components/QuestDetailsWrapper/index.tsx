@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
+  Images,
+  Button,
   Game,
   MarkdownDescription,
   QuestDetails,
@@ -22,10 +24,7 @@ import { mintReward } from '../../helpers/mintReward'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
 import useGetUserPlayStreak from '../../hooks/useGetUserPlayStreak'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  getPlaystreakArgsFromQuestData,
-  resetSessionStartedTime
-} from '../../helpers/getPlaystreakArgsFromQuestData'
+import { getPlaystreakArgsFromQuestData } from '../../helpers/getPlaystreakArgsFromQuestData'
 import { useGetRewards } from '../../hooks/useGetRewards'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
@@ -37,6 +36,7 @@ import { injected } from 'wagmi/connectors'
 import { TrackEventFn } from '@/types/analytics'
 import { TFunction } from 'i18next'
 import cn from 'classnames'
+import { useHasPendingExternalSync } from '@/hooks/useHasPendingExternalSync'
 
 class ClaimError extends Error {
   properties: any
@@ -70,6 +70,7 @@ export interface QuestDetailsWrapperProps {
     rewardId: number,
     tokenId?: number
   ) => Promise<RewardClaimSignature>
+  getPendingExternalSync: (questId: number) => Promise<boolean>
   confirmRewardClaim: (params: ConfirmClaimParams) => Promise<void>
   questsWithExternalPlayStreakSync: number[]
   syncPlayStreakWithExternalSource: (questId: number) => Promise<unknown>
@@ -104,7 +105,7 @@ export function QuestDetailsWrapper({
   confirmRewardClaim,
   resyncExternalTask,
   getExternalTaskCredits,
-  syncPlaySession,
+  getPendingExternalSync,
   logInfo,
   openDiscordLink,
   getDepositContracts,
@@ -115,6 +116,7 @@ export function QuestDetailsWrapper({
   syncPlayStreakWithExternalSource,
   questsWithExternalPlayStreakSync
 }: QuestDetailsWrapperProps) {
+  const [syncSuccess, setSyncSuccess] = useState(false)
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
     writeContractAsync,
@@ -157,6 +159,63 @@ export function QuestDetailsWrapper({
     getUserPlayStreak
   )
   const questPlayStreakData = questPlayStreakResult.data.data
+
+  const {
+    data: hasPendingExternalSync,
+    invalidateQuery: invalidateHasPendingExternalSync
+  } = useHasPendingExternalSync({
+    questId: selectedQuestId,
+    getPendingExternalSync
+  })
+
+  const syncWithExternalSourceMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedQuestId) {
+        return
+      }
+      return syncPlayStreakWithExternalSource(selectedQuestId)
+    },
+    onSuccess: async () => {
+      setSyncSuccess(true)
+      await questPlayStreakResult.invalidateQuery()
+      await invalidateHasPendingExternalSync()
+      setTimeout(() => {
+        setSyncSuccess(false)
+      }, 3000)
+    }
+  })
+
+  let streakRightSection = null
+
+  if (
+    selectedQuestId &&
+    questsWithExternalPlayStreakSync.includes(selectedQuestId) &&
+    hasPendingExternalSync
+  ) {
+    streakRightSection = (
+      <Button
+        disabled={syncWithExternalSourceMutation.isPending}
+        type="secondaryGradient"
+        onClick={() => syncWithExternalSourceMutation.mutate()}
+        size="small"
+      >
+        {t('quest.playstreak.sync', 'Sync Progress')}
+      </Button>
+    )
+  }
+
+  if (syncSuccess) {
+    streakRightSection = (
+      <div className={styles.syncSuccess}>
+        <Images.Checkmark
+          fill="var(--color-success-500)"
+          width={18}
+          height={18}
+        />
+        {t('quest.playstreak.syncSuccess', 'Progress synced')}
+      </div>
+    )
+  }
 
   const resyncMutation = useMutation({
     mutationFn: async (rewards: Reward[]) => {
@@ -592,17 +651,7 @@ export function QuestDetailsWrapper({
           questMeta,
           questPlayStreakData,
           useModuleInitTimeForSessionStartTime: isSignedIn,
-          onSync: async () => {
-            if (questsWithExternalPlayStreakSync.includes(questMeta.id)) {
-              await syncPlayStreakWithExternalSource(questMeta.id)
-            } else {
-              await syncPlaySession(projectId, 'hyperplay')
-              resetSessionStartedTime()
-              logInfo(`Synced play session for quest ${questMeta.id}`)
-              console.log(`Synced play session for quest ${questMeta.id}`)
-            }
-            questPlayStreakResult.invalidateQuery()
-          }
+          rightSection: streakRightSection
         })
       },
       rewards: questRewards ?? [],
@@ -669,7 +718,6 @@ export function QuestDetailsWrapper({
           steamAccountLinked: false
         },
         playStreak: {
-          onSync: () => console.log('loading...'),
           currentStreakInDays: 0,
           requiredStreakInDays: 1,
           minimumSessionTimeInSeconds: 100,
