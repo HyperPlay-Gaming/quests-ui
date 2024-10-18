@@ -13,7 +13,7 @@ export function getPlaystreakArgsFromQuestData({
 }: {
   questMeta: Quest
   questPlayStreakData: UserPlayStreak | undefined | null
-  useModuleInitTimeForSessionStartTime?: boolean,
+  useModuleInitTimeForSessionStartTime?: boolean
   rightSection?: ReactNode
 }): PlayStreakEligibility {
   let sessionStartedTime = undefined
