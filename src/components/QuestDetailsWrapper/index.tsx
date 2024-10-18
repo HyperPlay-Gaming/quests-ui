@@ -72,7 +72,6 @@ export interface QuestDetailsWrapperProps {
   ) => Promise<RewardClaimSignature>
   getPendingExternalSync: (questId: number) => Promise<boolean>
   confirmRewardClaim: (params: ConfirmClaimParams) => Promise<void>
-  questsWithExternalPlayStreakSync: number[]
   syncPlayStreakWithExternalSource: (questId: number) => Promise<unknown>
   resyncExternalTask: (rewardId: string) => Promise<void>
   getExternalTaskCredits: (rewardId: string) => Promise<string>
@@ -113,8 +112,7 @@ export function QuestDetailsWrapper({
   sessionEmail,
   checkG7ConnectionStatus,
   isQuestsPage,
-  syncPlayStreakWithExternalSource,
-  questsWithExternalPlayStreakSync
+  syncPlayStreakWithExternalSource
 }: QuestDetailsWrapperProps) {
   const [syncSuccess, setSyncSuccess] = useState(false)
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
@@ -187,11 +185,7 @@ export function QuestDetailsWrapper({
 
   let streakRightSection = null
 
-  if (
-    selectedQuestId &&
-    questsWithExternalPlayStreakSync.includes(selectedQuestId) &&
-    hasPendingExternalSync
-  ) {
+  if (hasPendingExternalSync) {
     streakRightSection = (
       <Button
         disabled={syncWithExternalSourceMutation.isPending}
