@@ -121,6 +121,9 @@ class QuestPlayStreakSyncState {
           questMeta?.eligibility?.play_streak.minimum_session_time_in_seconds
         if (
           minimumRequiredPlayTimeInSeconds !== undefined &&
+          minimumRequiredPlayTimeInSeconds !== null &&
+          currentPlayTimeInSeconds !== undefined &&
+          currentPlayTimeInSeconds !== null &&
           currentPlayTimeInSeconds < minimumRequiredPlayTimeInSeconds
         ) {
           const finalSyncTimer = setTimeout(
