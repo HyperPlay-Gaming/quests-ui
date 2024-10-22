@@ -128,7 +128,7 @@ class QuestPlayStreakSyncState {
         ) {
           const finalSyncTimer = setTimeout(
             syncThisProjectMutation,
-            minimumRequiredPlayTimeInSeconds - currentPlayTimeInSeconds
+            (minimumRequiredPlayTimeInSeconds - currentPlayTimeInSeconds) * 1000
           )
           this.projectSyncData[projectId].syncTimers.push(finalSyncTimer)
         }
