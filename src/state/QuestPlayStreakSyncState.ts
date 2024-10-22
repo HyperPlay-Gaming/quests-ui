@@ -24,7 +24,7 @@ class QuestPlayStreakSyncState {
     string,
     {
       syncTimers: NodeJS.Timeout[]
-      intervalTimers: NodeJS.Timer[]
+      intervalTimers: NodeJS.Timeout[]
     }
   > = {}
 
@@ -92,6 +92,11 @@ class QuestPlayStreakSyncState {
         const syncThisProjectMutation = async () =>
           this.queryClient?.fetchQuery({
             queryKey: getSyncPlaysessionQueryKey(projectId),
+            /**
+             * if multiple quests are syncing at the same time (within 1 second), we want to only send once.
+             * if one quest finishes in 40 seconds and another in 41 seconds, then we want to post at 40 and 41 sec
+             */
+            staleTime: 500,
             queryFn: async () => {
               this.syncPlaySession(
                 projectId,
@@ -105,6 +110,7 @@ class QuestPlayStreakSyncState {
                 )
                 this.appQueryClient?.invalidateQueries({ queryKey })
               }
+              return null
             }
           })
 
@@ -114,11 +120,12 @@ class QuestPlayStreakSyncState {
         const minimumRequiredPlayTimeInSeconds =
           questMeta?.eligibility?.play_streak.minimum_session_time_in_seconds
         if (
-          minimumRequiredPlayTimeInSeconds &&
-          currentPlayTimeInSeconds &&
+          minimumRequiredPlayTimeInSeconds !== undefined &&
+          minimumRequiredPlayTimeInSeconds !== null &&
+          currentPlayTimeInSeconds !== undefined &&
+          currentPlayTimeInSeconds !== null &&
           currentPlayTimeInSeconds < minimumRequiredPlayTimeInSeconds
         ) {
-          console.log('setting timeout for post mutation')
           const finalSyncTimer = setTimeout(
             syncThisProjectMutation,
             minimumRequiredPlayTimeInSeconds - currentPlayTimeInSeconds
@@ -130,7 +137,7 @@ class QuestPlayStreakSyncState {
           syncThisProjectMutation,
           this.intervalSyncTick
         )
-        this.projectSyncData[projectId].syncTimers.push(intervalId)
+        this.projectSyncData[projectId].intervalTimers.push(intervalId)
       } catch (err) {
         console.error(`Error while setting up playstreak sync: ${err}`)
       }
