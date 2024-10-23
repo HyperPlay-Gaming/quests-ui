@@ -9,3 +9,7 @@ export function getGetUserPlayStreakQueryKey(questId: number | null) {
 export function getSyncPlaysessionQueryKey(projectId: string) {
   return ['syncPlaysession', projectId]
 }
+
+export function getGetQuestLogInfoQueryKey(questId: string) {
+  return ['getQuestLogInfo', questId]
+}
