@@ -37,6 +37,7 @@ import { TrackEventFn } from '@/types/analytics'
 import { TFunction } from 'i18next'
 import cn from 'classnames'
 import { useHasPendingExternalSync } from '@/hooks/useHasPendingExternalSync'
+import { getGetQuestLogInfoQueryKey } from '@/helpers/getQueryKeys'
 
 class ClaimError extends Error {
   properties: any
@@ -525,6 +526,11 @@ export function QuestDetailsWrapper({
     },
     onSuccess: async () => {
       await questPlayStreakResult.invalidateQuery()
+      if (selectedQuestId !== null) {
+        await queryClient.invalidateQueries({
+          queryKey: [getGetQuestLogInfoQueryKey(selectedQuestId.toString())]
+        })
+      }
     },
     onError: (error) => {
       if (error instanceof ClaimError) {
