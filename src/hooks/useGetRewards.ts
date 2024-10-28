@@ -1,16 +1,25 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useGetQuest from './useGetQuest'
-import { getDecimalNumberFromAmount, Quest } from '@hyperplay/utils'
+import { getDecimalNumberFromAmount, Quest, Reward } from '@hyperplay/utils'
 import { getRewardCategory } from '../helpers/getRewardCategory'
 import { useTranslation } from 'react-i18next'
 import { QuestReward } from '@hyperplay/ui'
 
-export function useGetRewards(
-  questId: number | null,
-  getQuest: (questId: number) => Promise<Quest>,
-  getExternalTaskCredits: (rewardId: string) => Promise<string>,
+export function useGetRewards({
+  questId,
+  getQuest,
+  onClaim,
+  canClaim,
+  getExternalTaskCredits,
+  logError
+}: {
+  questId: number | null
+  getQuest: (questId: number) => Promise<Quest>
+  canClaim: boolean
+  onClaim: (reward: Reward) => Promise<void>
+  getExternalTaskCredits: (rewardId: string) => Promise<string>
   logError: (msg: string) => void
-) {
+}) {
   const questResult = useGetQuest(questId, getQuest)
   const questMeta = questResult.data.data
 
@@ -67,7 +76,9 @@ export function useGetRewards(
               imageUrl: reward_i.image_url,
               chainName: getRewardCategory(reward_i, t),
               numToClaim: token_i.amount_per_user,
-              numOfClaimsLeft: token_i.numClaimsLeft
+              numOfClaimsLeft: token_i.numClaimsLeft,
+              canClaim: canClaim,
+              onClaim: async () => onClaim(reward_i)
             }
             rewards.push(questReward_i)
           }
@@ -77,7 +88,9 @@ export function useGetRewards(
             imageUrl: reward_i.image_url,
             chainName: getRewardCategory(reward_i, t),
             numToClaim,
-            numOfClaimsLeft: reward_i.numClaimsLeft
+            numOfClaimsLeft: reward_i.numClaimsLeft,
+            canClaim: canClaim,
+            onClaim: async () => onClaim(reward_i)
           }
           rewards.push(questReward_i)
         }

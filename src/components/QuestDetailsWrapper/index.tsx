@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Images,
   Button,
@@ -18,7 +18,8 @@ import {
   RewardClaimSignature,
   ConfirmClaimParams,
   Runner,
-  DepositContract
+  DepositContract,
+  Quest
 } from '@hyperplay/utils'
 import { mintReward } from '../../helpers/mintReward'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
@@ -51,7 +52,6 @@ class ClaimError extends Error {
 export interface QuestDetailsWrapperProps {
   className?: string
   selectedQuestId: number | null
-  projectId: string
   flags: {
     rewardTypeClaimEnabled: Record<Reward['reward_type'], boolean>
     questsOverlayClaimCtaEnabled?: boolean
@@ -84,12 +84,12 @@ export interface QuestDetailsWrapperProps {
   sessionEmail?: string
   checkG7ConnectionStatus: () => Promise<boolean>
   isQuestsPage?: boolean
+  onPlayClick?: (quest: Quest) => void
 }
 
 export function QuestDetailsWrapper({
   className,
   selectedQuestId,
-  projectId,
   flags,
   getQuest,
   getUserPlayStreak,
@@ -113,8 +113,10 @@ export function QuestDetailsWrapper({
   sessionEmail,
   checkG7ConnectionStatus,
   isQuestsPage,
-  syncPlayStreakWithExternalSource
+  syncPlayStreakWithExternalSource,
+  onPlayClick
 }: QuestDetailsWrapperProps) {
+  const queryClient = useQueryClient()
   const [syncSuccess, setSyncSuccess] = useState(false)
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
@@ -144,20 +146,50 @@ export function QuestDetailsWrapper({
   const [warningMessage, setWarningMessage] = useState<string>()
   const questMeta = questResult.data.data
 
-  const rewardsQuery = useGetRewards(
-    selectedQuestId,
-    getQuest,
-    getExternalTaskCredits,
-    logError
-  )
-  const questRewards = rewardsQuery.data.data
-  const queryClient = useQueryClient()
-
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
     getUserPlayStreak
   )
   const questPlayStreakData = questPlayStreakResult.data.data
+
+  const isEligible = useMemo(() => {
+    if (!questMeta) {
+      return false
+    }
+
+    const currentStreak = questPlayStreakData?.current_playstreak_in_days
+    const requiredStreak =
+      questMeta.eligibility?.play_streak?.required_playstreak_in_days
+
+    if (questMeta.type === 'PLAYSTREAK' && currentStreak && requiredStreak) {
+      return currentStreak >= requiredStreak
+    }
+
+    return false
+  }, [questMeta, questPlayStreakData])
+
+  const onClaim = async (reward: Reward) => {
+    const isRewardOnChain = ['ERC1155', 'ERC721', 'ERC20'].includes(
+      reward.reward_type
+    )
+
+    if (isRewardOnChain) {
+      setShowWarning(true)
+    } else {
+      claimRewardsMutation.mutate([reward])
+    }
+  }
+
+  const rewardsQuery = useGetRewards({
+    questId: selectedQuestId,
+    getQuest,
+    getExternalTaskCredits,
+    logError,
+    onClaim,
+    canClaim: isEligible
+  })
+
+  const questRewards = rewardsQuery.data.data
 
   const {
     data: hasPendingExternalSync,
@@ -275,10 +307,19 @@ export function QuestDetailsWrapper({
     }
   })
 
+  const onPlayClickHandler = () => {
+    if (!questMeta) {
+      console.error('questMeta is undefined')
+      return
+    }
+    
+    onPlayClick?.(questMeta)
+  }
+
   const claimPointsMutation = useMutation({
     mutationFn: async (reward: Reward) => {
       const result = await claimPoints(reward)
-      const queryKey = `getPointsBalancesForProject:${projectId}`
+      const queryKey = `getPointsBalancesForProject:${questMeta?.project_id}`
       queryClient.invalidateQueries({ queryKey: [queryKey] })
       return result
     },
@@ -543,21 +584,6 @@ export function QuestDetailsWrapper({
       logError(`Error claiming rewards: ${error}`)
     }
   })
-
-  function isEligible() {
-    if (!questMeta) {
-      return false
-    }
-    const currentStreak = questPlayStreakData?.current_playstreak_in_days
-    const requiredStreak =
-      questMeta.eligibility?.play_streak?.required_playstreak_in_days
-    if (questMeta.type === 'PLAYSTREAK' && currentStreak && requiredStreak) {
-      return currentStreak >= requiredStreak
-    }
-
-    return false
-  }
-
   const chainTooltips: Record<string, string> = {}
   chainTooltips[t('quest.points', 'Points')] =
     'Points are off-chain fungible rewards that may or may not be redeemable for an on-chain reward in the future. This is up to the particular game developer who is providing this reward.'
@@ -581,7 +607,7 @@ export function QuestDetailsWrapper({
       )
     )
 
-    const notEligible = !isEligible() && !showResyncButton && isSignedIn
+    const notEligible = !isEligible && !showResyncButton && isSignedIn
 
     const ctaDisabled =
       !flags.questsOverlayClaimCtaEnabled ||
@@ -592,7 +618,7 @@ export function QuestDetailsWrapper({
     const logMsg = `cta is disabled: ${ctaDisabled}. 
       isClaiming: ${isClaiming} 
       flag: ${flags.questsOverlayClaimCtaEnabled}, 
-      not eligible ${!isEligible() && !showResyncButton && isSignedIn}, 
+      not eligible ${!isEligible && !showResyncButton && isSignedIn}, 
       claiming: ${isClaiming}, 
       is reward claimable ${isRewardTypeClaimable}`
     logInfo(logMsg)
@@ -626,13 +652,11 @@ export function QuestDetailsWrapper({
     }
 
     const rewardsToClaim = questMeta.rewards ?? []
-    const isRewardOnChain = rewardsToClaim.some((reward) =>
-      ['ERC1155', 'ERC721', 'ERC20'].includes(reward.reward_type)
-    )
 
     const questDetailsProps: QuestDetailsProps = {
       className,
       alertProps,
+      onPlayClick: onPlayClickHandler,
       questType: questMeta.type,
       title: questMeta.name,
       description: (
@@ -655,13 +679,6 @@ export function QuestDetailsWrapper({
         })
       },
       rewards: questRewards ?? [],
-      onClaimClick: async () => {
-        if (isRewardOnChain) {
-          setShowWarning(true)
-        } else {
-          claimRewardsMutation.mutate(rewardsToClaim)
-        }
-      },
       onSignInClick: openSignInModal,
       onConnectSteamAccountClick: signInWithSteamAccount,
       collapseIsOpen,
@@ -726,7 +743,6 @@ export function QuestDetailsWrapper({
         }
       },
       rewards: [],
-      onClaimClick: () => console.log('claim clicked for ', questMeta?.name),
       onSignInClick: () => console.log('sign in clicked for ', questMeta?.name),
       onConnectSteamAccountClick: () =>
         console.log('connect steam account clicked for ', questMeta?.name),
