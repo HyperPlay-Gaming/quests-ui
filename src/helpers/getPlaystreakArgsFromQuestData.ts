@@ -9,8 +9,10 @@ export function getPlaystreakArgsFromQuestData({
   questMeta,
   questPlayStreakData,
   useModuleInitTimeForSessionStartTime,
-  rightSection
+  rightSection,
+  standby
 }: {
+  standby?: boolean
   questMeta: Quest
   questPlayStreakData: UserPlayStreak | undefined | null
   useModuleInitTimeForSessionStartTime?: boolean
@@ -21,6 +23,7 @@ export function getPlaystreakArgsFromQuestData({
     sessionStartedTime = dateTimeCurrentSessionStartedInMsSinceEpoch
   }
   return {
+    standby,
     rightSection,
     requiredStreakInDays:
       questMeta?.eligibility?.play_streak.required_playstreak_in_days ?? 0,

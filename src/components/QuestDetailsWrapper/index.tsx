@@ -112,7 +112,7 @@ export function QuestDetailsWrapper({
   tOverride,
   sessionEmail,
   checkG7ConnectionStatus,
-  isQuestsPage,
+  isQuestsPage = false,
   syncPlayStreakWithExternalSource,
   onPlayClick
 }: QuestDetailsWrapperProps) {
@@ -186,7 +186,7 @@ export function QuestDetailsWrapper({
     getExternalTaskCredits,
     logError,
     onClaim,
-    canClaim: isEligible
+    canClaim: false
   })
 
   const questRewards = rewardsQuery.data.data
@@ -312,7 +312,7 @@ export function QuestDetailsWrapper({
       console.error('questMeta is undefined')
       return
     }
-    
+
     onPlayClick?.(questMeta)
   }
 
@@ -392,7 +392,7 @@ export function QuestDetailsWrapper({
       `You need to have completed {{percent}}% of the achievements in one of these games.`,
       { percent: questMeta?.eligibility?.completion_threshold ?? '??' }
     ),
-    claim: t('quest.claimAll', 'Claim all'),
+    claim: t('quest.claim', 'Claim'),
     signIn: t('quest.signIn', 'Sign in'),
     connectSteamAccount: t(
       'quest.connectSteamAccount',
@@ -607,19 +607,20 @@ export function QuestDetailsWrapper({
       )
     )
 
-    const notEligible = !isEligible && !showResyncButton && isSignedIn
+    const canClaim =
+      Boolean(flags.questsOverlayClaimCtaEnabled) &&
+      isEligible &&
+      !showResyncButton &&
+      isSignedIn &&
+      !isClaiming &&
+      isRewardTypeClaimable
 
-    const ctaDisabled =
-      !flags.questsOverlayClaimCtaEnabled ||
-      notEligible ||
-      isClaiming ||
-      !isRewardTypeClaimable
-
-    const logMsg = `cta is disabled: ${ctaDisabled}. 
+    const logMsg = `can claim: ${canClaim}. 
       isClaiming: ${isClaiming} 
-      flag: ${flags.questsOverlayClaimCtaEnabled}, 
-      not eligible ${!isEligible && !showResyncButton && isSignedIn}, 
-      claiming: ${isClaiming}, 
+      flag: ${flags.questsOverlayClaimCtaEnabled},
+      is eligible: ${isEligible},
+      show resync button: ${showResyncButton},
+      is signed in: ${isSignedIn},
       is reward claimable ${isRewardTypeClaimable}`
     logInfo(logMsg)
 
@@ -672,13 +673,17 @@ export function QuestDetailsWrapper({
           steamAccountLinked: true
         },
         playStreak: getPlaystreakArgsFromQuestData({
+          standby: isQuestsPage,
           questMeta,
           questPlayStreakData,
           useModuleInitTimeForSessionStartTime: isSignedIn,
           rightSection: streakRightSection
         })
       },
-      rewards: questRewards ?? [],
+      rewards: questRewards.map((reward) => ({
+        ...reward,
+        canClaim: canClaim
+      })),
       onSignInClick: openSignInModal,
       onConnectSteamAccountClick: signInWithSteamAccount,
       collapseIsOpen,
@@ -686,7 +691,7 @@ export function QuestDetailsWrapper({
       errorMessage: warningMessage,
       isMinting: isClaiming,
       isSignedIn,
-      ctaDisabled,
+      ctaDisabled: false,
       showSync: showResyncButton,
       onSyncClick: () => {
         resyncMutation.mutateAsync(questMeta.rewards ?? [])
@@ -735,6 +740,7 @@ export function QuestDetailsWrapper({
           steamAccountLinked: false
         },
         playStreak: {
+          standby: isQuestsPage,
           currentStreakInDays: 0,
           requiredStreakInDays: 1,
           minimumSessionTimeInSeconds: 100,
