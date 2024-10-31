@@ -121,27 +121,23 @@ export function QuestDetailsWrapper({
   const queryClient = useQueryClient()
   const [syncSuccess, setSyncSuccess] = useState(false)
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
-  const {
-    writeContractAsync,
-    isPending: isPendingWriteContract,
-  } = useWriteContract({
-    mutation: {
-      onError: (error) => {
-        logError(`Error writing contract: ${error}`)
+  const { writeContractAsync, isPending: isPendingWriteContract } =
+    useWriteContract({
+      mutation: {
+        onError: (error) => {
+          logError(`Error writing contract: ${error}`)
+        }
       }
-    }
-  })
+    })
 
-  const {
-    switchChainAsync,
-    isPending: isPendingSwitchingChain,
-  } = useSwitchChain({
-    mutation: {
-      onError: (error) => {
-        logError(`Error switching chain: ${error}`)
+  const { switchChainAsync, isPending: isPendingSwitchingChain } =
+    useSwitchChain({
+      mutation: {
+        onError: (error) => {
+          logError(`Error switching chain: ${error}`)
+        }
       }
-    }
-  })
+    })
 
   const [claimError, setClaimError] = useState<Error | null>(null)
 
@@ -156,7 +152,10 @@ export function QuestDetailsWrapper({
     t = tOverride
   }
   const questResult = useGetQuest(selectedQuestId, getQuest)
-  const [warningMessage, setWarningMessage] = useState<string>()
+  const [warningMessage, setWarningMessage] = useState<{
+    title: string
+    message: string
+  }>()
   const questMeta = questResult.data.data
 
   const questPlayStreakResult = useGetUserPlayStreak(
@@ -182,6 +181,28 @@ export function QuestDetailsWrapper({
   }, [questMeta, questPlayStreakData])
 
   const onClaim = async (reward: Reward) => {
+    if (!isSignedIn) {
+      setWarningMessage({
+        title: t('quest.notSignedIn.title', 'Not signed in'),
+        message: t(
+          'quest.notSignedIn.message',
+          'You need to be signed in to claim your reward.'
+        )
+      })
+      return
+    }
+
+    if (!isEligible) {
+      setWarningMessage({
+        title: t('quest.notEligible.title', 'Not eligible yet'),
+        message: t(
+          'quest.notEligible.message',
+          'You have not completed the required play streak days and can not claim your reward at this time.'
+        )
+      })
+      return
+    }
+
     const isRewardOnChain = ['ERC1155', 'ERC721', 'ERC20'].includes(
       reward.reward_type
     )
@@ -197,9 +218,7 @@ export function QuestDetailsWrapper({
     questId: selectedQuestId,
     getQuest,
     getExternalTaskCredits,
-    logError,
-    onClaim,
-    canClaim: false
+    logError
   })
 
   const questRewards = rewardsQuery.data.data
@@ -262,15 +281,16 @@ export function QuestDetailsWrapper({
       const isConnectedToG7 = await checkG7ConnectionStatus()
 
       if (!isConnectedToG7) {
-        setWarningMessage(
-          t(
-            'quest.noG7ConnectionSync',
+        setWarningMessage({
+          title: t('quest.noG7ConnectionSync.title', 'No G7 account linked'),
+          message: t(
+            'quest.noG7ConnectionSync.message',
             `You need to have a Game7 account linked to ${
               sessionEmail ?? 'your email'
             } to resync your tasks.`,
             { email: sessionEmail ?? 'your email' }
           )
-        )
+        })
         return
       }
 
@@ -295,15 +315,16 @@ export function QuestDetailsWrapper({
       const isConnectedToG7 = await checkG7ConnectionStatus()
 
       if (!isConnectedToG7) {
-        setWarningMessage(
-          t(
-            'quest.noG7ConnectionClaim',
+        setWarningMessage({
+          title: t('quest.noG7ConnectionSync.title', 'No G7 account linked'),
+          message: t(
+            'quest.noG7ConnectionSync.message',
             `You need to have a Game7 account linked to ${
               sessionEmail ?? 'your email'
-            } to claim your rewards.`,
+            } to resync your tasks.`,
             { email: sessionEmail ?? 'your email' }
           )
-        )
+        })
         return
       }
 
@@ -482,12 +503,13 @@ export function QuestDetailsWrapper({
       logError(
         `Not enough balance in the connected wallet to cover the gas fee associated with this Quest Reward claim. Current balance: ${walletBalance}, gas needed: ${gasNeeded}`
       )
-      setWarningMessage(
-        t(
-          'quest.notEnoughGas',
+      setWarningMessage({
+        title: t('quest.notEnoughBalance.title', 'Low balance'),
+        message: t(
+          'quest.notEnoughGas.message',
           'Insufficient wallet balance to claim your reward due to gas fees. Try a different wallet or replenish this one before retrying.'
         )
-      )
+      })
       return
     }
 
@@ -636,15 +658,7 @@ export function QuestDetailsWrapper({
       )
     )
 
-    const canClaim =
-      Boolean(flags.questsOverlayClaimCtaEnabled) &&
-      isEligible &&
-      !showResyncButton &&
-      isSignedIn &&
-      !isClaiming &&
-      isRewardTypeClaimable
-
-    const logMsg = `can claim: ${canClaim}. 
+    const logMsg = ` 
       isClaiming: ${isClaiming} 
       flag: ${flags.questsOverlayClaimCtaEnabled},
       is eligible: ${isEligible},
@@ -666,6 +680,15 @@ export function QuestDetailsWrapper({
         actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
         onActionClick: () => openDiscordLink(),
         variant: 'danger'
+      }
+    }
+
+    if (warningMessage) {
+      alertProps = {
+        showClose: false,
+        title: warningMessage.title,
+        message: warningMessage.message,
+        variant: 'warning'
       }
     }
 
@@ -705,14 +728,13 @@ export function QuestDetailsWrapper({
       },
       rewards: questRewards.map((reward) => ({
         ...reward,
-        canClaim: canClaim,
+        onClaim: async () => onClaim(reward.apiReward),
         claimPending: isClaiming
       })),
       onSignInClick: openSignInModal,
       onConnectSteamAccountClick: signInWithSteamAccount,
       collapseIsOpen,
       toggleCollapse: () => setCollapseIsOpen(!collapseIsOpen),
-      errorMessage: warningMessage,
       isSignedIn,
       ctaDisabled: false,
       showSync: showResyncButton,

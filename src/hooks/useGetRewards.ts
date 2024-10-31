@@ -5,18 +5,18 @@ import { getRewardCategory } from '../helpers/getRewardCategory'
 import { useTranslation } from 'react-i18next'
 import { QuestReward } from '@hyperplay/ui'
 
+interface UseGetRewardsData extends Omit<QuestReward, 'onClaim'> {
+  apiReward: Reward
+}
+
 export function useGetRewards({
   questId,
   getQuest,
-  onClaim,
-  canClaim,
   getExternalTaskCredits,
   logError
 }: {
   questId: number | null
   getQuest: (questId: number) => Promise<Quest>
-  canClaim: boolean
-  onClaim: (reward: Reward) => Promise<void>
   getExternalTaskCredits: (rewardId: string) => Promise<string>
   logError: (msg: string) => void
 }) {
@@ -28,10 +28,10 @@ export function useGetRewards({
 
   const { t } = useTranslation()
 
-  const query = useQuery<QuestReward[]>({
+  const query = useQuery({
     queryKey: [queryKey],
     queryFn: async () => {
-      const rewards: QuestReward[] = []
+      const rewards: UseGetRewardsData[] = []
       const questRewards = questMeta?.rewards
       if (!questRewards) {
         return rewards
@@ -71,26 +71,24 @@ export function useGetRewards({
           reward_i.token_ids.length
         ) {
           for (const token_i of reward_i.token_ids) {
-            const questReward_i: QuestReward = {
+            const questReward_i = {
               title: reward_i.name,
               imageUrl: reward_i.image_url,
               chainName: getRewardCategory(reward_i, t),
               numToClaim: token_i.amount_per_user,
               numOfClaimsLeft: token_i.numClaimsLeft,
-              canClaim: canClaim,
-              onClaim: async () => onClaim(reward_i)
+              apiReward: reward_i,
             }
             rewards.push(questReward_i)
           }
         } else {
-          const questReward_i: QuestReward = {
+          const questReward_i = {
             title: reward_i.name,
             imageUrl: reward_i.image_url,
             chainName: getRewardCategory(reward_i, t),
             numToClaim,
             numOfClaimsLeft: reward_i.numClaimsLeft,
-            canClaim: canClaim,
-            onClaim: async () => onClaim(reward_i)
+            apiReward: reward_i
           }
           rewards.push(questReward_i)
         }
