@@ -85,6 +85,7 @@ export interface QuestDetailsWrapperProps {
   checkG7ConnectionStatus: () => Promise<boolean>
   isQuestsPage?: boolean
   onPlayClick?: (quest: Quest) => void
+  onRewardsClaimed?: (rewards: Reward[]) => void
 }
 
 export function QuestDetailsWrapper({
@@ -114,7 +115,8 @@ export function QuestDetailsWrapper({
   checkG7ConnectionStatus,
   isQuestsPage = false,
   syncPlayStreakWithExternalSource,
-  onPlayClick
+  onPlayClick,
+  onRewardsClaimed
 }: QuestDetailsWrapperProps) {
   const queryClient = useQueryClient()
   const [syncSuccess, setSyncSuccess] = useState(false)
@@ -129,7 +131,8 @@ export function QuestDetailsWrapper({
   const {
     switchChainAsync,
     isPending: isPendingSwitchingChain,
-    error: switchChainError
+    error: switchChainError,
+    reset: resetSwitchChain
   } = useSwitchChain()
 
   useTrackQuestViewed(selectedQuestId, trackEvent)
@@ -302,7 +305,8 @@ export function QuestDetailsWrapper({
     onError: (error) => {
       logError(`Error resyncing tasks: ${error}`)
     },
-    onSuccess: async () => {
+    onSuccess: async (_data, reward) => {
+      onRewardsClaimed?.([reward])
       await questPlayStreakResult.invalidateQuery()
     }
   })
@@ -326,7 +330,8 @@ export function QuestDetailsWrapper({
     onError: (error) => {
       logError(`Error claiming points: ${error}`)
     },
-    onSuccess: async () => {
+    onSuccess: async (_data, reward) => {
+      onRewardsClaimed?.([reward])
       await questPlayStreakResult.invalidateQuery()
     }
   })
@@ -565,7 +570,8 @@ export function QuestDetailsWrapper({
     mutationFn: async (params: Reward[]) => {
       return claimRewards(params)
     },
-    onSuccess: async () => {
+    onSuccess: async (_data, rewards) => {
+      onRewardsClaimed?.(rewards)
       await questPlayStreakResult.invalidateQuery()
       if (selectedQuestId !== null) {
         await queryClient.invalidateQueries({
@@ -598,6 +604,7 @@ export function QuestDetailsWrapper({
   useEffect(() => {
     setWarningMessage(undefined)
     resetWriteContract()
+    resetSwitchChain()
   }, [selectedQuestId])
 
   if (selectedQuestId !== null && questMeta && questRewards) {
@@ -682,14 +689,14 @@ export function QuestDetailsWrapper({
       },
       rewards: questRewards.map((reward) => ({
         ...reward,
-        canClaim: canClaim
+        canClaim: canClaim,
+        claimPending: isClaiming
       })),
       onSignInClick: openSignInModal,
       onConnectSteamAccountClick: signInWithSteamAccount,
       collapseIsOpen,
       toggleCollapse: () => setCollapseIsOpen(!collapseIsOpen),
       errorMessage: warningMessage,
-      isMinting: isClaiming,
       isSignedIn,
       ctaDisabled: false,
       showSync: showResyncButton,
