@@ -123,17 +123,27 @@ export function QuestDetailsWrapper({
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
     writeContractAsync,
-    error: writeContractError,
     isPending: isPendingWriteContract,
-    reset: resetWriteContract
-  } = useWriteContract()
+  } = useWriteContract({
+    mutation: {
+      onError: (error) => {
+        logError(`Error writing contract: ${error}`)
+      }
+    }
+  })
 
   const {
     switchChainAsync,
     isPending: isPendingSwitchingChain,
-    error: switchChainError,
-    reset: resetSwitchChain
-  } = useSwitchChain()
+  } = useSwitchChain({
+    mutation: {
+      onError: (error) => {
+        logError(`Error switching chain: ${error}`)
+      }
+    }
+  })
+
+  const [claimError, setClaimError] = useState<Error | null>(null)
 
   useTrackQuestViewed(selectedQuestId, trackEvent)
 
@@ -603,9 +613,21 @@ export function QuestDetailsWrapper({
 
   useEffect(() => {
     setWarningMessage(undefined)
-    resetWriteContract()
-    resetSwitchChain()
+    setClaimError(null)
   }, [selectedQuestId])
+
+  useEffect(() => {
+    const error =
+      claimRewardsMutation.error ||
+      claimPointsMutation.error ||
+      completeTaskMutation.error
+
+    setClaimError(error)
+  }, [
+    claimRewardsMutation.error,
+    claimPointsMutation.error,
+    completeTaskMutation.error
+  ])
 
   if (selectedQuestId !== null && questMeta && questRewards) {
     const isRewardTypeClaimable = Boolean(
@@ -633,13 +655,7 @@ export function QuestDetailsWrapper({
 
     let alertProps: InfoAlertProps | undefined
 
-    if (
-      writeContractError ||
-      claimRewardsMutation.error ||
-      switchChainError ||
-      resyncMutation.error ||
-      completeTaskMutation.error
-    ) {
+    if (claimError) {
       alertProps = {
         showClose: false,
         title: t('quest.claimFailed', 'Claim failed'),
