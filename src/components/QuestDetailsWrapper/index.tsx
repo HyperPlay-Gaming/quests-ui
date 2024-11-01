@@ -475,9 +475,18 @@ export function QuestDetailsWrapper({
       throw Error('chain id is not set for reward when trying to mint')
     }
 
-    if (account.address === undefined) {
+    let address: `0x${string}` | undefined
+
+    if (account.address) {
+      address = account.address
+    } else {
       logInfo('connecting to wallet...')
-      await connectAsync({ connector: injected() })
+      const { accounts } = await connectAsync({ connector: injected() })
+      address = accounts[0]
+    }
+
+    if (!address) {
+      throw Error('no address found when trying to mint')
     }
 
     await switchChainAsync({ chainId: reward.chain_id })
@@ -489,12 +498,11 @@ export function QuestDetailsWrapper({
       chain: viemChain,
       transport: http()
     })
-    if (account.address === undefined) {
-      return
-    }
+
     const walletBalance = await publicClient.getBalance({
-      address: account.address
+      address
     })
+
     const hasEnoughBalance = walletBalance >= gasNeeded
 
     logInfo(`Current wallet gas: ${walletBalance}`)
@@ -523,7 +531,7 @@ export function QuestDetailsWrapper({
     }
 
     const claimSignature: RewardClaimSignature = await getQuestRewardSignature(
-      account.address,
+      address,
       reward.id,
       tokenId
     )
