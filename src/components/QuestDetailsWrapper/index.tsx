@@ -321,7 +321,7 @@ export function QuestDetailsWrapper({
             'quest.noG7ConnectionSync.message',
             `You need to have a Game7 account linked to ${
               sessionEmail ?? 'your email'
-            } to resync your tasks.`,
+            } to claim your rewards.`,
             { email: sessionEmail ?? 'your email' }
           )
         })
