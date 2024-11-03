@@ -736,7 +736,7 @@ export function QuestDetailsWrapper({
       },
       rewards: questRewards.map((reward) => ({
         ...reward,
-        onClaim: async () => onClaim(reward.apiReward),
+        onClaim: async () => onClaim(reward),
         claimPending: isClaiming
       })),
       onSignInClick: openSignInModal,

@@ -5,9 +5,9 @@ import { getRewardCategory } from '../helpers/getRewardCategory'
 import { useTranslation } from 'react-i18next'
 import { QuestReward } from '@hyperplay/ui'
 
-interface UseGetRewardsData extends Omit<QuestReward, 'onClaim'> {
-  apiReward: Reward
-}
+// @dev: onClaim is assigned in the component to avoid passing it to the hook
+// since it is pretty tied to the implementation
+type UseGetRewardsData = Omit<QuestReward, 'onClaim'> & Reward;
 
 export function useGetRewards({
   questId,
@@ -72,23 +72,23 @@ export function useGetRewards({
         ) {
           for (const token_i of reward_i.token_ids) {
             const questReward_i = {
+              ...reward_i,
               title: reward_i.name,
               imageUrl: reward_i.image_url,
               chainName: getRewardCategory(reward_i, t),
               numToClaim: token_i.amount_per_user,
               numOfClaimsLeft: token_i.numClaimsLeft,
-              apiReward: reward_i,
             }
             rewards.push(questReward_i)
           }
         } else {
           const questReward_i = {
+            ...reward_i,
             title: reward_i.name,
             imageUrl: reward_i.image_url,
             chainName: getRewardCategory(reward_i, t),
             numToClaim,
             numOfClaimsLeft: reward_i.numClaimsLeft,
-            apiReward: reward_i
           }
           rewards.push(questReward_i)
         }
