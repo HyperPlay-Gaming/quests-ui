@@ -727,10 +727,9 @@ export function QuestDetailsWrapper({
           steamAccountLinked: true
         },
         playStreak: getPlaystreakArgsFromQuestData({
-          standby: isQuestsPage,
           questMeta,
           questPlayStreakData,
-          useModuleInitTimeForSessionStartTime: isSignedIn,
+          useModuleInitTimeForSessionStartTime: isSignedIn && !isQuestsPage,
           rightSection: streakRightSection
         })
       },
@@ -793,7 +792,7 @@ export function QuestDetailsWrapper({
           steamAccountLinked: false
         },
         playStreak: {
-          standby: isQuestsPage,
+          // standby: isQuestsPage,
           currentStreakInDays: 0,
           requiredStreakInDays: 1,
           minimumSessionTimeInSeconds: 100,
