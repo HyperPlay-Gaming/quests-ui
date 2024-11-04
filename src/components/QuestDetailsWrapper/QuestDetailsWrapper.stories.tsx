@@ -42,7 +42,8 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
           name: 'Dyno Coin',
           contract_address: '0xb85Df74eB6db8C2D87c3bD7d4Ee1A27929643dA3',
           decimals: 18,
-          image_url: 'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
+          image_url:
+            'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
           token_ids: [],
           numClaimsLeft: '2357',
           amount_per_user: '200000000000000000000000',

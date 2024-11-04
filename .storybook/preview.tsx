@@ -7,8 +7,8 @@ import { mainnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HyperPlayDesignProvider } from '@hyperplay/ui'
 
-import '@mantine/core/styles.css';
-import '@hyperplay/ui/style.css';
+import '@mantine/core/styles.css'
+import '@hyperplay/ui/style.css'
 
 const queryClient = new QueryClient()
 
