@@ -1,3 +1,4 @@
+import { getGetQuestQueryKey } from '@/helpers/getQueryKeys'
 import { Quest } from '@hyperplay/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -6,7 +7,7 @@ export default function useGetQuest(
   getQuest: (questId: number) => Promise<Quest>
 ) {
   const queryClient = useQueryClient()
-  const queryKey = `getQuest:${questId}`
+  const queryKey = getGetQuestQueryKey(questId)
   const query = useQuery({
     queryKey: [queryKey],
     queryFn: async () => {

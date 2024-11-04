@@ -54,7 +54,7 @@ const mockProps: QuestDetailsWrapperProps = {
     }
   },
   getUserPlayStreak: async () => {
-    return 0        
+    return 0
   },
   getSteamGameMetadata: async () => {
     return {
@@ -64,12 +64,12 @@ const mockProps: QuestDetailsWrapperProps = {
     }
   },
   isSignedIn: false,
-  trackEvent: () => {},
-  signInWithSteamAccount: () => {},
-  openSignInModal: () => {},
-  logError: () => {},
-  claimPoints: async () => {},
-  completeExternalTask: async () => {},
+  trackEvent: () => { },
+  signInWithSteamAccount: () => { },
+  openSignInModal: () => { },
+  logError: () => { },
+  claimPoints: async () => { },
+  completeExternalTask: async () => { },
   getQuestRewardSignature: async () => {
     return {
       signature: `0x123`,
@@ -78,19 +78,25 @@ const mockProps: QuestDetailsWrapperProps = {
       tokenIds: []
     }
   },
-  confirmRewardClaim: async () => {},
-  resyncExternalTask: async () => {},
+  confirmRewardClaim: async () => { },
+  resyncExternalTask: async () => { },
   getExternalTaskCredits: async () => {
     return '100'
   },
-  syncPlaySession: async () => {},
-  logInfo: () => {},
-  openDiscordLink: () => {},
+  syncPlaySession: async () => { },
+  logInfo: () => { },
+  openDiscordLink: () => { },
   getDepositContracts: async () => {
     return []
   },
   checkG7ConnectionStatus: async () => {
     return false
+  },
+  getPendingExternalSync: async () => {
+    return false
+  },
+  syncPlayStreakWithExternalSource: async () => {
+    alert('sync play streak with external source')
   }
 }
 

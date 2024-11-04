@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
+  Images,
+  Button,
   Game,
   MarkdownDescription,
   QuestDetails,
@@ -26,7 +28,6 @@ import { getPlaystreakArgsFromQuestData } from '../../helpers/getPlaystreakArgsF
 import { useGetRewards } from '../../hooks/useGetRewards'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
-import { useSyncPlaySession } from '../../hooks/useSyncInterval'
 import { useTrackQuestViewed } from '../../hooks/useTrackQuestViewed'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
@@ -35,6 +36,8 @@ import { injected } from 'wagmi/connectors'
 import { TrackEventFn } from '@/types/analytics'
 import { TFunction } from 'i18next'
 import cn from 'classnames'
+import { useHasPendingExternalSync } from '@/hooks/useHasPendingExternalSync'
+import { getGetQuestLogInfoQueryKey } from '@/helpers/getQueryKeys'
 
 class ClaimError extends Error {
   properties: any
@@ -68,7 +71,9 @@ export interface QuestDetailsWrapperProps {
     rewardId: number,
     tokenId?: number
   ) => Promise<RewardClaimSignature>
+  getPendingExternalSync: (questId: number) => Promise<boolean>
   confirmRewardClaim: (params: ConfirmClaimParams) => Promise<void>
+  syncPlayStreakWithExternalSource: (questId: number) => Promise<unknown>
   resyncExternalTask: (rewardId: string) => Promise<void>
   getExternalTaskCredits: (rewardId: string) => Promise<string>
   syncPlaySession: (appName: string, runner: Runner) => Promise<void>
@@ -100,15 +105,17 @@ export function QuestDetailsWrapper({
   confirmRewardClaim,
   resyncExternalTask,
   getExternalTaskCredits,
-  syncPlaySession,
+  getPendingExternalSync,
   logInfo,
   openDiscordLink,
   getDepositContracts,
   tOverride,
   sessionEmail,
   checkG7ConnectionStatus,
-  isQuestsPage
+  isQuestsPage,
+  syncPlayStreakWithExternalSource
 }: QuestDetailsWrapperProps) {
+  const [syncSuccess, setSyncSuccess] = useState(false)
   const rewardTypeClaimEnabled = flags.rewardTypeClaimEnabled
   const {
     writeContractAsync,
@@ -151,6 +158,59 @@ export function QuestDetailsWrapper({
     getUserPlayStreak
   )
   const questPlayStreakData = questPlayStreakResult.data.data
+
+  const {
+    data: hasPendingExternalSync,
+    invalidateQuery: invalidateHasPendingExternalSync
+  } = useHasPendingExternalSync({
+    questId: selectedQuestId,
+    getPendingExternalSync
+  })
+
+  const syncWithExternalSourceMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedQuestId) {
+        return
+      }
+      return syncPlayStreakWithExternalSource(selectedQuestId)
+    },
+    onSuccess: async () => {
+      setSyncSuccess(true)
+      await questPlayStreakResult.invalidateQuery()
+      await invalidateHasPendingExternalSync()
+      setTimeout(() => {
+        setSyncSuccess(false)
+      }, 3000)
+    }
+  })
+
+  let streakRightSection = null
+
+  if (hasPendingExternalSync) {
+    streakRightSection = (
+      <Button
+        disabled={syncWithExternalSourceMutation.isPending}
+        type="secondaryGradient"
+        onClick={() => syncWithExternalSourceMutation.mutate()}
+        size="small"
+      >
+        {t('quest.playstreak.sync', 'Sync Progress')}
+      </Button>
+    )
+  }
+
+  if (syncSuccess) {
+    streakRightSection = (
+      <div className={styles.syncSuccess}>
+        <Images.Checkmark
+          fill="var(--color-success-500)"
+          width={18}
+          height={18}
+        />
+        {t('quest.playstreak.syncSuccess', 'Progress synced')}
+      </div>
+    )
+  }
 
   const resyncMutation = useMutation({
     mutationFn: async (rewards: Reward[]) => {
@@ -265,12 +325,6 @@ export function QuestDetailsWrapper({
       loading: val.isLoading || val.isFetching
     })) ?? []
 
-  useSyncPlaySession(
-    projectId,
-    questPlayStreakResult.invalidateQuery,
-    syncPlaySession
-  )
-
   const [collapseIsOpen, setCollapseIsOpen] = useState(false)
 
   const hasMetStreak =
@@ -309,6 +363,7 @@ export function QuestDetailsWrapper({
     },
     sync: t('quest.sync', 'Sync'),
     streakProgressI18n: {
+      sync: t('quest.playstreak.sync', 'Sync Progress'),
       streakProgress: t('quest.playstreak.streakProgress', 'Streak Progress'),
       days: t('quest.playstreak.days', 'days'),
       playToStart: t(
@@ -471,6 +526,11 @@ export function QuestDetailsWrapper({
     },
     onSuccess: async () => {
       await questPlayStreakResult.invalidateQuery()
+      if (selectedQuestId !== null) {
+        await queryClient.invalidateQueries({
+          queryKey: [getGetQuestLogInfoQueryKey(selectedQuestId.toString())]
+        })
+      }
     },
     onError: (error) => {
       if (error instanceof ClaimError) {
@@ -587,14 +647,14 @@ export function QuestDetailsWrapper({
           eligible: false,
           steamAccountLinked: true
         },
-        playStreak: getPlaystreakArgsFromQuestData(
+        playStreak: getPlaystreakArgsFromQuestData({
           questMeta,
           questPlayStreakData,
-          isSignedIn
-        )
+          useModuleInitTimeForSessionStartTime: isSignedIn,
+          rightSection: streakRightSection
+        })
       },
       rewards: questRewards ?? [],
-      i18n,
       onClaimClick: async () => {
         if (isRewardOnChain) {
           setShowWarning(true)
@@ -616,7 +676,8 @@ export function QuestDetailsWrapper({
       },
       isSyncing: resyncMutation.isPending,
       chainTooltips: {},
-      isQuestsPage
+      isQuestsPage,
+      i18n
     }
     questDetails = (
       <>
@@ -664,7 +725,6 @@ export function QuestDetailsWrapper({
           lastPlaySessionCompletedDateTimeUTC: new Date().toISOString()
         }
       },
-      i18n,
       rewards: [],
       onClaimClick: () => console.log('claim clicked for ', questMeta?.name),
       onSignInClick: () => console.log('sign in clicked for ', questMeta?.name),
@@ -673,7 +733,8 @@ export function QuestDetailsWrapper({
       collapseIsOpen,
       toggleCollapse: () => setCollapseIsOpen(!collapseIsOpen),
       isSignedIn,
-      isQuestsPage
+      isQuestsPage,
+      i18n
     }
     questDetails = (
       <QuestDetails
