@@ -84,7 +84,7 @@ export interface QuestDetailsWrapperProps {
   sessionEmail?: string
   checkG7ConnectionStatus: () => Promise<boolean>
   isQuestsPage?: boolean
-  onPlayClick?: (quest: Quest) => void
+  onPlayClick: (quest: Quest) => void
   onRewardsClaimed?: (rewards: Reward[]) => void
 }
 
@@ -348,7 +348,7 @@ export function QuestDetailsWrapper({
       return
     }
 
-    onPlayClick?.(questMeta)
+    onPlayClick(questMeta)
   }
 
   const claimPointsMutation = useMutation({
