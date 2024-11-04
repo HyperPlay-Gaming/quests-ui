@@ -27,19 +27,27 @@ const mockProps: QuestDetailsWrapperProps = {
     return {
       id: 1,
       project_id: 'test-project',
-      name: 'Test Quest',
-      type: 'REPUTATIONAL-AIRDROP',
+      name: '🦖 Craft World’s Ultimate Play Streak Quest 🔥 🚀',
+      type: 'PLAY-STREAK',
       status: 'ACTIVE',
-      description: 'This is a test quest',
+      description: `Embrace the Ultimate Play Streak Quest by Craft World! 🎮 Play daily to earn rewards, contribute to the Masterpiece, and climb the leaderboard. 🏆
+
+👉 Quest: Play 5+ minutes/day for 7 consecutive days within our 30-day campaign.
+💰 Rewards: 200,000 in-game Dyno Coins and Game7 Credits! Dyno Coins are THE in-game currency for resources.
+
+Rise among Craft World's top ranks. 🚀 Join now and make your mark before the masterpiece is completed! 🔥🎮`,
       rewards: [
         {
           id: 1,
-          name: 'Test Reward',
-          contract_address: '0x123',
+          name: 'Dyno Coin',
+          contract_address: '0xb85Df74eB6db8C2D87c3bD7d4Ee1A27929643dA3',
           decimals: 18,
-          image_url: 'https://test.com/image.png',
+          image_url: 'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
           token_ids: [],
-          numClaimsLeft: '100'
+          numClaimsLeft: '2357',
+          amount_per_user: '200000000000000000000000',
+          chain_id: 84532,
+          reward_type: 'ERC20'
         }
       ],
       deposit_contracts: [],
@@ -63,13 +71,13 @@ const mockProps: QuestDetailsWrapperProps = {
       capsule_image: 'https://test.com/image.png'
     }
   },
-  isSignedIn: false,
-  trackEvent: () => { },
-  signInWithSteamAccount: () => { },
-  openSignInModal: () => { },
-  logError: () => { },
-  claimPoints: async () => { },
-  completeExternalTask: async () => { },
+  isSignedIn: true,
+  trackEvent: () => {},
+  signInWithSteamAccount: () => {},
+  openSignInModal: () => {},
+  logError: () => {},
+  claimPoints: async () => {},
+  completeExternalTask: async () => {},
   getQuestRewardSignature: async () => {
     return {
       signature: `0x123`,
@@ -78,14 +86,14 @@ const mockProps: QuestDetailsWrapperProps = {
       tokenIds: []
     }
   },
-  confirmRewardClaim: async () => { },
-  resyncExternalTask: async () => { },
+  confirmRewardClaim: async () => {},
+  resyncExternalTask: async () => {},
   getExternalTaskCredits: async () => {
     return '100'
   },
-  syncPlaySession: async () => { },
-  logInfo: () => { },
-  openDiscordLink: () => { },
+  syncPlaySession: async () => {},
+  logInfo: () => {},
+  openDiscordLink: () => {},
   getDepositContracts: async () => {
     return []
   },
@@ -100,7 +108,6 @@ const mockProps: QuestDetailsWrapperProps = {
   }
 }
 
-export const Default: Story = {
-  args: mockProps,
+export const PlayStreakQuest: Story = {
+  args: mockProps
 }
-
