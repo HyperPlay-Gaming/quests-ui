@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Images,
   Button,
@@ -130,14 +130,17 @@ export function QuestDetailsWrapper({
       }
     })
 
-  const { switchChainAsync, isPending: isPendingSwitchingChain } =
-    useSwitchChain({
-      mutation: {
-        onError: (error) => {
-          logError(`Error switching chain: ${error}`)
-        }
+  const {
+    switchChainAsync,
+    isPending: isPendingSwitchingChain,
+    error: switchChainError
+  } = useSwitchChain({
+    mutation: {
+      onError: (error) => {
+        logError(`Error switching chain: ${error}`)
       }
-    })
+    }
+  })
 
   const [claimError, setClaimError] = useState<Error | null>(null)
 
@@ -158,27 +161,34 @@ export function QuestDetailsWrapper({
   }>()
   const questMeta = questResult.data.data
 
+  const rewardsQuery = useGetRewards({
+    questId: selectedQuestId,
+    getQuest,
+    getExternalTaskCredits,
+    logError
+  })
+
+  const questRewards = rewardsQuery.data.data
+
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
     getUserPlayStreak
   )
   const questPlayStreakData = questPlayStreakResult.data.data
 
-  const isEligible = useMemo(() => {
-    if (!questMeta) {
-      return false
-    }
+  let isEligible = false
 
+  if (!questMeta) {
+    isEligible = false
+  } else if (questMeta.type === 'PLAYSTREAK') {
     const currentStreak = questPlayStreakData?.current_playstreak_in_days
     const requiredStreak =
       questMeta.eligibility?.play_streak?.required_playstreak_in_days
 
-    if (questMeta.type === 'PLAYSTREAK' && currentStreak && requiredStreak) {
-      return currentStreak >= requiredStreak
+    if (currentStreak && requiredStreak) {
+      isEligible = currentStreak >= requiredStreak
     }
-
-    return false
-  }, [questMeta, questPlayStreakData])
+  }
 
   const onClaim = async (reward: Reward) => {
     if (!isSignedIn) {
@@ -213,15 +223,6 @@ export function QuestDetailsWrapper({
       claimRewardsMutation.mutate([reward])
     }
   }
-
-  const rewardsQuery = useGetRewards({
-    questId: selectedQuestId,
-    getQuest,
-    getExternalTaskCredits,
-    logError
-  })
-
-  const questRewards = rewardsQuery.data.data
 
   const {
     data: hasPendingExternalSync,
@@ -650,7 +651,8 @@ export function QuestDetailsWrapper({
     const error =
       claimRewardsMutation.error ||
       claimPointsMutation.error ||
-      completeTaskMutation.error
+      completeTaskMutation.error ||
+      switchChainError
 
     setClaimError(error)
   }, [
