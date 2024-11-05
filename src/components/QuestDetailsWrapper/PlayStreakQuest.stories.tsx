@@ -51,7 +51,8 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
           amount_per_user: '200000000000000000000000',
           chain_id: 84532,
           reward_type: 'ERC20'
-        }, {
+        },
+        {
           id: 2,
           name: 'G7 Credits',
           contract_address: '0x0000000000000000000000000000000000000000',
@@ -151,7 +152,7 @@ export const QuestPageSignedInEligible: Story = {
     isSignedIn: true,
     getUserPlayStreak: async () => {
       return {
-        current_playstreak_in_days: 5,
+        current_playstreak_in_days: 5
       }
     },
     checkG7ConnectionStatus: async () => {
@@ -179,12 +180,11 @@ export const OverlaySignedInEligible: Story = {
     isSignedIn: true,
     getUserPlayStreak: async () => {
       return {
-        current_playstreak_in_days: 5,
+        current_playstreak_in_days: 5
       }
     }
   }
 }
-
 
 export const PendingExternalSync: Story = {
   args: {
