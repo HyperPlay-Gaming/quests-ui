@@ -8,7 +8,7 @@
     "lint": "eslint ./src",
     "prettier": "prettier --check .",
     "prettier-fix": "prettier --write .",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 6007",
     "build-storybook": "storybook build",
     "test": "jest"
   },
