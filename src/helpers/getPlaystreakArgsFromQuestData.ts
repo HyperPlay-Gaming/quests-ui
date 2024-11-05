@@ -9,7 +9,7 @@ export function getPlaystreakArgsFromQuestData({
   questMeta,
   questPlayStreakData,
   useModuleInitTimeForSessionStartTime,
-  rightSection,
+  rightSection
 }: {
   questMeta: Quest
   questPlayStreakData: UserPlayStreak | undefined | null

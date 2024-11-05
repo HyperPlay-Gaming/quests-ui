@@ -7,7 +7,7 @@ import { QuestReward } from '@hyperplay/ui'
 
 // @dev: onClaim is assigned in the component to avoid passing it to the hook
 // since it is pretty tied to the implementation
-type UseGetRewardsData = Omit<QuestReward, 'onClaim'> & Reward;
+type UseGetRewardsData = Omit<QuestReward, 'onClaim'> & Reward
 
 export function useGetRewards({
   questId,
@@ -77,7 +77,7 @@ export function useGetRewards({
               imageUrl: reward_i.image_url,
               chainName: getRewardCategory(reward_i, t),
               numToClaim: token_i.amount_per_user,
-              numOfClaimsLeft: token_i.numClaimsLeft,
+              numOfClaimsLeft: token_i.numClaimsLeft
             }
             rewards.push(questReward_i)
           }
@@ -88,7 +88,7 @@ export function useGetRewards({
             imageUrl: reward_i.image_url,
             chainName: getRewardCategory(reward_i, t),
             numToClaim,
-            numOfClaimsLeft: reward_i.numClaimsLeft,
+            numOfClaimsLeft: reward_i.numClaimsLeft
           }
           rewards.push(questReward_i)
         }
