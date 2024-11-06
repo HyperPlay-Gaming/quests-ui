@@ -1,13 +1,13 @@
 import { getGetUserPlayStreakQueryKey } from '@/helpers/getQueryKeys'
 import { UserPlayStreak } from '@hyperplay/utils'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export function getGetUserPlaystreakQuery(
+export function getUserPlaystreakQueryOptions(
   questId: number | null,
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
 ) {
   const queryKey = getGetUserPlayStreakQueryKey(questId)
-  return {
+  return queryOptions({
     queryKey,
     queryFn: async () => {
       if (questId === null) {
@@ -19,7 +19,7 @@ export function getGetUserPlaystreakQuery(
     },
     refetchOnWindowFocus: false,
     enabled: questId !== null
-  }
+  })
 }
 
 export function useGetUserPlayStreak(
@@ -28,7 +28,7 @@ export function useGetUserPlayStreak(
 ) {
   const queryClient = useQueryClient()
   const queryKey = getGetUserPlayStreakQueryKey(questId)
-  const query = useQuery(getGetUserPlaystreakQuery(questId, getUserPlayStreak))
+  const query = useQuery(getUserPlaystreakQueryOptions(questId, getUserPlayStreak))
 
   return {
     data: query,

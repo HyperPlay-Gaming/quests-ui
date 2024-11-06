@@ -6,8 +6,8 @@ import {
   getGetUserPlayStreakQueryKey,
   getSyncPlaysessionQueryKey
 } from '@/helpers/getQueryKeys'
-import { getGetQuestQuery } from '@/hooks/useGetQuest'
-import { getGetUserPlaystreakQuery } from '@/hooks/useGetUserPlayStreak'
+import { getQuestQueryOptions } from '@/hooks/useGetQuest'
+import { getUserPlaystreakQueryOptions } from '@/hooks/useGetUserPlayStreak'
 
 class QuestPlayStreakSyncState {
   // @ts-expect-error not assigned in constructor since this is a singleton
@@ -74,11 +74,11 @@ class QuestPlayStreakSyncState {
       try {
         // get quest
         const questMeta = await this.queryClient.fetchQuery(
-          getGetQuestQuery(quest.id, this.getQuest)
+          getQuestQueryOptions(quest.id, this.getQuest)
         )
         // get user playstreak
         const userPlayStreakData = await this.queryClient.fetchQuery(
-          getGetUserPlaystreakQuery(quest.id, this.getUserPlayStreak)
+          getUserPlaystreakQueryOptions(quest.id, this.getUserPlayStreak)
         )
 
         if (!Object.hasOwn(this.projectSyncData, projectId)) {
