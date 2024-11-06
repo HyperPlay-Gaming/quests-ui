@@ -3,10 +3,11 @@ import { makeAutoObservable } from 'mobx'
 import { QueryClient } from '@tanstack/query-core'
 import { resetSessionStartedTime } from '@/helpers/getPlaystreakArgsFromQuestData'
 import {
-  getGetQuestQueryKey,
   getGetUserPlayStreakQueryKey,
   getSyncPlaysessionQueryKey
 } from '@/helpers/getQueryKeys'
+import { getGetQuestQuery } from '@/hooks/useGetQuest'
+import { getGetUserPlaystreakQuery } from '@/hooks/useGetUserPlayStreak'
 
 class QuestPlayStreakSyncState {
   // @ts-expect-error not assigned in constructor since this is a singleton
@@ -72,15 +73,9 @@ class QuestPlayStreakSyncState {
     for (const quest of quests) {
       try {
         // get quest
-        const questMeta = await this.queryClient.fetchQuery({
-          queryKey: getGetQuestQueryKey(quest.id),
-          queryFn: async () => this.getQuest(quest.id)
-        })
+        const questMeta = await this.queryClient.fetchQuery(getGetQuestQuery(quest.id, this.getQuest))
         // get user playstreak
-        const userPlayStreakData = await this.queryClient.fetchQuery({
-          queryKey: getGetUserPlayStreakQueryKey(quest.id),
-          queryFn: async () => this.getUserPlayStreak(quest.id)
-        })
+        const userPlayStreakData = await this.queryClient.fetchQuery(getGetUserPlaystreakQuery(quest.id, this.getUserPlayStreak))
 
         if (!Object.hasOwn(this.projectSyncData, projectId)) {
           this.projectSyncData[projectId] = {
@@ -100,7 +95,7 @@ class QuestPlayStreakSyncState {
             queryFn: async () => {
               this.syncPlaySession(
                 projectId,
-                questMeta.quest_external_game?.runner ?? 'hyperplay'
+                questMeta?.quest_external_game?.runner ?? 'hyperplay'
               )
               resetSessionStartedTime()
               // all quest user playstreak data needs to be refetched after playsession sync
@@ -116,7 +111,7 @@ class QuestPlayStreakSyncState {
 
         // set timeout for when we meet the min time
         const currentPlayTimeInSeconds =
-          userPlayStreakData.accumulated_playtime_today_in_seconds
+          userPlayStreakData?.userPlayStreak.accumulated_playtime_today_in_seconds
         const minimumRequiredPlayTimeInSeconds =
           questMeta?.eligibility?.play_streak.minimum_session_time_in_seconds
         if (
