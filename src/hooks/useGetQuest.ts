@@ -27,13 +27,13 @@ export function useGetQuest(
   getQuest: (questId: number) => Promise<Quest>
 ) {
   const queryClient = useQueryClient()
-  const queryKey = getGetQuestQueryKey(questId)
+  const queryOption = getQuestQueryOptions(questId, getQuest)
   const query = useQuery(getQuestQueryOptions(questId, getQuest))
 
   return {
     data: query,
     isLoading: query.isLoading || query.isFetching,
     invalidateQuery: async () =>
-      queryClient.invalidateQueries({ queryKey: [queryKey] })
+      queryClient.invalidateQueries({ queryKey: [queryOption.queryKey] })
   }
 }
