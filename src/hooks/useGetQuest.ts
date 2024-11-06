@@ -1,14 +1,13 @@
 import { getGetQuestQueryKey } from '@/helpers/getQueryKeys'
 import { Quest } from '@hyperplay/utils'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient, queryOptions } from '@tanstack/react-query'
 
-export function useGetQuest(
+export function getQuestQueryOptions(
   questId: number | null,
   getQuest: (questId: number) => Promise<Quest>
 ) {
-  const queryClient = useQueryClient()
   const queryKey = getGetQuestQueryKey(questId)
-  const query = useQuery({
+  return queryOptions({
     queryKey: [queryKey],
     queryFn: async () => {
       if (questId === null) {
@@ -21,11 +20,20 @@ export function useGetQuest(
     refetchOnWindowFocus: false,
     enabled: questId !== null
   })
+}
+
+export function useGetQuest(
+  questId: number | null,
+  getQuest: (questId: number) => Promise<Quest>
+) {
+  const queryClient = useQueryClient()
+  const queryOption = getQuestQueryOptions(questId, getQuest)
+  const query = useQuery(queryOption)
 
   return {
     data: query,
     isLoading: query.isLoading || query.isFetching,
     invalidateQuery: async () =>
-      queryClient.invalidateQueries({ queryKey: [queryKey] })
+      queryClient.invalidateQueries({ queryKey: [queryOption.queryKey] })
   }
 }
