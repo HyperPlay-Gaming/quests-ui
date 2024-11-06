@@ -9,8 +9,8 @@ import {
   QuestDetailsTranslations
 } from '@hyperplay/ui'
 import styles from './index.module.scss'
-import useGetQuest from '../../hooks/useGetQuest'
-import useGetSteamGame from '../../hooks/useGetSteamGame'
+import { useGetQuest } from '../../hooks/useGetQuest'
+import { useGetSteamGame } from '../../hooks/useGetSteamGame'
 import { useTranslation } from 'react-i18next'
 import { useAccount, useConnect, useSwitchChain, useWriteContract } from 'wagmi'
 import {
@@ -22,7 +22,7 @@ import {
 } from '@hyperplay/utils'
 import { mintReward } from '../../helpers/mintReward'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
-import useGetUserPlayStreak from '../../hooks/useGetUserPlayStreak'
+import { useGetUserPlayStreak } from '../../hooks/useGetUserPlayStreak'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { getPlaystreakArgsFromQuestData } from '../../helpers/getPlaystreakArgsFromQuestData'
 import { useGetRewards } from '../../hooks/useGetRewards'
