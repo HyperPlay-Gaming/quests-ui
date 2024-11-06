@@ -28,7 +28,9 @@ export function useGetUserPlayStreak(
 ) {
   const queryClient = useQueryClient()
   const queryKey = getGetUserPlayStreakQueryKey(questId)
-  const query = useQuery(getUserPlaystreakQueryOptions(questId, getUserPlayStreak))
+  const query = useQuery(
+    getUserPlaystreakQueryOptions(questId, getUserPlayStreak)
+  )
 
   return {
     data: query,
