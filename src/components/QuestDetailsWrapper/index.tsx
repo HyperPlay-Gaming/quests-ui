@@ -157,7 +157,7 @@ export function QuestDetailsWrapper({
     selectedQuestId,
     getUserPlayStreak
   )
-  const questPlayStreakData = questPlayStreakResult.data.data
+  const questPlayStreakData = questPlayStreakResult.data.data?.userPlayStreak
 
   const {
     data: hasPendingExternalSync,

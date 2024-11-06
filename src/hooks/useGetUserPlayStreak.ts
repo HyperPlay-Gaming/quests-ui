@@ -16,7 +16,7 @@ export function useGetUserPlayStreak(
       }
       const response = await getUserPlayStreak(questId)
       if (!response) return null
-      return response
+      return { questId: questId, userPlayStreak: response }
     },
     refetchOnWindowFocus: false,
     enabled: questId !== null
