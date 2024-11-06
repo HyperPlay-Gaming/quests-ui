@@ -28,7 +28,7 @@ export function useGetQuest(
 ) {
   const queryClient = useQueryClient()
   const queryOption = getQuestQueryOptions(questId, getQuest)
-  const query = useQuery(getQuestQueryOptions(questId, getQuest))
+  const query = useQuery(queryOption)
 
   return {
     data: query,
