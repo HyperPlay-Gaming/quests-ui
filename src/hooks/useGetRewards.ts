@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import useGetQuest from './useGetQuest'
+import { useGetQuest } from './useGetQuest'
 import { getDecimalNumberFromAmount, Quest } from '@hyperplay/utils'
 import { getRewardCategory } from '../helpers/getRewardCategory'
 import { useTranslation } from 'react-i18next'
