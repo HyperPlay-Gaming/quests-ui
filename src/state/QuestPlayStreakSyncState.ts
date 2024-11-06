@@ -73,9 +73,13 @@ class QuestPlayStreakSyncState {
     for (const quest of quests) {
       try {
         // get quest
-        const questMeta = await this.queryClient.fetchQuery(getGetQuestQuery(quest.id, this.getQuest))
+        const questMeta = await this.queryClient.fetchQuery(
+          getGetQuestQuery(quest.id, this.getQuest)
+        )
         // get user playstreak
-        const userPlayStreakData = await this.queryClient.fetchQuery(getGetUserPlaystreakQuery(quest.id, this.getUserPlayStreak))
+        const userPlayStreakData = await this.queryClient.fetchQuery(
+          getGetUserPlaystreakQuery(quest.id, this.getUserPlayStreak)
+        )
 
         if (!Object.hasOwn(this.projectSyncData, projectId)) {
           this.projectSyncData[projectId] = {
@@ -111,7 +115,8 @@ class QuestPlayStreakSyncState {
 
         // set timeout for when we meet the min time
         const currentPlayTimeInSeconds =
-          userPlayStreakData?.userPlayStreak.accumulated_playtime_today_in_seconds
+          userPlayStreakData?.userPlayStreak
+            .accumulated_playtime_today_in_seconds
         const minimumRequiredPlayTimeInSeconds =
           questMeta?.eligibility?.play_streak.minimum_session_time_in_seconds
         if (
