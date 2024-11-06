@@ -2,7 +2,7 @@ import { getGetQuestQueryKey } from '@/helpers/getQueryKeys'
 import { Quest } from '@hyperplay/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-export default function useGetQuest(
+export function useGetQuest(
   questId: number | null,
   getQuest: (questId: number) => Promise<Quest>
 ) {
