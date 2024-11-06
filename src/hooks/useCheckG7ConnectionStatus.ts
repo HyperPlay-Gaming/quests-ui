@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-export default function useCheckG7ConnectionStatus({
+export function useCheckG7ConnectionStatus({
   checkG7ConnectionStatus
 }: {
   checkG7ConnectionStatus: () => Promise<boolean>
