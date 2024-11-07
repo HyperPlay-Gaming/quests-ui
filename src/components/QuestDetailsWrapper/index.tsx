@@ -3,7 +3,9 @@ import {
   MarkdownDescription,
   QuestDetails,
   QuestDetailsProps,
-  QuestDetailsTranslations
+  QuestDetailsTranslations,
+  LoadingSpinner,
+  DarkContainer
 } from '@hyperplay/ui'
 import styles from './index.module.scss'
 import { useGetQuest } from '../../hooks/useGetQuest'
@@ -67,8 +69,6 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     getExternalTaskCredits,
     logError
   })
-
-  const questRewards = rewardsQuery.data?.data?.rewards
 
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
@@ -176,7 +176,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
   chainTooltips[t('quest.points', 'Points')] =
     'Points are off-chain fungible rewards that may or may not be redeemable for an on-chain reward in the future. This is up to the particular game developer who is providing this reward.'
 
-  if (selectedQuestId !== null && questMeta && questRewards) {
+  if (selectedQuestId !== null && questMeta) {
     let alertProps: InfoAlertProps | undefined
 
     if (warningMessage) {
@@ -229,27 +229,10 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     questPlayStreakResult?.isLoading ||
     rewardsQuery?.isLoading
   ) {
-    const emptyQuestDetailsProps: QuestDetailsProps = {
-      className,
-      questType: 'PLAYSTREAK',
-      title: '',
-      description: '',
-      eligibilityComponent: <></>,
-      rewardsComponent: <></>,
-      onSignInClick: () => console.log('sign in clicked for ', questMeta?.name),
-      onConnectSteamAccountClick: () =>
-        console.log('connect steam account clicked for ', questMeta?.name),
-      isSignedIn,
-      isQuestsPage,
-      i18n
-    }
     questDetails = (
-      <QuestDetails
-        {...emptyQuestDetailsProps}
-        className={cn(styles.questDetails, emptyQuestDetailsProps.className)}
-        ctaDisabled={true}
-        key={'questDetailsLoading'}
-      />
+      <DarkContainer className={styles.loadingContainer}>
+        <LoadingSpinner className={styles.loadingSpinner} />
+      </DarkContainer>
     )
   }
 

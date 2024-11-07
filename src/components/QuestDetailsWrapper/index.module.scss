@@ -14,3 +14,17 @@
   align-items: center;
   gap: var(--space-sm);
 }
+
+.loadingContainer {
+  padding: var(--space-2lg);
+  max-width: 700px;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingSpinner {
+  font-size: var(--text-3xl);
+}

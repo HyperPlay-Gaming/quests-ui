@@ -3,9 +3,9 @@ import { useGetQuest } from '@/hooks/useGetQuest'
 import { useGetRewards } from '@/hooks/useGetRewards'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
-import { RewardsRow, Rewards } from '@hyperplay/ui'
+import { RewardsRow, Rewards, LoadingSpinner } from '@hyperplay/ui'
 import { RewardWrapper } from '../RewardWrapper'
-
+import styles from './index.module.scss'
 export function RewardsWrapper({ questId }: { questId: number | null }) {
   const { getQuest, logError, getUserPlayStreak, getExternalTaskCredits } =
     useQuestWrapper()
@@ -23,6 +23,14 @@ export function RewardsWrapper({ questId }: { questId: number | null }) {
     getExternalTaskCredits,
     logError
   })
+
+  if (rewardsQuery.isLoading) {
+    return (
+      <Rewards>
+        <LoadingSpinner className={styles.loadingSpinner} />
+      </Rewards>
+    )
+  }
 
   const questMeta = questQuery?.data
   const questPlayStreakData = questPlayStreakQuery?.data
