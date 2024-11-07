@@ -29,9 +29,11 @@ export function useGetRewards({
     queryFn: async () => {
       const rewards: UseGetRewardsData[] = []
       const questRewards = questMeta?.rewards
+
       if (!questRewards) {
-        return rewards
+        return { rewards: [], rewardsByCategory: {} }
       }
+
       for (const reward_i of questRewards) {
         let numToClaim: string | undefined = undefined
         if (
@@ -89,7 +91,18 @@ export function useGetRewards({
           rewards.push(questReward_i)
         }
       }
-      return rewards
+
+      const rewardsByCategory: Record<string, UseGetRewardsData[]> = {}
+
+      for (const reward_i of rewards) {
+        if (Object.hasOwn(rewardsByCategory, reward_i.chainName)) {
+          rewardsByCategory[reward_i.chainName].push(reward_i)
+        } else {
+          rewardsByCategory[reward_i.chainName] = [reward_i]
+        }
+      }
+
+      return { rewards, rewardsByCategory }
     },
     refetchOnWindowFocus: false
   })

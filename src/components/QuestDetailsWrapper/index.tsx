@@ -110,7 +110,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     logError
   })
 
-  const questRewards = rewardsQuery.data.data
+  const questRewards = rewardsQuery.data?.data?.rewards
 
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
