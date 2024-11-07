@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
-import useGetQuest from '@/hooks/useGetQuest'
+import { useGetQuest } from '@/hooks/useGetQuest'
 import { useGetRewards } from '@/hooks/useGetRewards'
-import useGetUserPlayStreak from '@/hooks/useGetUserPlayStreak'
+import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { RewardsRow, Rewards } from '@hyperplay/ui'
 import { RewardWrapper } from '../RewardWrapper'
@@ -33,8 +33,6 @@ export function RewardsWrapper({ questId }: { questId: number | null }) {
     return null
   }
 
-  // console.log(rewardsData)
-
   // Organize rewards by category
   const rewardsByCategory: Record<string, UseGetRewardsData[]> = {}
 
@@ -56,7 +54,7 @@ export function RewardsWrapper({ questId }: { questId: number | null }) {
               reward={reward}
               questId={questId}
               questMeta={questMeta}
-              questPlayStreakData={questPlayStreakData}
+              questPlayStreakData={questPlayStreakData?.userPlayStreak}
               invalidateQuestPlayStreakQuery={invalidateQuestPlayStreakQuery}
             />
           ))}

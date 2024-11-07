@@ -1,6 +1,6 @@
 import { useQueries } from '@tanstack/react-query'
 
-export default function useGetSteamGame(
+export function useGetSteamGame(
   steam_games: {
     id: string
   }[],

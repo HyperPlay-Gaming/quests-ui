@@ -1,6 +1,6 @@
 import { getPlaystreakArgsFromQuestData } from '@/helpers/getPlaystreakArgsFromQuestData'
-import useGetQuest from '@/hooks/useGetQuest'
-import useGetUserPlayStreak from '@/hooks/useGetUserPlayStreak'
+import { useGetQuest } from '@/hooks/useGetQuest'
+import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { useHasPendingExternalSync } from '@/hooks/useHasPendingExternalSync'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { Button, Images, StreakProgress } from '@hyperplay/ui'
@@ -97,7 +97,7 @@ export function PlayStreakEligibilityWrapper({
     <StreakProgress
       {...getPlaystreakArgsFromQuestData({
         questMeta: questMeta.data,
-        questPlayStreakData: questPlayStreakData.data,
+        questPlayStreakData: questPlayStreakData?.data?.userPlayStreak,
         useModuleInitTimeForSessionStartTime: isSignedIn && !isQuestsPage,
         rightSection: streakRightSection
       })}

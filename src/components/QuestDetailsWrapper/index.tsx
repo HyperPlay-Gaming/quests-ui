@@ -6,7 +6,7 @@ import {
   QuestDetailsTranslations
 } from '@hyperplay/ui'
 import styles from './index.module.scss'
-import useGetQuest from '../../hooks/useGetQuest'
+import { useGetQuest } from '../../hooks/useGetQuest'
 import { useTranslation } from 'react-i18next'
 import {
   Reward,
@@ -17,7 +17,7 @@ import {
   Quest
 } from '@hyperplay/utils'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
-import useGetUserPlayStreak from '../../hooks/useGetUserPlayStreak'
+import { useGetUserPlayStreak } from '../../hooks/useGetUserPlayStreak'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useGetRewards } from '../../hooks/useGetRewards'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
@@ -116,7 +116,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     selectedQuestId,
     getUserPlayStreak
   )
-  const questPlayStreakData = questPlayStreakResult.data.data
+  const questPlayStreakData = questPlayStreakResult.data.data?.userPlayStreak
 
   const onPlayClickHandler = () => {
     if (!questMeta) {
