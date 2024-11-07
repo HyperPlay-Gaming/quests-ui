@@ -1,13 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useGetQuest from './useGetQuest'
-import { getDecimalNumberFromAmount, Quest, Reward } from '@hyperplay/utils'
+import { getDecimalNumberFromAmount, Quest } from '@hyperplay/utils'
 import { getRewardCategory } from '../helpers/getRewardCategory'
 import { useTranslation } from 'react-i18next'
-import { QuestReward } from '@hyperplay/ui'
-
-// @dev: onClaim is assigned in the component to avoid passing it to the hook
-// since it is pretty tied to the implementation
-type UseGetRewardsData = Omit<QuestReward, 'onClaim'> & Reward
+import { UseGetRewardsData } from '@/types/quests'
 
 export function useGetRewards({
   questId,
