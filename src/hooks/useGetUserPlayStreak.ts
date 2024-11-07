@@ -1,10 +1,11 @@
 import { getGetUserPlayStreakQueryKey } from '@/helpers/getQueryKeys'
+import { QuestWrapperContextValue } from '@/types/quests'
 import { UserPlayStreak } from '@hyperplay/utils'
 import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function getUserPlaystreakQueryOptions(
   questId: number | null,
-  getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
+  getUserPlayStreak: QuestWrapperContextValue['getUserPlayStreak']
 ) {
   const queryKey = getGetUserPlayStreakQueryKey(questId)
   return queryOptions({

@@ -1,9 +1,10 @@
+import { QuestWrapperContextValue } from '@/types/quests'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function useCheckG7ConnectionStatus({
   checkG7ConnectionStatus
 }: {
-  checkG7ConnectionStatus: () => Promise<boolean>
+  checkG7ConnectionStatus: QuestWrapperContextValue['checkG7ConnectionStatus']
 }) {
   const queryClient = useQueryClient()
   const queryKey = `checkG7ConnectionStatus`

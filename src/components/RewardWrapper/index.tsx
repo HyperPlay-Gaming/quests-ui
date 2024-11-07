@@ -3,7 +3,7 @@ import { getGetQuestLogInfoQueryKey } from '@/helpers/getQueryKeys'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
 import { mintReward } from '@/helpers/mintReward'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
-import { UseGetRewardsData } from '@/types/quests'
+import { ClaimError, UseGetRewardsData } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
 import {
@@ -21,15 +21,6 @@ import { useAccount, useConnect, useSwitchChain, useWriteContract } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
-
-class ClaimError extends Error {
-  properties: any
-
-  constructor(message: string, properties: any) {
-    super(message)
-    this.properties = properties
-  }
-}
 
 interface RewardWrapperProps {
   reward: UseGetRewardsData

@@ -1,10 +1,11 @@
+import { QuestWrapperContextValue } from '@/types/quests'
 import { useQueries } from '@tanstack/react-query'
 
 export function useGetSteamGame(
   steam_games: {
     id: string
   }[],
-  getSteamGameMetadata: (gameId: number) => Promise<unknown>
+  getSteamGameMetadata: QuestWrapperContextValue['getSteamGameMetadata']
 ) {
   const query = useQueries({
     queries: steam_games.map((val) => ({

@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
-import { UserPlayStreak } from '@hyperplay/utils'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -30,7 +29,7 @@ const mockProps: QuestDetailsWrapperProps = {
     return {
       id: 1,
       project_id: 'test-project',
-      name: '🦖 Craft World’s Ultimate Play Streak Quest 🔥 🚀',
+      name: "🦖 Craft World's Ultimate Play Streak Quest 🔥 🚀",
       type: 'PLAYSTREAK',
       status: 'ACTIVE',
       description: `Embrace the Ultimate Play Streak Quest by Craft World! 🎮 Play daily to earn rewards, contribute to the Masterpiece, and climb the leaderboard. 🏆
@@ -49,9 +48,10 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
             'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
           token_ids: [],
           numClaimsLeft: '2357',
-          amount_per_user: '200000000000000000000000',
+          amount_per_user: 200000000000000000000000,
           chain_id: 84532,
-          reward_type: 'ERC20'
+          reward_type: 'ERC20',
+          marketplace_url: 'https://test.com'
         },
         {
           id: 2,
@@ -60,9 +60,11 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
           decimals: 18,
           image_url: 'https://gateway-b3.valist.io/hyperplay/game7passport.png',
           token_ids: [],
-          amount_per_user: '100000000000000000000000',
+          amount_per_user: 100000000000000000000000,
           chain_id: 84532,
-          reward_type: 'EXTERNAL-TASKS'
+          reward_type: 'EXTERNAL-TASKS',
+          marketplace_url: 'https://test.com',
+          numClaimsLeft: '2357'
         }
       ],
       deposit_contracts: [],
@@ -73,10 +75,12 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
           required_playstreak_in_days: 1,
           minimum_session_time_in_seconds: 1
         }
-      }
+      },
+      quest_external_game: null,
+      num_of_times_repeatable: 0
     }
   },
-  getUserPlayStreak: async (): Promise<UserPlayStreak> => {
+  getUserPlayStreak: async () => {
     return {
       current_playstreak_in_days: 0,
       completed_counter: 0,
@@ -156,7 +160,7 @@ export const QuestPageSignedInEligible: Story = {
     ...mockProps,
     isQuestsPage: true,
     isSignedIn: true,
-    getUserPlayStreak: async (): Promise<UserPlayStreak> => {
+    getUserPlayStreak: async () => {
       return {
         current_playstreak_in_days: 5,
         completed_counter: 0,
@@ -187,7 +191,7 @@ export const OverlaySignedInEligible: Story = {
   args: {
     ...mockProps,
     isSignedIn: true,
-    getUserPlayStreak: async (): Promise<UserPlayStreak> => {
+    getUserPlayStreak: async () => {
       return {
         current_playstreak_in_days: 5,
         completed_counter: 0,

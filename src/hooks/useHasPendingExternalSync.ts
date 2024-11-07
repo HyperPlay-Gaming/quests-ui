@@ -1,3 +1,4 @@
+import { QuestWrapperContextValue } from '@/types/quests'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 
@@ -6,7 +7,7 @@ export function useHasPendingExternalSync({
   getPendingExternalSync
 }: {
   questId: number | null
-  getPendingExternalSync: (questId: number) => Promise<boolean>
+  getPendingExternalSync: QuestWrapperContextValue['getPendingExternalSync']
 }) {
   const { address } = useAccount()
   const queryClient = useQueryClient()

@@ -1,4 +1,5 @@
 import { getGetQuestQueryKey } from '@/helpers/getQueryKeys'
+import { QuestWrapperContextValue } from '@/types/quests'
 import { Quest } from '@hyperplay/utils'
 import { useQuery, useQueryClient, queryOptions } from '@tanstack/react-query'
 
@@ -24,7 +25,7 @@ export function getQuestQueryOptions(
 
 export function useGetQuest(
   questId: number | null,
-  getQuest: (questId: number) => Promise<Quest>
+  getQuest: QuestWrapperContextValue['getQuest']
 ) {
   const queryClient = useQueryClient()
   const queryOption = getQuestQueryOptions(questId, getQuest)

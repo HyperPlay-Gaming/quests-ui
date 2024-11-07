@@ -8,64 +8,22 @@ import {
 import styles from './index.module.scss'
 import { useGetQuest } from '../../hooks/useGetQuest'
 import { useTranslation } from 'react-i18next'
-import {
-  Reward,
-  RewardClaimSignature,
-  ConfirmClaimParams,
-  Runner,
-  DepositContract,
-  Quest
-} from '@hyperplay/utils'
+import { Reward } from '@hyperplay/utils'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
 import { useGetUserPlayStreak } from '../../hooks/useGetUserPlayStreak'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useGetRewards } from '../../hooks/useGetRewards'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
 import { useTrackQuestViewed } from '../../hooks/useTrackQuestViewed'
-import { TrackEventFn } from '@/types/analytics'
-import { TFunction } from 'i18next'
 import cn from 'classnames'
 import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { PlayStreakEligibilityWrapper } from '../PlayStreakEligibilityWrapper'
 import { RewardsWrapper } from '../RewardsWrapper'
+import { QuestWrapperContextValue } from '@/types/quests'
 
-export interface QuestDetailsWrapperProps {
+export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
+  selectedQuestId: number
   className?: string
-  selectedQuestId: number | null
-  flags: {
-    rewardTypeClaimEnabled: Record<Reward['reward_type'], boolean>
-    questsOverlayClaimCtaEnabled?: boolean
-  }
-  getQuest: (questId: number) => any
-  getUserPlayStreak: (questId: number) => any
-  getSteamGameMetadata: (id: number) => any
-  isSignedIn: boolean
-  trackEvent: TrackEventFn
-  signInWithSteamAccount: () => void
-  openSignInModal: () => void
-  logError: (msg: string) => void
-  claimPoints: (reward: Reward) => Promise<any>
-  completeExternalTask: (reward: Reward) => Promise<any>
-  getQuestRewardSignature: (
-    address: `0x${string}`,
-    rewardId: number,
-    tokenId?: number
-  ) => Promise<RewardClaimSignature>
-  getPendingExternalSync: (questId: number) => Promise<boolean>
-  confirmRewardClaim: (params: ConfirmClaimParams) => Promise<void>
-  syncPlayStreakWithExternalSource: (questId: number) => Promise<unknown>
-  resyncExternalTask: (rewardId: string) => Promise<void>
-  getExternalTaskCredits: (rewardId: string) => Promise<string>
-  syncPlaySession: (appName: string, runner: Runner) => Promise<void>
-  logInfo: (message: string) => void
-  openDiscordLink: () => void
-  getDepositContracts: (questId: number) => Promise<DepositContract[]>
-  tOverride?: TFunction<any, string>
-  sessionEmail?: string
-  checkG7ConnectionStatus: () => Promise<boolean>
-  isQuestsPage?: boolean
-  onPlayClick: (quest: Quest) => void
-  onRewardsClaimed?: (rewards: Reward[]) => void
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {

@@ -10,6 +10,9 @@ export * from './helpers/getPlaystreakArgsFromQuestData'
 export * from './helpers/getQueryKeys'
 export * from './helpers/getPlaystreakQuestStatus'
 
+// types
+export * from './types/quests'
+
 // hooks
 export * from './hooks/useCheckG7ConnectionStatus'
 export * from './hooks/useGetQuest'
