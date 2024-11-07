@@ -622,6 +622,9 @@ export function QuestDetailsWrapper({
       ['ERC1155', 'ERC721', 'ERC20'].includes(reward.reward_type)
     )
 
+    const dateTimeCurrentSessionStartedInMsSinceEpoch =
+      questPlayStreakResult?.data.dataUpdatedAt ?? Date.now()
+
     const questDetailsProps: QuestDetailsProps = {
       className,
       alertProps,
@@ -642,8 +645,8 @@ export function QuestDetailsWrapper({
         playStreak: getPlaystreakArgsFromQuestData({
           questMeta,
           questPlayStreakData,
-          useModuleInitTimeForSessionStartTime: isSignedIn,
-          rightSection: streakRightSection
+          rightSection: streakRightSection,
+          dateTimeCurrentSessionStartedInMsSinceEpoch
         })
       },
       rewards: questRewards ?? [],

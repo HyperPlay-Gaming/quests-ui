@@ -9,8 +9,7 @@ export function getUserPlaystreakQueryOptions(
   const queryKey = getGetUserPlayStreakQueryKey(questId)
   return queryOptions({
     queryKey,
-    // needs to be infinity so that sync state can work correctly and invalidate on each sync call
-    staleTime: Infinity,
+    staleTime: 60 * 1000,
     queryFn: async () => {
       if (questId === null) {
         return null
@@ -20,7 +19,8 @@ export function getUserPlaystreakQueryOptions(
       return { questId: questId, userPlayStreak: response }
     },
     refetchOnWindowFocus: false,
-    enabled: questId !== null
+    enabled: questId !== null,
+    refetchOnMount: false
   })
 }
 
