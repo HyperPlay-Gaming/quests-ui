@@ -1,11 +1,7 @@
 import { Quest, Runner, UserPlayStreak } from '@hyperplay/utils'
 import { makeAutoObservable } from 'mobx'
 import { QueryClient } from '@tanstack/query-core'
-import { resetSessionStartedTime } from '@/helpers/getPlaystreakArgsFromQuestData'
-import {
-  getGetUserPlayStreakQueryKey,
-  getSyncPlaysessionQueryKey
-} from '@/helpers/getQueryKeys'
+import { getSyncPlaysessionQueryKey } from '@/helpers/getQueryKeys'
 import { getQuestQueryOptions } from '@/hooks/useGetQuest'
 import { getUserPlaystreakQueryOptions } from '@/hooks/useGetUserPlayStreak'
 
@@ -101,14 +97,9 @@ class QuestPlayStreakSyncState {
                 projectId,
                 questMeta?.quest_external_game?.runner ?? 'hyperplay'
               )
-              resetSessionStartedTime()
               // all quest user playstreak data needs to be refetched after playsession sync
-              for (const questToInvalidate of quests) {
-                const queryKey = getGetUserPlayStreakQueryKey(
-                  questToInvalidate.id
-                )
-                this.appQueryClient?.invalidateQueries({ queryKey })
-              }
+              const queryKey = ['getUserPlayStreak']
+              this.appQueryClient?.invalidateQueries({ queryKey })
               return null
             }
           })

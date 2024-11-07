@@ -92,7 +92,6 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
   getExternalTaskCredits: async () => {
     return '100'
   },
-  syncPlaySession: async () => {},
   logInfo: () => {},
   openDiscordLink: () => {},
   getDepositContracts: async () => {
