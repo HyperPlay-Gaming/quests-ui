@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
+import { UserPlayStreak } from '@hyperplay/utils'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -75,8 +76,13 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       }
     }
   },
-  getUserPlayStreak: async () => {
-    return 0
+  getUserPlayStreak: async (): Promise<UserPlayStreak> => {
+    return {
+      current_playstreak_in_days: 0,
+      completed_counter: 0,
+      accumulated_playtime_today_in_seconds: 0,
+      last_play_session_completed_datetime: ''
+    }
   },
   getSteamGameMetadata: async () => {
     return {
@@ -150,9 +156,12 @@ export const QuestPageSignedInEligible: Story = {
     ...mockProps,
     isQuestsPage: true,
     isSignedIn: true,
-    getUserPlayStreak: async () => {
+    getUserPlayStreak: async (): Promise<UserPlayStreak> => {
       return {
-        current_playstreak_in_days: 5
+        current_playstreak_in_days: 5,
+        completed_counter: 0,
+        accumulated_playtime_today_in_seconds: 0,
+        last_play_session_completed_datetime: ''
       }
     },
     checkG7ConnectionStatus: async () => {
@@ -178,9 +187,12 @@ export const OverlaySignedInEligible: Story = {
   args: {
     ...mockProps,
     isSignedIn: true,
-    getUserPlayStreak: async () => {
+    getUserPlayStreak: async (): Promise<UserPlayStreak> => {
       return {
-        current_playstreak_in_days: 5
+        current_playstreak_in_days: 5,
+        completed_counter: 0,
+        accumulated_playtime_today_in_seconds: 0,
+        last_play_session_completed_datetime: ''
       }
     }
   }

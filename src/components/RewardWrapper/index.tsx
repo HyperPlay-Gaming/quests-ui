@@ -1,26 +1,26 @@
+import { getPlaystreakQuestStatus } from '@/helpers/getPlaystreakQuestStatus'
 import { getGetQuestLogInfoQueryKey } from '@/helpers/getQueryKeys'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
-import { isEligibleForClaiming } from '@/helpers/isEligibleForClaiming'
 import { mintReward } from '@/helpers/mintReward'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
+import { UseGetRewardsData } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
+import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
 import {
-  Reward,
   ConfirmClaimParams,
-  RewardClaimSignature,
   Quest,
+  Reward,
+  RewardClaimSignature,
   UserPlayStreak
 } from '@hyperplay/utils'
-import { useQueryClient, useMutation } from '@tanstack/react-query'
-import { useState, useEffect } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createPublicClient, http } from 'viem'
-import { useAccount, useConnect, useWriteContract, useSwitchChain } from 'wagmi'
+import { useAccount, useConnect, useSwitchChain, useWriteContract } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
-import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
 import styles from './index.module.scss'
-import { UseGetRewardsData } from '@/types/quests'
 
 class ClaimError extends Error {
   properties: any
@@ -99,10 +99,15 @@ export function RewardWrapper({
   // Translation override
   const t = tOverride || tOriginal
 
-  const isEligible = isEligibleForClaiming({
-    questMeta,
-    questPlayStreakData
-  })
+  let isEligible = false
+
+  if (questPlayStreakData) {
+    const playstreakQuestStatus = getPlaystreakQuestStatus(
+      questMeta,
+      questPlayStreakData
+    )
+    isEligible = playstreakQuestStatus === 'READY_FOR_CLAIM'
+  }
 
   // Mutations
   const claimRewardMutation = useMutation({
