@@ -19,8 +19,7 @@ export function getUserPlaystreakQueryOptions(
       return { questId: questId, userPlayStreak: response }
     },
     refetchOnWindowFocus: false,
-    enabled: questId !== null,
-    refetchOnMount: false
+    enabled: questId !== null
   })
 }
 
