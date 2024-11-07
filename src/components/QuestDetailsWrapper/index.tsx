@@ -17,7 +17,6 @@ import {
   Reward,
   RewardClaimSignature,
   ConfirmClaimParams,
-  Runner,
   DepositContract
 } from '@hyperplay/utils'
 import { mintReward } from '../../helpers/mintReward'
@@ -76,7 +75,6 @@ export interface QuestDetailsWrapperProps {
   syncPlayStreakWithExternalSource: (questId: number) => Promise<unknown>
   resyncExternalTask: (rewardId: string) => Promise<void>
   getExternalTaskCredits: (rewardId: string) => Promise<string>
-  syncPlaySession: (appName: string, runner: Runner) => Promise<void>
   logInfo: (message: string) => void
   openDiscordLink: () => void
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
