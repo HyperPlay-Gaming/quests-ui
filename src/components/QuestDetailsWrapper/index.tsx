@@ -24,7 +24,7 @@ import { RewardsWrapper } from '../RewardsWrapper'
 import { QuestWrapperContextValue } from '@/types/quests'
 
 export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
-  selectedQuestId: number
+  selectedQuestId: number | null
   className?: string
 }
 
