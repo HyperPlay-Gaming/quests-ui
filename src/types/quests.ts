@@ -22,6 +22,16 @@ export class ClaimError extends Error {
   }
 }
 
+export class WarningError extends Error {
+  constructor(
+    public title: string,
+    message: string
+  ) {
+    super(message)
+    this.name = 'WarningError'
+  }
+}
+
 export interface QuestWrapperContextValue {
   flags: {
     rewardTypeClaimEnabled: Record<Reward['reward_type'], boolean>

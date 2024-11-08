@@ -230,7 +230,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     rewardsQuery?.isLoading
   ) {
     questDetails = (
-      <DarkContainer className={styles.loadingContainer}>
+      <DarkContainer className={cn(styles.loadingContainer, className)}>
         <LoadingSpinner className={styles.loadingSpinner} />
       </DarkContainer>
     )

@@ -3,7 +3,7 @@ import { getGetQuestLogInfoQueryKey } from '@/helpers/getQueryKeys'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
 import { mintReward } from '@/helpers/mintReward'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
-import { ClaimError, UseGetRewardsData } from '@/types/quests'
+import { ClaimError, UseGetRewardsData, WarningError } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
 import {
@@ -21,6 +21,21 @@ import { useAccount, useConnect, useSwitchChain, useWriteContract } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
+
+const getClaimEventProperties = (reward: Reward, questId: number | null) => {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  const {
+    amount_per_user,
+    chain_id,
+    marketplace_url,
+    decimals,
+    ...rewardToTrack_i
+  } = reward
+  return {
+    ...rewardToTrack_i,
+    quest_id: questId?.toString() ?? ''
+  }
+}
 
 interface RewardWrapperProps {
   reward: UseGetRewardsData
@@ -63,11 +78,9 @@ export function RewardWrapper({
 
   // State
   const [showWarning, setShowWarning] = useState(false)
-  const [claimError, setClaimError] = useState<Error | null>(null)
-  const [warningMessage, setWarningMessage] = useState<{
-    title: string
-    message: string
-  }>()
+  const [claimError, setClaimError] = useState<
+    Error | WarningError | ClaimError | null
+  >(null)
 
   // Contract interactions
   const { writeContractAsync, isPending: isPendingWriteContract } =
@@ -104,6 +117,11 @@ export function RewardWrapper({
   const claimRewardMutation = useMutation({
     mutationFn: async (params: Reward) => claimReward(params),
     onSuccess: async (_data, rewards) => {
+      trackEvent({
+        event: 'Reward Claim Success',
+        properties: getClaimEventProperties(rewards, questId)
+      })
+
       onRewardsClaimed?.([rewards])
       await invalidateQuestPlayStreakQuery()
       if (questId !== null) {
@@ -113,12 +131,10 @@ export function RewardWrapper({
       }
     },
     onError: (error) => {
-      if (error instanceof ClaimError) {
-        trackEvent({
-          event: 'Reward Claim Error',
-          properties: error.properties
-        })
-      }
+      trackEvent({
+        event: 'Reward Claim Error',
+        properties: getClaimEventProperties(reward, questId)
+      })
       console.error('Error claiming rewards:', error)
       logError(`Error claiming rewards: ${error}`)
     }
@@ -153,7 +169,6 @@ export function RewardWrapper({
     },
     onError: (error) => logError(`Error claiming points: ${error}`),
     onSuccess: async (_data, reward) => {
-      onRewardsClaimed?.([reward])
       await invalidateQuestPlayStreakQuery()
     }
   })
@@ -163,15 +178,14 @@ export function RewardWrapper({
       const isConnectedToG7 = await checkG7ConnectionStatus()
 
       if (!isConnectedToG7) {
-        setWarningMessage({
-          title: t('quest.noG7ConnectionSync.title', 'No G7 account linked'),
-          message: t(
+        throw new WarningError(
+          t('quest.noG7ConnectionSync.title', 'No G7 account linked'),
+          t(
             'quest.noG7ConnectionSync.message',
             `You need to have a Game7 account linked to ${sessionEmail ?? 'your email'} to claim your rewards.`,
             { email: sessionEmail ?? 'your email' }
           )
-        })
-        return
+        )
       }
 
       const result = await completeExternalTask(reward)
@@ -181,15 +195,12 @@ export function RewardWrapper({
     },
     onError: (error) => logError(`Error resyncing tasks: ${error}`),
     onSuccess: async (_data, reward) => {
-      onRewardsClaimed?.([reward])
       await invalidateQuestPlayStreakQuery()
     }
   })
 
   // Handlers
   const mintOnChainReward = async (reward: Reward) => {
-    setWarningMessage(undefined)
-
     if (questMeta?.id === undefined) {
       throw Error('tried to mint but quest meta id is undefined')
     }
@@ -231,14 +242,13 @@ export function RewardWrapper({
       logError(
         `Not enough balance in the connected wallet to cover the gas fee associated with this Quest Reward claim. Current balance: ${walletBalance}, gas needed: ${gasNeeded}`
       )
-      setWarningMessage({
-        title: t('quest.notEnoughBalance.title', 'Low balance'),
-        message: t(
+      throw new WarningError(
+        t('quest.notEnoughBalance.title', 'Low balance'),
+        t(
           'quest.notEnoughGas.message',
           'Insufficient wallet balance to claim your reward due to gas fees. Try a different wallet or replenish this one before retrying.'
         )
-      })
-      return
+      )
     }
 
     let tokenId: number | undefined = undefined
@@ -279,76 +289,57 @@ export function RewardWrapper({
       flags.rewardTypeClaimEnabled[reward.reward_type]
 
     if (!isRewardTypeClaimable) {
-      logInfo(`reward type ${reward.reward_type} is not claimable`)
-      return
-    }
-
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    const {
-      amount_per_user,
-      chain_id,
-      marketplace_url,
-      decimals,
-      ...rewardToTrack_i
-    } = reward
-    const properties = {
-      ...rewardToTrack_i,
-      quest_id: questId.toString()
+      throw new Error(`reward type ${reward.reward_type} is not claimable`)
     }
 
     trackEvent({
       event: 'Reward Claim Started',
-      properties
+      properties: getClaimEventProperties(reward, questId)
     })
 
-    try {
-      setWarningMessage(undefined)
-      switch (reward.reward_type) {
-        case 'ERC1155':
-        case 'ERC721':
-        case 'ERC20':
-          await mintOnChainReward(reward)
-          break
-        case 'POINTS':
-          await claimPointsMutation.mutateAsync(reward)
-          break
-        case 'EXTERNAL-TASKS':
-          await completeTaskMutation.mutateAsync(reward)
-          break
-        default:
-          logError(`unknown reward type ${reward.reward_type}`)
-          break
-      }
-    } catch (err) {
-      throw new ClaimError(`${err}`, properties)
+    switch (reward.reward_type) {
+      case 'ERC1155':
+      case 'ERC721':
+      case 'ERC20':
+        await mintOnChainReward(reward)
+        break
+      case 'POINTS':
+        await claimPointsMutation.mutateAsync(reward)
+        break
+      case 'EXTERNAL-TASKS':
+        await completeTaskMutation.mutateAsync(reward)
+        break
+      default:
+        throw new Error(`unknown reward type ${reward.reward_type}`)
     }
-
-    trackEvent({
-      event: 'Reward Claim Success',
-      properties
-    })
   }
 
   const onClaim = async (reward: Reward) => {
+    setClaimError(null)
+
     if (!isSignedIn) {
-      setWarningMessage({
-        title: t('quest.notSignedIn.title', 'Not signed in'),
-        message: t(
-          'quest.notSignedIn.message',
-          'You need to be signed in to claim your reward.'
+      setClaimError(
+        new WarningError(
+          t('quest.notSignedIn.title', 'Not signed in'),
+          t(
+            'quest.notSignedIn.message',
+            'You need to be signed in to claim your reward.'
+          )
         )
-      })
+      )
       return
     }
 
     if (!isEligible) {
-      setWarningMessage({
-        title: t('quest.notEligible.title', 'Not eligible yet'),
-        message: t(
-          'quest.notEligible.message',
-          'You have not completed the required play streak days and can not claim your reward at this time.'
+      setClaimError(
+        new WarningError(
+          t('quest.notEligible.title', 'Not eligible yet'),
+          t(
+            'quest.notEligible.message',
+            'You have not completed the required play streak days and can not claim your reward at this time.'
+          )
         )
-      })
+      )
       return
     }
 
@@ -365,7 +356,6 @@ export function RewardWrapper({
 
   // Effects
   useEffect(() => {
-    setWarningMessage(undefined)
     setClaimError(null)
   }, [questId])
 
@@ -400,25 +390,25 @@ export function RewardWrapper({
   let alertProps = undefined
 
   if (claimError) {
-    alertProps = {
-      showClose: false,
-      title: t('quest.claimFailed', 'Claim failed'),
-      message: t(
-        'quest.claimFailedMessage',
-        "Please try once more. If it still doesn't work, create a Discord support ticket."
-      ),
-      actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
-      onActionClick: () => openDiscordLink(),
-      variant: 'danger' as const
-    }
-  }
-
-  if (warningMessage) {
-    alertProps = {
-      showClose: false,
-      title: warningMessage.title,
-      message: warningMessage.message,
-      variant: 'warning' as const
+    if (claimError instanceof WarningError) {
+      alertProps = {
+        showClose: false,
+        title: claimError.title,
+        message: claimError.message,
+        variant: 'warning' as const
+      }
+    } else {
+      alertProps = {
+        showClose: false,
+        title: t('quest.claimFailed', 'Claim failed'),
+        message: t(
+          'quest.claimFailedMessage',
+          "Please try once more. If it still doesn't work, create a Discord support ticket."
+        ),
+        actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
+        onActionClick: () => openDiscordLink(),
+        variant: 'danger' as const
+      }
     }
   }
 

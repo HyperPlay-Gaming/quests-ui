@@ -68,7 +68,14 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
     }
   },
   quest_external_game: null,
-  num_of_times_repeatable: 0
+  num_of_times_repeatable: 10
+}
+
+const eligibleUserPlayStreak: UserPlayStreak = {
+  current_playstreak_in_days: 5,
+  completed_counter: 0,
+  accumulated_playtime_today_in_seconds: 1000,
+  last_play_session_completed_datetime: '2024-01-01T00:00:00Z'
 }
 
 const mockUserPlayStreak: UserPlayStreak = {
@@ -81,6 +88,9 @@ const mockUserPlayStreak: UserPlayStreak = {
 const mockProps: QuestDetailsWrapperProps = {
   className: styles.root,
   selectedQuestId: 1,
+  onRewardsClaimed: () => {
+    alert('This is when we show the claim success modal')
+  },
   flags: {
     rewardTypeClaimEnabled: {
       ERC20: true,
@@ -171,12 +181,7 @@ export const QuestPageSignedInEligible: Story = {
     isQuestsPage: true,
     isSignedIn: true,
     getUserPlayStreak: async () => {
-      return {
-        current_playstreak_in_days: 5,
-        completed_counter: 0,
-        accumulated_playtime_today_in_seconds: 0,
-        last_play_session_completed_datetime: ''
-      }
+      return eligibleUserPlayStreak
     },
     checkG7ConnectionStatus: async () => {
       return true
@@ -202,12 +207,10 @@ export const OverlaySignedInEligible: Story = {
     ...mockProps,
     isSignedIn: true,
     getUserPlayStreak: async () => {
-      return {
-        current_playstreak_in_days: 5,
-        completed_counter: 0,
-        accumulated_playtime_today_in_seconds: 0,
-        last_play_session_completed_datetime: ''
-      }
+      return eligibleUserPlayStreak
+    },
+    checkG7ConnectionStatus: async () => {
+      return true
     }
   }
 }
