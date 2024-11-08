@@ -18,9 +18,7 @@ export function PlayStreakEligibilityWrapper({
     syncPlayStreakWithExternalSource,
     getPendingExternalSync,
     getUserPlayStreak,
-    getQuest,
-    isSignedIn,
-    isQuestsPage
+    getQuest
   } = useQuestWrapper()
   const { t } = useTranslation()
   const { data: questMeta } = useGetQuest(questId, getQuest)
@@ -93,12 +91,15 @@ export function PlayStreakEligibilityWrapper({
     return null
   }
 
+  const dateTimeCurrentSessionStartedInMsSinceEpoch =
+    questPlayStreakData.dataUpdatedAt ?? Date.now()
+
   return (
     <StreakProgress
       {...getPlaystreakArgsFromQuestData({
         questMeta: questMeta.data,
-        questPlayStreakData: questPlayStreakData?.data?.userPlayStreak,
-        useModuleInitTimeForSessionStartTime: isSignedIn && !isQuestsPage,
+        questPlayStreakData: questPlayStreakData.data?.userPlayStreak,
+        dateTimeCurrentSessionStartedInMsSinceEpoch,
         rightSection: streakRightSection
       })}
     />
