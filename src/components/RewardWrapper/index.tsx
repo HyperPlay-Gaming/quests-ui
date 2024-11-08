@@ -69,11 +69,12 @@ export function RewardWrapper({
     getDepositContracts,
     getQuestRewardSignature,
     confirmRewardClaim,
-    onRewardsClaimed,
+    onRewardClaimed,
     claimPoints,
     checkG7ConnectionStatus,
     completeExternalTask,
-    openDiscordLink
+    openDiscordLink,
+    onShowMetaMaskPopup
   } = useQuestWrapper()
 
   // State
@@ -116,13 +117,13 @@ export function RewardWrapper({
   // Mutations
   const claimRewardMutation = useMutation({
     mutationFn: async (params: Reward) => claimReward(params),
-    onSuccess: async (_data, rewards) => {
+    onSuccess: async (_data, reward) => {
       trackEvent({
         event: 'Reward Claim Success',
-        properties: getClaimEventProperties(rewards, questId)
+        properties: getClaimEventProperties(reward, questId)
       })
 
-      onRewardsClaimed?.([rewards])
+      onRewardClaimed?.(reward)
       await invalidateQuestPlayStreakQuery()
       if (questId !== null) {
         await queryClient.invalidateQueries({
@@ -214,6 +215,7 @@ export function RewardWrapper({
     if (account.address) {
       address = account.address
     } else {
+      onShowMetaMaskPopup?.()
       logInfo('connecting to wallet...')
       const { accounts } = await connectAsync({ connector: injected() })
       address = accounts[0]

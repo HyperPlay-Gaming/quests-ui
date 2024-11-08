@@ -69,5 +69,6 @@ export interface QuestWrapperContextValue {
   checkG7ConnectionStatus: () => Promise<boolean>
   isQuestsPage?: boolean
   onPlayClick: (quest: Quest) => void
-  onRewardsClaimed?: (rewards: Reward[]) => void
+  onRewardClaimed?: (reward: Reward) => void
+  onShowMetaMaskPopup?: () => void
 }

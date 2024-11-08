@@ -88,7 +88,7 @@ const mockUserPlayStreak: UserPlayStreak = {
 const mockProps: QuestDetailsWrapperProps = {
   className: styles.root,
   selectedQuestId: 1,
-  onRewardsClaimed: () => {
+  onRewardClaimed: () => {
     alert('This is when we show the claim success modal')
   },
   flags: {
