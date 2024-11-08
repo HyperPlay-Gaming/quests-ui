@@ -19,7 +19,9 @@ export function getQuestQueryOptions(
       return response
     },
     refetchOnWindowFocus: false,
-    enabled: questId !== null
+    enabled: questId !== null,
+    // choosing 60s over Infinity here to keep the num of claims left value fresh
+    staleTime: 60 * 1000
   })
 }
 

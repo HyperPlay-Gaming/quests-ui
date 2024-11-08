@@ -10,6 +10,7 @@ export function getUserPlaystreakQueryOptions(
   const queryKey = getGetUserPlayStreakQueryKey(questId)
   return queryOptions({
     queryKey,
+    staleTime: 60 * 1000,
     queryFn: async () => {
       if (questId === null) {
         return null

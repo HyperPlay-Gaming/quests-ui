@@ -22,8 +22,8 @@ importers:
         specifier: ^1.8.18
         version: 1.8.18(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(@mantine/carousel@7.12.1(@mantine/core@7.13.1(@mantine/hooks@7.12.1(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.12.1(react@18.3.1))(embla-carousel-react@8.1.8(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.13.1(@mantine/hooks@7.12.1(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.12.1(@mantine/core@7.13.1(@mantine/hooks@7.12.1(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.12.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.12.1(react@18.3.1))(bufferutil@4.0.8)(embla-carousel-autoplay@8.1.8(embla-carousel@8.1.8))(embla-carousel-react@8.1.8(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
       '@hyperplay/utils':
-        specifier: ^0.2.7
-        version: 0.2.7
+        specifier: ^0.3.4
+        version: 0.3.4
       '@mantine/core':
         specifier: ^7.5.1
         version: 7.13.1(@mantine/hooks@7.12.1(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1258,8 +1258,8 @@ packages:
       react-dom: ^17.0.0 || ^18.0.0
       react-markdown: 9.0.1
 
-  '@hyperplay/utils@0.2.7':
-    resolution: {integrity: sha512-FnypQrdu1C3YWP6OB6/jjKSRJhq8CTgarRFd1pLPc7omwr8SElq6WgaJ5A9b8ibCycBtf+lIvdc/r2k6pFRZrw==}
+  '@hyperplay/utils@0.3.4':
+    resolution: {integrity: sha512-ndkDnp+iV9BlLCKpbq0XVuuc/ORzaZ+69wFvVvAftdU6mbwbk4EfxAwTOpmXWkLaiGp0MZaybYMa5zYZkxkW5w==}
 
   '@hyperplay/utils@0.3.4':
     resolution: {integrity: sha512-ndkDnp+iV9BlLCKpbq0XVuuc/ORzaZ+69wFvVvAftdU6mbwbk4EfxAwTOpmXWkLaiGp0MZaybYMa5zYZkxkW5w==}
@@ -8494,7 +8494,7 @@ snapshots:
       - encoding
       - utf-8-validate
 
-  '@hyperplay/utils@0.2.7':
+  '@hyperplay/utils@0.3.4':
     dependencies:
       bignumber.js: 9.1.2
 

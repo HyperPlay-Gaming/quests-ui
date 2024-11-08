@@ -188,6 +188,9 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       }
     }
 
+    const dateTimeCurrentSessionStartedInMsSinceEpoch =
+      questPlayStreakResult?.data.dataUpdatedAt ?? Date.now()
+
     const questDetailsProps: QuestDetailsProps = {
       className,
       alertProps,
