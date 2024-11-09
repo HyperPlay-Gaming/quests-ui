@@ -4,6 +4,7 @@ export type { TrackEventFn } from './types/analytics'
 
 // state
 export { default as questPlayStreakSyncState } from './state/QuestPlayStreakSyncState'
+export { claimedRewardToastState } from './state/ClaimedRewardToastState'
 
 // helpers
 export * from './helpers/getPlaystreakArgsFromQuestData'
