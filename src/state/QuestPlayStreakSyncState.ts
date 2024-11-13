@@ -1,7 +1,11 @@
 import { Quest, Runner, UserPlayStreak } from '@hyperplay/utils'
 import { makeAutoObservable } from 'mobx'
 import { QueryClient } from '@tanstack/query-core'
-import { getSyncPlaysessionQueryKey } from '@/helpers/getQueryKeys'
+import {
+  getGetQuestQueryKey,
+  getGetUserPlayStreakQueryKey,
+  getSyncPlaysessionQueryKey
+} from '@/helpers/getQueryKeys'
 import { getQuestQueryOptions } from '@/hooks/useGetQuest'
 import { getUserPlaystreakQueryOptions } from '@/hooks/useGetUserPlayStreak'
 
@@ -61,13 +65,58 @@ class QuestPlayStreakSyncState {
     this.appQueryClient = appQueryClient
   }
 
-  async keepProjectQuestsInSync(projectId: string) {
+  async keepProjectQuestsInSync(projectId: string, runner: Runner) {
+    const noClientErrMsg = 'must call init on QuestPlayStreakSyncState first'
     if (this.queryClient === undefined) {
-      throw 'must call init on QuestPlayStreakSyncState first'
+      throw noClientErrMsg
     }
+
+    const syncThisProjectMutation = async () => {
+      if (this.queryClient === undefined) {
+        throw noClientErrMsg
+      }
+      return this.queryClient!.fetchQuery({
+        queryKey: getSyncPlaysessionQueryKey(projectId),
+        /**
+         * if multiple quests are syncing at the same time (within 1 second), we want to only send once.
+         * if one quest finishes in 40 seconds and another in 41 seconds, then we want to post at 40 and 41 sec
+         */
+        staleTime: 500,
+        queryFn: async () => {
+          await this.syncPlaySession(projectId, runner)
+          // all quest user playstreak data needs to be refetched after playsession sync
+          const queryKey = ['getUserPlayStreak']
+          this.appQueryClient?.invalidateQueries({ queryKey })
+          return { dataUpdatedAtInMs: Date.now() }
+        }
+      })
+    }
+
+    // we don't know how much time elapsed between clicking play and the overlay/game being launched so sync first
+    const { dataUpdatedAtInMs } = await syncThisProjectMutation()
+
+    // set up the update every minute call
+    const intervalId = setInterval(
+      syncThisProjectMutation.bind(this),
+      this.intervalSyncTick
+    )
+    if (!Object.hasOwn(this.projectSyncData, projectId)) {
+      this.projectSyncData[projectId] = {
+        syncTimers: [],
+        intervalTimers: []
+      }
+    }
+    this.projectSyncData[projectId].intervalTimers.push(intervalId)
+
     const quests = await this.getQuests(projectId)
     for (const quest of quests) {
       try {
+        this.queryClient.invalidateQueries({
+          queryKey: getGetQuestQueryKey(quest.id)
+        })
+        this.queryClient.invalidateQueries({
+          queryKey: getGetUserPlayStreakQueryKey(quest.id)
+        })
         // get quest
         const questMeta = await this.queryClient.fetchQuery(
           getQuestQueryOptions(quest.id, this.getQuest)
@@ -76,33 +125,6 @@ class QuestPlayStreakSyncState {
         const userPlayStreakData = await this.queryClient.fetchQuery(
           getUserPlaystreakQueryOptions(quest.id, this.getUserPlayStreak)
         )
-
-        if (!Object.hasOwn(this.projectSyncData, projectId)) {
-          this.projectSyncData[projectId] = {
-            syncTimers: [],
-            intervalTimers: []
-          }
-        }
-
-        const syncThisProjectMutation = async () =>
-          this.queryClient?.fetchQuery({
-            queryKey: getSyncPlaysessionQueryKey(projectId),
-            /**
-             * if multiple quests are syncing at the same time (within 1 second), we want to only send once.
-             * if one quest finishes in 40 seconds and another in 41 seconds, then we want to post at 40 and 41 sec
-             */
-            staleTime: 500,
-            queryFn: async () => {
-              this.syncPlaySession(
-                projectId,
-                questMeta?.quest_external_game?.runner ?? 'hyperplay'
-              )
-              // all quest user playstreak data needs to be refetched after playsession sync
-              const queryKey = ['getUserPlayStreak']
-              this.appQueryClient?.invalidateQueries({ queryKey })
-              return null
-            }
-          })
 
         // set timeout for when we meet the min time
         const currentPlayTimeInSeconds =
@@ -117,18 +139,20 @@ class QuestPlayStreakSyncState {
           currentPlayTimeInSeconds !== null &&
           currentPlayTimeInSeconds < minimumRequiredPlayTimeInSeconds
         ) {
+          const totalPlaysessionTimeLeftInSeconds =
+            minimumRequiredPlayTimeInSeconds - currentPlayTimeInSeconds
+          const timeElapsedSinceLastPlaysessionGetInSeconds = Math.min(
+            (Date.now() - dataUpdatedAtInMs) / 1000
+          )
+          const durationLeftInSeconds =
+            totalPlaysessionTimeLeftInSeconds -
+            timeElapsedSinceLastPlaysessionGetInSeconds
           const finalSyncTimer = setTimeout(
-            syncThisProjectMutation,
-            (minimumRequiredPlayTimeInSeconds - currentPlayTimeInSeconds) * 1000
+            syncThisProjectMutation.bind(this),
+            durationLeftInSeconds * 1000
           )
           this.projectSyncData[projectId].syncTimers.push(finalSyncTimer)
         }
-
-        const intervalId = setInterval(
-          syncThisProjectMutation,
-          this.intervalSyncTick
-        )
-        this.projectSyncData[projectId].intervalTimers.push(intervalId)
       } catch (err) {
         console.error(`Error while setting up playstreak sync: ${err}`)
       }
