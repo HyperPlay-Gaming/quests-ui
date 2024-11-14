@@ -1,16 +1,21 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useGetQuest } from './useGetQuest'
-import { getDecimalNumberFromAmount, Quest } from '@hyperplay/utils'
+import { getDecimalNumberFromAmount } from '@hyperplay/utils'
 import { getRewardCategory } from '../helpers/getRewardCategory'
 import { useTranslation } from 'react-i18next'
-import { QuestReward } from '@hyperplay/ui'
+import { QuestWrapperContextValue, UseGetRewardsData } from '@/types/quests'
 
-export function useGetRewards(
-  questId: number | null,
-  getQuest: (questId: number) => Promise<Quest>,
-  getExternalTaskCredits: (rewardId: string) => Promise<string>,
-  logError: (msg: string) => void
-) {
+export function useGetRewards({
+  questId,
+  getQuest,
+  getExternalTaskCredits,
+  logError
+}: {
+  questId: number | null
+  getQuest: QuestWrapperContextValue['getQuest']
+  getExternalTaskCredits: QuestWrapperContextValue['getExternalTaskCredits']
+  logError: QuestWrapperContextValue['logError']
+}) {
   const questResult = useGetQuest(questId, getQuest)
   const questMeta = questResult.data.data
 
@@ -19,14 +24,16 @@ export function useGetRewards(
 
   const { t } = useTranslation()
 
-  const query = useQuery<QuestReward[]>({
+  const query = useQuery({
     queryKey: [queryKey],
     queryFn: async () => {
-      const rewards: QuestReward[] = []
+      const rewards: UseGetRewardsData[] = []
       const questRewards = questMeta?.rewards
+
       if (!questRewards) {
-        return rewards
+        return { rewards: [], rewardsByCategory: {} }
       }
+
       for (const reward_i of questRewards) {
         let numToClaim: string | undefined = undefined
         if (
@@ -62,7 +69,8 @@ export function useGetRewards(
           reward_i.token_ids.length
         ) {
           for (const token_i of reward_i.token_ids) {
-            const questReward_i: QuestReward = {
+            const questReward_i = {
+              ...reward_i,
               title: reward_i.name,
               imageUrl: reward_i.image_url,
               chainName: getRewardCategory(reward_i, t),
@@ -72,7 +80,8 @@ export function useGetRewards(
             rewards.push(questReward_i)
           }
         } else {
-          const questReward_i: QuestReward = {
+          const questReward_i = {
+            ...reward_i,
             title: reward_i.name,
             imageUrl: reward_i.image_url,
             chainName: getRewardCategory(reward_i, t),
@@ -82,7 +91,18 @@ export function useGetRewards(
           rewards.push(questReward_i)
         }
       }
-      return rewards
+
+      const rewardsByCategory: Record<string, UseGetRewardsData[]> = {}
+
+      for (const reward_i of rewards) {
+        if (Object.hasOwn(rewardsByCategory, reward_i.chainName)) {
+          rewardsByCategory[reward_i.chainName].push(reward_i)
+        } else {
+          rewardsByCategory[reward_i.chainName] = [reward_i]
+        }
+      }
+
+      return { rewards, rewardsByCategory }
     },
     refetchOnWindowFocus: false
   })

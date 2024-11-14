@@ -6,6 +6,7 @@ import { createConfig, http, WagmiProvider } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HyperPlayDesignProvider } from '@hyperplay/ui'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import '@mantine/core/styles.css'
 import '@hyperplay/ui/style.css'
@@ -27,6 +28,7 @@ const preview: Preview = {
           <HyperPlayDesignProvider>
             <Story />
           </HyperPlayDesignProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </WagmiProvider>
     )
