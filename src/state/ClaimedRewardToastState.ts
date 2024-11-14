@@ -15,7 +15,7 @@ class ClaimedRewardToastState {
     if (this.clearTimeoutId) {
       clearTimeout(this.clearTimeoutId)
     }
-    
+
     this.clearTimeoutId = setTimeout(() => {
       this.reward = null
       this.clearTimeoutId = undefined
