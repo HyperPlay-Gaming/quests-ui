@@ -26,6 +26,7 @@ import { QuestWrapperContextValue } from '@/types/quests'
 export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   selectedQuestId: number | null
   className?: string
+  ctaComponent?: React.ReactNode
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
@@ -45,7 +46,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     signInWithSteamAccount,
     isQuestsPage,
     isSignedIn,
-    className
+    className,
+    ctaComponent
   } = props
 
   const queryClient = useQueryClient()
@@ -213,7 +215,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       eligibilityComponent: (
         <PlayStreakEligibilityWrapper questId={selectedQuestId} />
       ),
-      rewardsComponent: <RewardsWrapper questId={selectedQuestId} />
+      rewardsComponent: <RewardsWrapper questId={selectedQuestId} />,
+      ctaComponent
     }
     questDetails = (
       <QuestDetails
