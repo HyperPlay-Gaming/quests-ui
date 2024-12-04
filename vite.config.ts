@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react-swc'
-import { resolve } from 'node:path'
+import { join, resolve } from 'node:path'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
@@ -9,7 +9,7 @@ export default defineConfig({
   publicDir: 'public',
   resolve: {
     alias: {
-      '@': '/src'
+      '@': join(__dirname, 'src')
     }
   },
   plugins: [react(), dts()],
