@@ -210,7 +210,9 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       eligibilityComponent: hideEligibilitySection ? null : (
         <PlayStreakEligibilityWrapper questId={selectedQuestId} />
       ),
-      rewardsComponent: <RewardsWrapper questId={selectedQuestId} hideClaim={hideClaim} />,
+      rewardsComponent: (
+        <RewardsWrapper questId={selectedQuestId} hideClaim={hideClaim} />
+      ),
       ctaComponent
     }
     questDetails = (
@@ -222,10 +224,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
         }streak${!!questPlayStreakData}isSignedIn${!!isSignedIn}`}
       />
     )
-  } else if (
-    questResult?.isLoading ||
-    questPlayStreakResult?.isLoading
-  ) {
+  } else if (questResult?.isLoading || questPlayStreakResult?.isLoading) {
     questDetails = (
       <DarkContainer className={cn(styles.loadingContainer, className)}>
         <LoadingSpinner className={styles.loadingSpinner} />
