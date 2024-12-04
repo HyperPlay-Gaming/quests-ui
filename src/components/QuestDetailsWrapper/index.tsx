@@ -14,7 +14,6 @@ import { Reward } from '@hyperplay/utils'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
 import { useGetUserPlayStreak } from '../../hooks/useGetUserPlayStreak'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useGetRewards } from '../../hooks/useGetRewards'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
 import { useTrackQuestViewed } from '../../hooks/useTrackQuestViewed'
 import cn from 'classnames'
@@ -35,7 +34,6 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     trackEvent,
     getQuest,
     getUserPlayStreak,
-    getExternalTaskCredits,
     logError,
     tOverride,
     sessionEmail,
@@ -47,7 +45,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     isQuestsPage,
     isSignedIn,
     className,
-    ctaComponent
+    ctaComponent,
+    questSSR
   } = props
 
   const queryClient = useQueryClient()
@@ -62,15 +61,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
 
-  const questResult = useGetQuest(selectedQuestId, getQuest)
-  const questMeta = questResult.data?.data
-
-  const rewardsQuery = useGetRewards({
-    questId: selectedQuestId,
-    getQuest,
-    getExternalTaskCredits,
-    logError
-  })
+  const questResult = useGetQuest(selectedQuestId, getQuest, !!questSSR)
+  const questMeta = questSSR ?? questResult.data?.data
 
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
@@ -229,8 +221,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     )
   } else if (
     questResult?.isLoading ||
-    questPlayStreakResult?.isLoading ||
-    rewardsQuery?.isLoading
+    questPlayStreakResult?.isLoading
   ) {
     questDetails = (
       <DarkContainer className={cn(styles.loadingContainer, className)}>

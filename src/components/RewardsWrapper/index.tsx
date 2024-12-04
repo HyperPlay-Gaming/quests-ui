@@ -7,10 +7,10 @@ import { RewardsRow, Rewards, LoadingSpinner } from '@hyperplay/ui'
 import { RewardWrapper } from '../RewardWrapper'
 import styles from './index.module.scss'
 export function RewardsWrapper({ questId }: { questId: number | null }) {
-  const { getQuest, logError, getUserPlayStreak, getExternalTaskCredits } =
+  const { getQuest, logError, getUserPlayStreak, getExternalTaskCredits, questSSR } =
     useQuestWrapper()
 
-  const { data: questQuery } = useGetQuest(questId, getQuest)
+  const { data: questQuery } = useGetQuest(questId, getQuest, !!questSSR)
 
   const {
     data: questPlayStreakQuery,
@@ -21,7 +21,8 @@ export function RewardsWrapper({ questId }: { questId: number | null }) {
     questId,
     getQuest,
     getExternalTaskCredits,
-    logError
+    logError,
+    questSSR
   })
 
   if (rewardsQuery.isLoading) {
@@ -32,7 +33,7 @@ export function RewardsWrapper({ questId }: { questId: number | null }) {
     )
   }
 
-  const questMeta = questQuery?.data
+  const questMeta = questSSR ?? questQuery?.data
   const questPlayStreakData = questPlayStreakQuery?.data
   const rewardsData = rewardsQuery?.data
 

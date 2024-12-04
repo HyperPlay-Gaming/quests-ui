@@ -71,4 +71,6 @@ export interface QuestWrapperContextValue {
   onPlayClick: (quest: Quest) => void
   onRewardClaimed?: (reward: Reward) => void
   onShowMetaMaskPopup?: () => void
+  /* Pass in this quest data to use instead of a client side fetch */
+  questSSR?: Quest
 }

@@ -5,7 +5,8 @@ import { useQuery, useQueryClient, queryOptions } from '@tanstack/react-query'
 
 export function getQuestQueryOptions(
   questId: number | null,
-  getQuest: (questId: number) => Promise<Quest>
+  getQuest: (questId: number) => Promise<Quest>,
+  disabled?: boolean
 ) {
   const queryKey = getGetQuestQueryKey(questId)
   return queryOptions({
@@ -19,7 +20,7 @@ export function getQuestQueryOptions(
       return response
     },
     refetchOnWindowFocus: false,
-    enabled: questId !== null,
+    enabled: questId !== null && !disabled,
     // choosing 60s over Infinity here to keep the num of claims left value fresh
     staleTime: 60 * 1000
   })
@@ -27,10 +28,11 @@ export function getQuestQueryOptions(
 
 export function useGetQuest(
   questId: number | null,
-  getQuest: QuestWrapperContextValue['getQuest']
+  getQuest: QuestWrapperContextValue['getQuest'],
+  disabled?: boolean
 ) {
   const queryClient = useQueryClient()
-  const queryOption = getQuestQueryOptions(questId, getQuest)
+  const queryOption = getQuestQueryOptions(questId, getQuest, disabled)
   const query = useQuery(queryOption)
 
   return {
