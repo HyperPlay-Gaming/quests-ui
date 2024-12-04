@@ -26,6 +26,8 @@ export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   selectedQuestId: number | null
   className?: string
   ctaComponent?: React.ReactNode
+  hideEligibilitySection?: boolean
+  hideClaim?: boolean
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
@@ -46,7 +48,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     isSignedIn,
     className,
     ctaComponent,
-    questSSR
+    hideEligibilitySection,
+    hideClaim
   } = props
 
   const queryClient = useQueryClient()
@@ -61,8 +64,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
 
-  const questResult = useGetQuest(selectedQuestId, getQuest, !!questSSR)
-  const questMeta = questSSR ?? questResult.data?.data
+  const questResult = useGetQuest(selectedQuestId, getQuest)
+  const questMeta = questResult.data?.data
 
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
@@ -204,10 +207,10 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       isQuestsPage,
       i18n,
       isSignedIn,
-      eligibilityComponent: (
+      eligibilityComponent: hideEligibilitySection ? null : (
         <PlayStreakEligibilityWrapper questId={selectedQuestId} />
       ),
-      rewardsComponent: <RewardsWrapper questId={selectedQuestId} />,
+      rewardsComponent: <RewardsWrapper questId={selectedQuestId} hideClaim={hideClaim} />,
       ctaComponent
     }
     questDetails = (

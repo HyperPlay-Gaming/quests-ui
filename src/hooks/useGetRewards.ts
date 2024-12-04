@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useGetQuest } from './useGetQuest'
-import { getDecimalNumberFromAmount, Quest } from '@hyperplay/utils'
+import { getDecimalNumberFromAmount } from '@hyperplay/utils'
 import { getRewardCategory } from '../helpers/getRewardCategory'
 import { useTranslation } from 'react-i18next'
 import { QuestWrapperContextValue, UseGetRewardsData } from '@/types/quests'
@@ -9,17 +9,15 @@ export function useGetRewards({
   questId,
   getQuest,
   getExternalTaskCredits,
-  logError,
-  questSSR
+  logError
 }: {
   questId: number | null
   getQuest: QuestWrapperContextValue['getQuest']
   getExternalTaskCredits: QuestWrapperContextValue['getExternalTaskCredits']
   logError: QuestWrapperContextValue['logError']
-  questSSR?: Quest
 }) {
-  const questResult = useGetQuest(questId, getQuest, !!questSSR)
-  const questMeta = questSSR ?? questResult.data.data
+  const questResult = useGetQuest(questId, getQuest)
+  const questMeta = questResult.data.data
 
   const queryClient = useQueryClient()
   const queryKey = `useGetRewards:${questId}:${questMeta?.rewards?.length}`
