@@ -43,6 +43,7 @@ interface RewardWrapperProps {
   questMeta: Quest
   questPlayStreakData: UserPlayStreak | undefined | null
   invalidateQuestPlayStreakQuery: () => Promise<void>
+  hideClaim?: boolean
 }
 
 export function RewardWrapper({
@@ -50,7 +51,8 @@ export function RewardWrapper({
   questId,
   questMeta,
   questPlayStreakData,
-  invalidateQuestPlayStreakQuery
+  invalidateQuestPlayStreakQuery,
+  hideClaim
 }: RewardWrapperProps) {
   const queryClient = useQueryClient()
   const { t: tOriginal } = useTranslation()
@@ -420,6 +422,7 @@ export function RewardWrapper({
         reward={{ ...reward, claimPending: isClaiming }}
         key={reward.title}
         onClaim={async () => onClaim(reward)}
+        hideClaim={hideClaim}
       />
       {alertProps ? (
         <div className={styles.alertCard}>

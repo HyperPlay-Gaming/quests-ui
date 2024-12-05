@@ -6,7 +6,13 @@ import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { RewardsRow, Rewards, LoadingSpinner } from '@hyperplay/ui'
 import { RewardWrapper } from '../RewardWrapper'
 import styles from './index.module.scss'
-export function RewardsWrapper({ questId }: { questId: number | null }) {
+export function RewardsWrapper({
+  questId,
+  hideClaim
+}: {
+  questId: number | null
+  hideClaim?: boolean
+}) {
   const { getQuest, logError, getUserPlayStreak, getExternalTaskCredits } =
     useQuestWrapper()
 
@@ -52,6 +58,7 @@ export function RewardsWrapper({ questId }: { questId: number | null }) {
               questMeta={questMeta}
               questPlayStreakData={questPlayStreakData?.userPlayStreak}
               invalidateQuestPlayStreakQuery={invalidateQuestPlayStreakQuery}
+              hideClaim={hideClaim}
             />
           ))}
         </RewardsRow>

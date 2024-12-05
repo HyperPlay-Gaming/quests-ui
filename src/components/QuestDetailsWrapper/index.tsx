@@ -14,7 +14,6 @@ import { Reward } from '@hyperplay/utils'
 import { resyncExternalTasks as resyncExternalTasksHelper } from '../../helpers/resyncExternalTask'
 import { useGetUserPlayStreak } from '../../hooks/useGetUserPlayStreak'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useGetRewards } from '../../hooks/useGetRewards'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
 import { useTrackQuestViewed } from '../../hooks/useTrackQuestViewed'
 import cn from 'classnames'
@@ -26,6 +25,9 @@ import { QuestWrapperContextValue } from '@/types/quests'
 export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   selectedQuestId: number | null
   className?: string
+  ctaComponent?: React.ReactNode
+  hideEligibilitySection?: boolean
+  hideClaim?: boolean
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
@@ -34,7 +36,6 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     trackEvent,
     getQuest,
     getUserPlayStreak,
-    getExternalTaskCredits,
     logError,
     tOverride,
     sessionEmail,
@@ -45,7 +46,10 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     signInWithSteamAccount,
     isQuestsPage,
     isSignedIn,
-    className
+    className,
+    ctaComponent,
+    hideEligibilitySection,
+    hideClaim
   } = props
 
   const queryClient = useQueryClient()
@@ -62,13 +66,6 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
 
   const questResult = useGetQuest(selectedQuestId, getQuest)
   const questMeta = questResult.data?.data
-
-  const rewardsQuery = useGetRewards({
-    questId: selectedQuestId,
-    getQuest,
-    getExternalTaskCredits,
-    logError
-  })
 
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
@@ -210,10 +207,13 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       isQuestsPage,
       i18n,
       isSignedIn,
-      eligibilityComponent: (
+      eligibilityComponent: hideEligibilitySection ? null : (
         <PlayStreakEligibilityWrapper questId={selectedQuestId} />
       ),
-      rewardsComponent: <RewardsWrapper questId={selectedQuestId} />
+      rewardsComponent: (
+        <RewardsWrapper questId={selectedQuestId} hideClaim={hideClaim} />
+      ),
+      ctaComponent
     }
     questDetails = (
       <QuestDetails
@@ -224,11 +224,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
         }streak${!!questPlayStreakData}isSignedIn${!!isSignedIn}`}
       />
     )
-  } else if (
-    questResult?.isLoading ||
-    questPlayStreakResult?.isLoading ||
-    rewardsQuery?.isLoading
-  ) {
+  } else if (questResult?.isLoading || questPlayStreakResult?.isLoading) {
     questDetails = (
       <DarkContainer className={cn(styles.loadingContainer, className)}>
         <LoadingSpinner className={styles.loadingSpinner} />
