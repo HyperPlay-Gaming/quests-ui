@@ -17,7 +17,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createPublicClient, http } from 'viem'
-import { useAccount, useConfig, useConnect, useSwitchChain, useWriteContract } from 'wagmi'
+import {
+  useAccount,
+  useConfig,
+  useConnect,
+  useSwitchChain,
+  useWriteContract
+} from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
@@ -221,8 +227,10 @@ export function RewardWrapper({
      * We need to check that the switch chain method exists before proceeding with claiming.
      */
     let connectionHasSwitchChain = false
-    if (config.state.current){
-      const currentConnection = config.state.connections.get(config.state.current)
+    if (config.state.current) {
+      const currentConnection = config.state.connections.get(
+        config.state.current
+      )
       connectionHasSwitchChain = !!currentConnection?.connector.switchChain
     }
 
@@ -233,6 +241,7 @@ export function RewardWrapper({
       logInfo('connecting to wallet...')
       const { accounts } = await connectAsync({ connector: injected() })
       address = accounts[0]
+    }
     if (!address) {
       throw Error('no address found when trying to mint')
     }
