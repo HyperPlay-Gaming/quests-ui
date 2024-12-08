@@ -4,7 +4,7 @@ import { Quest, UserPlayStreak } from '@hyperplay/utils'
 export function getPlaystreakQuestStatus(
   quest: Quest,
   questPlayStreak: UserPlayStreak
-): QuestLogInfo['state'] {
+): QuestLogInfo['state'] | undefined {
   const completedCounter = questPlayStreak.completed_counter
   const numTimesCompleteable = quest.num_of_times_repeatable
 
@@ -23,6 +23,8 @@ export function getPlaystreakQuestStatus(
     (gameIsInfinitelyCompleteable || gameHasMoreFiniteCompletionsPossible)
   ) {
     return 'READY_FOR_CLAIM'
+  } else if (quest.status === 'COMPLETED') {
+    return undefined
   } else if (gameIsInfinitelyCompleteable) {
     return 'ACTIVE'
   } else if (!gameHasMoreFiniteCompletionsPossible) {
