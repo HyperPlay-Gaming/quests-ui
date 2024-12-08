@@ -17,7 +17,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createPublicClient, http } from 'viem'
-import { useAccount, useConnect, useSwitchChain, useWriteContract } from 'wagmi'
+import { useAccount, useConfig, useConnect, useSwitchChain, useWriteContract } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
@@ -58,6 +58,7 @@ export function RewardWrapper({
   const { t: tOriginal } = useTranslation()
   const account = useAccount()
   const { connectAsync } = useConnect()
+  const config = useConfig()
 
   // Context
   const {
@@ -214,15 +215,24 @@ export function RewardWrapper({
 
     let address: `0x${string}` | undefined
 
-    if (account.address) {
+    /**
+     * handles https://github.com/HyperPlay-Gaming/product-management/issues/801
+     * Sometimes wagmi does not establish a connection but useAccount returns the address.
+     * We need to check that the switch chain method exists before proceeding with claiming.
+     */
+    let connectionHasSwitchChain = false
+    if (config.state.current){
+      const currentConnection = config.state.connections.get(config.state.current)
+      connectionHasSwitchChain = !!currentConnection?.connector.switchChain
+    }
+
+    if (account.address && connectionHasSwitchChain) {
       address = account.address
     } else {
       onShowMetaMaskPopup?.()
       logInfo('connecting to wallet...')
       const { accounts } = await connectAsync({ connector: injected() })
       address = accounts[0]
-    }
-
     if (!address) {
       throw Error('no address found when trying to mint')
     }
