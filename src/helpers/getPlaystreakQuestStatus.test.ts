@@ -169,9 +169,10 @@ describe('get playstreak quest status test', () => {
       accumulated_playtime_today_in_seconds: 100,
       last_play_session_completed_datetime: '0'
     }
-    expect(getPlaystreakQuestStatus(quest, playstreak)).toEqual('READY_FOR_CLAIM')
+    expect(getPlaystreakQuestStatus(quest, playstreak)).toEqual(
+      'READY_FOR_CLAIM'
+    )
   })
-
 })
 
 export {}

@@ -23,7 +23,7 @@ export function getPlaystreakQuestStatus(
     (gameIsInfinitelyCompleteable || gameHasMoreFiniteCompletionsPossible)
   ) {
     return 'READY_FOR_CLAIM'
-  } else if (quest.status === 'COMPLETED'){
+  } else if (quest.status === 'COMPLETED') {
     return undefined
   } else if (gameIsInfinitelyCompleteable) {
     return 'ACTIVE'
