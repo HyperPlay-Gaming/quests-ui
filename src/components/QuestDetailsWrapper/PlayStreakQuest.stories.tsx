@@ -5,7 +5,7 @@ import { Quest, UserPlayStreak } from '@hyperplay/utils'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
-  title: 'Components/QuestDetailsWrapper',
+  title: 'Components/QuestDetailsWrapper/PlayStreak',
   render: (args) => (
     <div style={{ height: 'calc(100vh - 100px)' }}>
       {<QuestDetailsWrapper {...args} />}
