@@ -10,6 +10,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import '@mantine/core/styles.css'
 import '@hyperplay/ui/style.css'
+import { injected } from 'wagmi/connectors'
+import { ConnectWallet } from '../src/components/ConnectWallet'
 
 const queryClient = new QueryClient()
 
@@ -17,7 +19,8 @@ const config = createConfig({
   chains: [mainnet],
   transports: {
     [mainnet.id]: http()
-  }
+  },
+  connectors: [injected({ shimDisconnect: true })]
 })
 
 const preview: Preview = {
@@ -26,6 +29,9 @@ const preview: Preview = {
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <HyperPlayDesignProvider>
+            <div style={{ position: 'absolute', top: 10, right: 10 }}>
+              <ConnectWallet />
+            </div>
             <Story />
           </HyperPlayDesignProvider>
           <ReactQueryDevtools initialIsOpen={false} />

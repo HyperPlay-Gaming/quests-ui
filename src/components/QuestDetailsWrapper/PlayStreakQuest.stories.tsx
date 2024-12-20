@@ -89,10 +89,10 @@ const mockProps: QuestDetailsWrapperProps = {
   className: styles.root,
   selectedQuestId: 1,
   getActiveWallet: async () => {
-    return '0x216e17c29c175c043CF218a9105Aa1b6fa6dB31A'
+    return null
   },
-  setActiveWallet: async () => {
-    alert('setActiveWallet')
+  setActiveWallet: async (wallet) => {
+    alert(`setActiveWallet ${wallet}`)
   },
   onRewardClaimed: () => {
     alert('This is when we show the claim success modal')
