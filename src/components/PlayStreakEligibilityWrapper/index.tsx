@@ -4,25 +4,52 @@ import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { useHasPendingExternalSync } from '@/hooks/useHasPendingExternalSync'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { Button, Images, StreakProgress } from '@hyperplay/ui'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './index.module.scss'
-// import ActiveWalletSection from '../ActiveWalletSection'
+import { useAccount } from 'wagmi'
+import ActiveWalletSection from '../ActiveWalletSection'
 
 export function PlayStreakEligibilityWrapper({
   questId
 }: {
   questId: number | null
 }) {
+  const queryClient = useQueryClient()
+
   const {
     syncPlayStreakWithExternalSource,
     getPendingExternalSync,
     getUserPlayStreak,
-    getQuest
+    getQuest,
+    getActiveWallet,
+    setActiveWallet
   } = useQuestWrapper()
   const { t } = useTranslation()
   const { data: questMeta } = useGetQuest(questId, getQuest)
+  const { address } = useAccount()
+
+  const { data: activeWallet } = useQuery({
+    queryKey: ['activeWallet'],
+    queryFn: async () => {
+      return getActiveWallet()
+    }
+  })
+
+  const { mutateAsync: setActiveWalletMutation } = useMutation({
+    mutationFn: async () => {
+      if (!address) {
+        throw new Error('No address found')
+      }
+
+      await setActiveWallet(address)
+      await invalidateQuestPlayStreak()
+      await queryClient.invalidateQueries({
+        queryKey: ['activeWallet']
+      })
+    }
+  })
 
   const {
     data: questPlayStreakData,
@@ -97,7 +124,11 @@ export function PlayStreakEligibilityWrapper({
 
   return (
     <div className={styles.container}>
-      {/* <ActiveWalletSection /> */}
+      <ActiveWalletSection
+        connectedWallet={address ?? null}
+        activeWallet={activeWallet ?? null}
+        setActiveWallet={setActiveWalletMutation}
+      />
       <StreakProgress
         {...getPlaystreakArgsFromQuestData({
           questMeta: questMeta.data,

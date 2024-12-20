@@ -1,26 +1,25 @@
 import { Button, Images, Alert } from '@hyperplay/ui'
 import styles from './index.module.scss'
 import cn from 'classnames'
+import { useTranslation } from 'react-i18next'
+import { TFunction } from 'i18next'
+import { truncateEthAddress } from '../truncateAddress'
 
-function NewWalletDetected() {
+function InfoAlert({
+  title,
+  children
+}: {
+  title: string
+  children: React.ReactNode
+}) {
   return (
     <div className={styles.newWalletDetectedContainer}>
       <div className={styles.infoIconContainer}>
         <Images.Info className={styles.infoIcon} />
       </div>
       <div className={styles.infoTextContainer}>
-        <span className="title-sm">New Wallet Detected</span>
-        <div>
-          <span className="body-sm">
-            {`Your connected wallet doesn't match any Gameplay wallet tracked for
-          this Quest. To track progress with this wallet, add it as a Gameplay
-          Wallet below by setting it.`}
-          </span>{' '}
-          <span className={cn('body-sm', styles.verifyText)}>
-            {`You only need to verify each address once and can switch freely at any
-          time.`}
-          </span>
-        </div>
+        <span className="title-sm">{title}</span>
+        <div>{children}</div>
       </div>
     </div>
   )
@@ -64,57 +63,161 @@ interface ActiveWalletSectionProps {
   connectedWallet: string | null
   activeWallet: string | null
   setActiveWallet: () => void
+  tOverride?: TFunction<any, string>
 }
 
 export default function ActiveWalletSection({
   connectedWallet,
   activeWallet,
-  setActiveWallet
+  setActiveWallet,
+  tOverride
 }: ActiveWalletSectionProps) {
-  let activeWalletText = 'No wallet connected'
+  const { t: tOriginal } = useTranslation()
+  const t = tOverride || tOriginal
 
-  if (activeWallet) {
-    activeWalletText = activeWallet
-  }
+  const onlyConnectedWallet = (
+    <InfoAlert title={t('wallet.detected.title', 'Wallet Detected')}>
+      <span className="body-sm">
+        {t(
+          'wallet.detected.message',
+          'To track progress with this wallet, add it as a Gameplay Wallet below by setting it.'
+        )}
+      </span>{' '}
+      <span className={cn('body-sm', styles.verifyText)}>
+        {t(
+          'wallet.verify.message',
+          'You only need to verify each address once and can switch freely at any time.'
+        )}
+      </span>
+    </InfoAlert>
+  )
 
-  const isNewWallet =
+  const newWalletDetected = (
+    <InfoAlert title={t('wallet.new.title', 'New Wallet Detected')}>
+      <span className="body-sm">
+        {t(
+          'wallet.new.message',
+          "Your connected wallet doesn't match any Gameplay wallet tracked for this Quest. To track progress with this wallet, add it as a Gameplay Wallet below by setting it."
+        )}
+      </span>{' '}
+      <span className={cn('body-sm', styles.verifyText)}>
+        {t(
+          'wallet.verify.message',
+          'You only need to verify each address once and can switch freely at any time.'
+        )}
+      </span>
+    </InfoAlert>
+  )
+
+  const hasNoWallets = !connectedWallet && !activeWallet
+  const hasOnlyConnectedWallet = connectedWallet && !activeWallet
+  const hasOnlyActiveWallet = activeWallet && !connectedWallet
+  const hasMatchingWallets =
+    Boolean(activeWallet && connectedWallet) && activeWallet === connectedWallet
+  const hasDifferentWallets =
     Boolean(activeWallet && connectedWallet) && activeWallet !== connectedWallet
 
-  return (
-    <div className={styles.root}>
-      {!connectedWallet && (
+  let content = null
+
+  if (hasNoWallets) {
+    content = (
+      <>
         <Alert
-          message="No wallet connected. Connect wallet to track Quest progress."
+          message={t(
+            'wallet.noWallet.message',
+            'No wallet connected. Connect wallet to track Quest progress.'
+          )}
           variant="warning"
         />
-      )}
-      {isNewWallet && <NewWalletDetected />}
-      <InputLikeContainer title="Active Gameplay Wallet">
-        <InputLikeBox
-          className={cn({
-            [styles.activeWallet]: Boolean(activeWallet),
-            [styles.noWallet]: !activeWallet
-          })}
+        <InputLikeContainer
+          title={t('wallet.active.title', 'Active Gameplay Wallet')}
         >
-          {activeWalletText}
-        </InputLikeBox>
-      </InputLikeContainer>
-      {isNewWallet && (
-        <InputLikeContainer title="Set Connected Wallet">
+          <InputLikeBox className={styles.noWallet}>
+            {t('wallet.noWallet.status', 'No wallet connected')}
+          </InputLikeBox>
+        </InputLikeContainer>
+      </>
+    )
+  }
+
+  if (hasOnlyConnectedWallet) {
+    content = (
+      <>
+        {onlyConnectedWallet}
+        <InputLikeContainer
+          title={t('wallet.connected.title', 'Connected Wallet')}
+        >
           <div className={styles.setActiveWalletContainer}>
             <InputLikeBox className={styles.setConnectedWalletInput}>
-              0xAB207...D713b
+              {truncateEthAddress(connectedWallet ?? '')}
             </InputLikeBox>
             <Button
               type="secondaryGradient"
               className={styles.setButton}
               onClick={setActiveWallet}
             >
-              Set
+              {t('wallet.action.set', 'Set')}
             </Button>
           </div>
         </InputLikeContainer>
-      )}
-    </div>
-  )
+      </>
+    )
+  }
+
+  if (hasOnlyActiveWallet) {
+    content = (
+      <InputLikeContainer
+        title={t('wallet.active.title', 'Active Gameplay Wallet')}
+      >
+        <InputLikeBox className={styles.activeWallet}>
+          {truncateEthAddress(activeWallet)}
+        </InputLikeBox>
+      </InputLikeContainer>
+    )
+  }
+
+  if (hasMatchingWallets) {
+    content = (
+      <InputLikeContainer
+        title={t('wallet.connected.title', 'Connected Wallet')}
+      >
+        <InputLikeBox className={styles.activeWallet}>
+          {truncateEthAddress(activeWallet ?? '')}
+        </InputLikeBox>
+      </InputLikeContainer>
+    )
+  }
+
+  if (hasDifferentWallets) {
+    content = (
+      <>
+        {newWalletDetected}
+        <InputLikeContainer
+          title={t('wallet.active.title', 'Active Gameplay Wallet')}
+        >
+          <InputLikeBox className={styles.activeWallet}>
+            {truncateEthAddress(activeWallet ?? '')}
+          </InputLikeBox>
+        </InputLikeContainer>
+        <InputLikeContainer
+          title={t('wallet.setConnected.title', 'Set Connected Wallet')}
+        >
+          <div className={styles.setActiveWalletContainer}>
+            <InputLikeBox className={styles.setConnectedWalletInput}>
+              {truncateEthAddress(connectedWallet ?? '')}
+            </InputLikeBox>
+            <Button
+              type="secondaryGradient"
+              className={styles.setButton}
+              onClick={setActiveWallet}
+            >
+              {t('wallet.action.set', 'Set')}
+            </Button>
+          </div>
+        </InputLikeContainer>
+      </>
+    )
+  }
+
+  return <div className={styles.root}>{content}</div>
 }

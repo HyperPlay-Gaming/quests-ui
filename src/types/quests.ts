@@ -38,6 +38,8 @@ export interface QuestWrapperContextValue {
     questsOverlayClaimCtaEnabled?: boolean
   }
   getQuest: (questId: number) => Promise<Quest>
+  getActiveWallet: () => Promise<string>
+  setActiveWallet: (wallet: string) => Promise<void>
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
   getSteamGameMetadata: (id: number) => Promise<{
     name?: string

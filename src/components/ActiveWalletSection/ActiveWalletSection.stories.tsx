@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import ActiveWalletSection from '.'
-
+import { DarkContainer } from '@hyperplay/ui'
+import styles from './story-styles.module.scss'
 const meta = {
-  title: 'Components/ActiveWalletSection',
+  title: 'Components/QuestDetailsWrapper/PlayStreak/ActiveWalletSection',
   component: ActiveWalletSection,
   parameters: {
     layout: 'centered',
@@ -20,6 +21,28 @@ export const NoWalletConnected: Story = {
     connectedWallet: null,
     activeWallet: null,
     setActiveWallet: () => {}
+  },
+  render: (args) => {
+    return (
+      <DarkContainer className={styles.root}>
+        <ActiveWalletSection {...args} />
+      </DarkContainer>
+    )
+  }
+}
+
+export const OnlyConnectedWallet: Story = {
+  args: {
+    connectedWallet: '0x1234...5678',
+    activeWallet: null,
+    setActiveWallet: () => {}
+  },
+  render: (args) => {
+    return (
+      <DarkContainer className={styles.root}>
+        <ActiveWalletSection {...args} />
+      </DarkContainer>
+    )
   }
 }
 
@@ -28,6 +51,13 @@ export const OnlyActiveWallet: Story = {
     connectedWallet: null,
     activeWallet: '0x1234...5678',
     setActiveWallet: () => {}
+  },
+  render: (args) => {
+    return (
+      <DarkContainer className={styles.root}>
+        <ActiveWalletSection {...args} />
+      </DarkContainer>
+    )
   }
 }
 
@@ -36,6 +66,13 @@ export const ConnectedMatchesActive: Story = {
     connectedWallet: '0x1234...5678',
     activeWallet: '0x1234...5678',
     setActiveWallet: () => {}
+  },
+  render: (args) => {
+    return (
+      <DarkContainer className={styles.root}>
+        <ActiveWalletSection {...args} />
+      </DarkContainer>
+    )
   }
 }
 
@@ -44,5 +81,12 @@ export const NewWalletDetected: Story = {
     connectedWallet: '0xABCD...EFGH',
     activeWallet: '0x1234...5678',
     setActiveWallet: () => alert('setActiveWallet')
+  },
+  render: (args) => {
+    return (
+      <DarkContainer className={styles.root}>
+        <ActiveWalletSection {...args} />
+      </DarkContainer>
+    )
   }
 }
