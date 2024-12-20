@@ -248,13 +248,14 @@ export const ActiveWalletConnectDefault: Story = {
   }
 }
 
-
 export const ActiveWalletSwitchWallet: Story = {
   args: {
     ...mockProps
   },
   render: (args) => {
-    const [activeWallet, setActiveWallet] = useState<string | null>('0x5a241425BF9AAA8503af0CE1Ec30651c30AeACB8')
+    const [activeWallet, setActiveWallet] = useState<string | null>(
+      '0x5a241425BF9AAA8503af0CE1Ec30651c30AeACB8'
+    )
     return (
       <QuestDetailsWrapper
         {...args}

@@ -178,9 +178,7 @@ export default function ActiveWalletSection({
 
   if (hasMatchingWallets) {
     content = (
-      <InputLikeContainer
-        title={t('wallet.connected.title', 'Active Wallet')}
-      >
+      <InputLikeContainer title={t('wallet.connected.title', 'Active Wallet')}>
         <InputLikeBox className={styles.activeWallet}>
           {truncateEthAddress(activeWallet ?? '')}
         </InputLikeBox>
