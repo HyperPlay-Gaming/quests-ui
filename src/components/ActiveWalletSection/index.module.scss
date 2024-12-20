@@ -1,8 +1,8 @@
 .newWalletDetectedContainer {
   display: flex;
-  gap: 12px;
-  padding: 8px 16px;
-  border-radius: 8px;
+  gap: var(--space-md);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--space-xs-fixed);
   background-color: var(--color-tertiary-400);
   color: var(--color-neutral-800);
 }
@@ -28,25 +28,25 @@
 .infoTextContainer {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2xs);
 }
 
 .container {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2xs);
 }
 
 .root {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-md);
 }
 
 .walletContainer {
   display: flex;
-  padding: 9px 12px;
-  border-radius: 8px;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--space-xs-fixed);
   border: 1px solid var(--color-stroke-01);
   align-items: center;
   justify-content: space-between;
@@ -64,12 +64,12 @@
 .inputLikeContainer {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2xs);
 }
 
 .setActiveWalletContainer {
   display: flex;
-  gap: 6px;
+  gap: var(--space-2xs);
 }
 
 .setConnectedWalletInput {
