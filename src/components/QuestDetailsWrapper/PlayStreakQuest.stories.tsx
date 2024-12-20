@@ -242,7 +242,10 @@ export const ActiveWalletConnectDefault: Story = {
       <QuestDetailsWrapper
         {...args}
         getActiveWallet={async () => Promise.resolve(activeWallet)}
-        setActiveWallet={async (wallet) => setActiveWallet(wallet)}
+        setActiveWallet={async (wallet) => {
+          setActiveWallet(wallet)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+        }}
       />
     )
   }
@@ -260,7 +263,27 @@ export const ActiveWalletSwitchWallet: Story = {
       <QuestDetailsWrapper
         {...args}
         getActiveWallet={async () => Promise.resolve(activeWallet)}
-        setActiveWallet={async (wallet) => setActiveWallet(wallet)}
+        setActiveWallet={async (wallet) => {
+          setActiveWallet(wallet)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+        }}
+      />
+    )
+  }
+}
+
+export const ActiveWalletSwitchWalletError: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        setActiveWallet={async () => {
+          await new Promise((resolve) => setTimeout(resolve, 3000))
+          throw new Error('Error')
+        }}
       />
     )
   }

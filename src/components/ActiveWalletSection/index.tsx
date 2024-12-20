@@ -1,9 +1,11 @@
-import { Button, Images, Alert } from '@hyperplay/ui'
+import { Button, Images, Alert, LoadingSpinner, AlertCard } from '@hyperplay/ui'
 import styles from './index.module.scss'
 import cn from 'classnames'
 import { useTranslation } from 'react-i18next'
-import { TFunction } from 'i18next'
 import { truncateEthAddress } from '../truncateAddress'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuestWrapper } from '@/state/QuestWrapperProvider'
+import { useAccount } from 'wagmi'
 
 function InfoAlert({
   title,
@@ -59,21 +61,38 @@ function InputLikeContainer({
   )
 }
 
-interface ActiveWalletSectionProps {
-  connectedWallet: string | null
-  activeWallet: string | null
-  setActiveWallet: () => void
-  tOverride?: TFunction<any, string>
-}
+export default function ActiveWalletSection() {
+  const queryClient = useQueryClient()
+  const { address: connectedWallet } = useAccount()
+  const { getActiveWallet, setActiveWallet, tOverride, openDiscordLink } =
+    useQuestWrapper()
 
-export default function ActiveWalletSection({
-  connectedWallet,
-  activeWallet,
-  setActiveWallet,
-  tOverride
-}: ActiveWalletSectionProps) {
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
+
+  const { data: activeWallet } = useQuery({
+    queryKey: ['activeWallet'],
+    queryFn: async () => {
+      return getActiveWallet()
+    }
+  })
+
+  const {
+    mutate: setActiveWalletMutation,
+    isPending,
+    error
+  } = useMutation({
+    mutationFn: async () => {
+      if (!connectedWallet) {
+        throw new Error('No address found')
+      }
+
+      await setActiveWallet(connectedWallet)
+      await queryClient.invalidateQueries({
+        queryKey: ['activeWallet']
+      })
+    }
+  })
 
   const onlyConnectedWallet = (
     <InfoAlert title={t('wallet.detected.title', 'Wallet Detected')}>
@@ -107,6 +126,21 @@ export default function ActiveWalletSection({
         )}
       </span>
     </InfoAlert>
+  )
+
+  const setButton = (
+    <Button
+      disabled={isPending}
+      type="secondaryGradient"
+      className={styles.setButton}
+      onClick={() => setActiveWalletMutation()}
+    >
+      {isPending ? (
+        <LoadingSpinner className={styles.loadingSpinner} />
+      ) : (
+        t('wallet.action.set', 'Set')
+      )}
+    </Button>
   )
 
   const hasNoWallets = !connectedWallet && !activeWallet
@@ -151,13 +185,7 @@ export default function ActiveWalletSection({
             <InputLikeBox className={styles.setConnectedWalletInput}>
               {truncateEthAddress(connectedWallet ?? '')}
             </InputLikeBox>
-            <Button
-              type="secondaryGradient"
-              className={styles.setButton}
-              onClick={setActiveWallet}
-            >
-              {t('wallet.action.set', 'Set')}
-            </Button>
+            {setButton}
           </div>
         </InputLikeContainer>
       </>
@@ -204,18 +232,29 @@ export default function ActiveWalletSection({
             <InputLikeBox className={styles.setConnectedWalletInput}>
               {truncateEthAddress(connectedWallet ?? '')}
             </InputLikeBox>
-            <Button
-              type="secondaryGradient"
-              className={styles.setButton}
-              onClick={setActiveWallet}
-            >
-              {t('wallet.action.set', 'Set')}
-            </Button>
+            {setButton}
           </div>
         </InputLikeContainer>
       </>
     )
   }
 
-  return <div className={styles.root}>{content}</div>
+  const alertProps = {
+    showClose: false,
+    title: t('wallet.error.title', 'Something went wrong'),
+    message: t(
+      'wallet.error.message',
+      "Please try once more. If it still doesn't work, create a Discord support ticket."
+    ),
+    actionText: t('wallet.error.action', 'Create Discord Ticket'),
+    onActionClick: () => openDiscordLink(),
+    variant: 'danger' as const
+  }
+
+  return (
+    <div className={styles.root}>
+      {content}
+      {error && <AlertCard {...alertProps} />}
+    </div>
+  )
 }

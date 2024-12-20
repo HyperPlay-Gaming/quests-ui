@@ -4,11 +4,10 @@ import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { useHasPendingExternalSync } from '@/hooks/useHasPendingExternalSync'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { Button, Images, StreakProgress } from '@hyperplay/ui'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './index.module.scss'
-import { useAccount } from 'wagmi'
 import ActiveWalletSection from '../ActiveWalletSection'
 
 export function PlayStreakEligibilityWrapper({
@@ -16,40 +15,14 @@ export function PlayStreakEligibilityWrapper({
 }: {
   questId: number | null
 }) {
-  const queryClient = useQueryClient()
-
   const {
     syncPlayStreakWithExternalSource,
     getPendingExternalSync,
     getUserPlayStreak,
-    getQuest,
-    getActiveWallet,
-    setActiveWallet
+    getQuest
   } = useQuestWrapper()
   const { t } = useTranslation()
   const { data: questMeta } = useGetQuest(questId, getQuest)
-  const { address } = useAccount()
-
-  const { data: activeWallet } = useQuery({
-    queryKey: ['activeWallet'],
-    queryFn: async () => {
-      return getActiveWallet()
-    }
-  })
-
-  const { mutateAsync: setActiveWalletMutation } = useMutation({
-    mutationFn: async () => {
-      if (!address) {
-        throw new Error('No address found')
-      }
-
-      await setActiveWallet(address)
-      await invalidateQuestPlayStreak()
-      await queryClient.invalidateQueries({
-        queryKey: ['activeWallet']
-      })
-    }
-  })
 
   const {
     data: questPlayStreakData,
@@ -124,11 +97,7 @@ export function PlayStreakEligibilityWrapper({
 
   return (
     <div className={styles.container}>
-      <ActiveWalletSection
-        connectedWallet={address ?? null}
-        activeWallet={activeWallet ?? null}
-        setActiveWallet={setActiveWalletMutation}
-      />
+      <ActiveWalletSection />
       <StreakProgress
         {...getPlaystreakArgsFromQuestData({
           questMeta: questMeta.data,
