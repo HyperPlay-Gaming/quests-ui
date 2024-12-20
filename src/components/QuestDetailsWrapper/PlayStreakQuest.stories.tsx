@@ -2,10 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
+import { useState } from 'react'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
-  title: 'Components/QuestDetailsWrapper',
+  title: 'Components/QuestDetailsWrapper/PlayStreak',
   render: (args) => (
     <div style={{ height: 'calc(100vh - 100px)' }}>
       {<QuestDetailsWrapper {...args} />}
@@ -88,6 +89,12 @@ const mockUserPlayStreak: UserPlayStreak = {
 const mockProps: QuestDetailsWrapperProps = {
   className: styles.root,
   selectedQuestId: 1,
+  getActiveWallet: async () => {
+    return null
+  },
+  setActiveWallet: async (wallet) => {
+    alert(`setActiveWallet ${wallet}`)
+  },
   onRewardClaimed: () => {
     alert('This is when we show the claim success modal')
   },
@@ -222,5 +229,62 @@ export const PendingExternalSync: Story = {
     getPendingExternalSync: async () => {
       return true
     }
+  }
+}
+
+export const ActiveWalletConnectDefault: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    const [activeWallet, setActiveWallet] = useState<string | null>(null)
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        setActiveWallet={async (wallet) => {
+          setActiveWallet(wallet)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+        }}
+      />
+    )
+  }
+}
+
+export const ActiveWalletSwitchWallet: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    const [activeWallet, setActiveWallet] = useState<string | null>(
+      '0x5a241425BF9AAA8503af0CE1Ec30651c30AeACB8'
+    )
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        setActiveWallet={async (wallet) => {
+          setActiveWallet(wallet)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+        }}
+      />
+    )
+  }
+}
+
+export const ActiveWalletSwitchWalletError: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        setActiveWallet={async () => {
+          await new Promise((resolve) => setTimeout(resolve, 3000))
+          throw new Error('Error')
+        }}
+      />
+    )
   }
 }
