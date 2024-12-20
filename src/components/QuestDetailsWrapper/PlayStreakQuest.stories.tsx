@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
+import { useState } from 'react'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -228,5 +229,38 @@ export const PendingExternalSync: Story = {
     getPendingExternalSync: async () => {
       return true
     }
+  }
+}
+
+export const ActiveWalletConnectDefault: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    const [activeWallet, setActiveWallet] = useState<string | null>(null)
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        setActiveWallet={async (wallet) => setActiveWallet(wallet)}
+      />
+    )
+  }
+}
+
+
+export const ActiveWalletSwitchWallet: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    const [activeWallet, setActiveWallet] = useState<string | null>('0x5a241425BF9AAA8503af0CE1Ec30651c30AeACB8')
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        setActiveWallet={async (wallet) => setActiveWallet(wallet)}
+      />
+    )
   }
 }
