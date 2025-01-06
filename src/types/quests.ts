@@ -39,7 +39,17 @@ export interface QuestWrapperContextValue {
   }
   getQuest: (questId: number) => Promise<Quest>
   getActiveWallet: () => Promise<string | null | undefined>
-  setActiveWallet: (wallet: string) => Promise<void>
+  getActiveWalletSignature: () => Promise<{
+    message: string
+    signature: string
+  }>
+  setActiveWallet: ({
+    message,
+    signature
+  }: {
+    message: string
+    signature: string
+  }) => Promise<void>
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
   getSteamGameMetadata: (id: number) => Promise<{
     name?: string

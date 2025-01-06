@@ -3,6 +3,8 @@ import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
 import { useState } from 'react'
+import { verifyMessage, BrowserProvider } from 'ethers'
+import { generateNonce, SiweMessage } from 'siwe'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -164,6 +166,34 @@ const mockProps: QuestDetailsWrapperProps = {
   },
   syncPlayStreakWithExternalSource: async () => {
     alert('sync play streak with external source')
+  },
+  getActiveWalletSignature: async () => {
+    try {
+      const provider = new BrowserProvider(window.ethereum)
+      const signer = await provider.getSigner()
+
+      const siweMessage = new SiweMessage({
+        domain: window.location.host,
+        address: signer.address,
+        statement: 'Sign in with Ethereum to the app.',
+        uri: window.location.origin,
+        version: '1',
+        chainId: 1,
+        nonce: generateNonce()
+      })
+
+      const message = siweMessage.prepareMessage()
+
+      const signature = await signer.signMessage(message)
+
+      return {
+        message,
+        signature
+      }
+    } catch (error) {
+      console.error('Error getting active wallet signature', error)
+      throw error
+    }
   }
 }
 
@@ -242,9 +272,11 @@ export const ActiveWalletConnectDefault: Story = {
       <QuestDetailsWrapper
         {...args}
         getActiveWallet={async () => Promise.resolve(activeWallet)}
-        setActiveWallet={async (wallet) => {
+        setActiveWallet={async ({ message, signature }) => {
+          const wallet = verifyMessage(message, signature)
           setActiveWallet(wallet)
-          await new Promise((resolve) => setTimeout(resolve, 2000))
+          // wait for wallet state to be updated so that the query is invalidated (this is only because we're mocking a remote state with a local react state)
+          await new Promise((resolve) => setTimeout(resolve, 1000))
         }}
       />
     )
@@ -263,9 +295,11 @@ export const ActiveWalletSwitchWallet: Story = {
       <QuestDetailsWrapper
         {...args}
         getActiveWallet={async () => Promise.resolve(activeWallet)}
-        setActiveWallet={async (wallet) => {
+        setActiveWallet={async ({ message, signature }) => {
+          const wallet = verifyMessage(message, signature)
           setActiveWallet(wallet)
-          await new Promise((resolve) => setTimeout(resolve, 2000))
+          // wait for wallet state to be updated so that the query is invalidated (this is only because we're mocking a remote state with a local react state)
+          await new Promise((resolve) => setTimeout(resolve, 1000))
         }}
       />
     )
@@ -281,7 +315,7 @@ export const ActiveWalletSwitchWalletError: Story = {
       <QuestDetailsWrapper
         {...args}
         setActiveWallet={async () => {
-          await new Promise((resolve) => setTimeout(resolve, 3000))
+          await new Promise((resolve) => setTimeout(resolve, 1000))
           throw new Error('Error')
         }}
       />

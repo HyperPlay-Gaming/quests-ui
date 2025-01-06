@@ -64,8 +64,14 @@ function InputLikeContainer({
 export default function ActiveWalletSection() {
   const queryClient = useQueryClient()
   const { address: connectedWallet } = useAccount()
-  const { getActiveWallet, setActiveWallet, tOverride, openDiscordLink } =
-    useQuestWrapper()
+  const {
+    getActiveWallet,
+    setActiveWallet,
+    tOverride,
+    logError,
+    openDiscordLink,
+    getActiveWalletSignature
+  } = useQuestWrapper()
 
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
@@ -86,11 +92,14 @@ export default function ActiveWalletSection() {
       if (!connectedWallet) {
         throw new Error('No address found')
       }
-
-      await setActiveWallet(connectedWallet)
+      const signatureData = await getActiveWalletSignature()
+      await setActiveWallet(signatureData)
       await queryClient.invalidateQueries({
         queryKey: ['activeWallet']
       })
+    },
+    onError: (error) => {
+      logError(`Error setting active wallet: ${error.message}`)
     }
   })
 
@@ -149,7 +158,7 @@ export default function ActiveWalletSection() {
   const hasMatchingWallets =
     Boolean(activeWallet && connectedWallet) && activeWallet === connectedWallet
   const hasDifferentWallets =
-    Boolean(activeWallet && connectedWallet) && activeWallet !== connectedWallet
+    Boolean(activeWallet && connectedWallet) && !hasMatchingWallets
 
   let content = null
 
