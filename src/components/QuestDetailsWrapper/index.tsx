@@ -1,4 +1,3 @@
-
 import {
   MarkdownDescription,
   QuestDetails,
@@ -55,7 +54,6 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     hideClaim
   } = props
 
-
   const queryClient = useQueryClient()
 
   const [warningMessage, setWarningMessage] = useState<{
@@ -63,13 +61,11 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     message: string
   }>()
 
-
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
 
   const questResult = useGetQuest(selectedQuestId, getQuest)
   const questMeta = questResult.data?.data
-
 
   useTrackQuestViewed(selectedQuestId, trackEvent)
 
