@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   MarkdownDescription,
   QuestDetails,
@@ -28,6 +28,7 @@ export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   ctaComponent?: React.ReactNode
   hideEligibilitySection?: boolean
   hideClaim?: boolean
+  gameTitle: string
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
@@ -35,6 +36,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     selectedQuestId,
     trackEvent,
     getQuest,
+    gameTitle,
     getUserPlayStreak,
     logError,
     tOverride,
@@ -52,6 +54,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     hideClaim
   } = props
 
+
   const queryClient = useQueryClient()
 
   const [warningMessage, setWarningMessage] = useState<{
@@ -59,13 +62,15 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     message: string
   }>()
 
-  useTrackQuestViewed(selectedQuestId, trackEvent)
 
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
 
   const questResult = useGetQuest(selectedQuestId, getQuest)
   const questMeta = questResult.data?.data
+
+
+  useTrackQuestViewed(selectedQuestId, trackEvent)
 
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
@@ -140,7 +145,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     ),
     questType: {
       REPUTATION: t('quest.type.reputation', 'Reputation'),
-      PLAYSTREAK: t('quest.type.playstreak', 'Play Streak')
+      PLAYSTREAK: t('quest.type.playstreak', 'Play Streak'),
+      GAME: gameTitle
     },
     sync: t('quest.sync', 'Sync'),
     streakProgressI18n: {
@@ -191,6 +197,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       onPlayClick: onPlayClickHandler,
       questType: questMeta.type,
       title: questMeta.name,
+      gameTitle,
       description: (
         <MarkdownDescription classNames={{ root: styles.markdownDescription }}>
           {questMeta.description}
