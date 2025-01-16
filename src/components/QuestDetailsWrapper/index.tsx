@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+
 import {
   MarkdownDescription,
   QuestDetails,
@@ -21,6 +21,7 @@ import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { PlayStreakEligibilityWrapper } from '../PlayStreakEligibilityWrapper'
 import { RewardsWrapper } from '../RewardsWrapper'
 import { QuestWrapperContextValue } from '@/types/quests'
+import { useState } from 'react'
 
 export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   selectedQuestId: number | null
