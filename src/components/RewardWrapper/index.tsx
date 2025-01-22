@@ -97,14 +97,17 @@ export function RewardWrapper({
     useWriteContract({
       mutation: {
         onError: (error) =>
-          logError(`Error interacting with contract for reward claim:  ${reward.title}`, {
-            sendToSentry: true,
-            sentryExtra: {
-              questId: questId,
-              reward: reward,
-              error: error
+          logError(
+            `Error interacting with contract for reward claim:  ${reward.title}`,
+            {
+              sendToSentry: true,
+              sentryExtra: {
+                questId: questId,
+                reward: reward,
+                error: error
+              }
             }
-          })
+          )
       }
     })
 
