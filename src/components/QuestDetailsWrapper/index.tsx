@@ -113,7 +113,13 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       return result
     },
     onError: (error) => {
-      logError(`Error resyncing tasks: ${error}`)
+      logError(`Error resyncing tasks: ${error}`, {
+        sendToSentry: true,
+        sentryExtra: {
+          questId: selectedQuestId,
+          error: error
+        }
+      })
     },
     onSuccess: async () => {
       await questPlayStreakResult.invalidateQuery()

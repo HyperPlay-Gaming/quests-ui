@@ -96,7 +96,15 @@ export function RewardWrapper({
   const { writeContractAsync, isPending: isPendingWriteContract } =
     useWriteContract({
       mutation: {
-        onError: (error) => logError(`Error writing contract: ${error}`)
+        onError: (error) =>
+          logError(`Error interacting with contract for reward claim:  ${reward.title}`, {
+            sendToSentry: true,
+            sentryExtra: {
+              questId: questId,
+              reward: reward,
+              error: error
+            }
+          })
       }
     })
 
@@ -106,7 +114,15 @@ export function RewardWrapper({
     error: switchChainError
   } = useSwitchChain({
     mutation: {
-      onError: (error) => logError(`Error switching chain: ${error}`)
+      onError: (error) =>
+        logError(`Error switching chain: ${error}`, {
+          sendToSentry: true,
+          sentryExtra: {
+            questId: questId,
+            reward: reward,
+            error: error
+          }
+        })
     }
   })
 
@@ -146,7 +162,14 @@ export function RewardWrapper({
         properties: getClaimEventProperties(reward, questId)
       })
       console.error('Error claiming rewards:', error)
-      logError(`Error claiming rewards: ${error}`)
+      logError(`Error claiming rewards: ${error}`, {
+        sendToSentry: true,
+        sentryExtra: {
+          questId: questId,
+          reward: reward,
+          error: error
+        }
+      })
     }
   })
 
@@ -165,7 +188,17 @@ export function RewardWrapper({
             ...variables,
             address: account?.address
           }
-        )}`
+        )}`,
+        {
+          sendToSentry: true,
+          sentryExtra: {
+            questId: questId,
+            reward: reward,
+            error: error,
+            variables: variables,
+            address: account?.address
+          }
+        }
       )
     }
   })
@@ -177,7 +210,15 @@ export function RewardWrapper({
       queryClient.invalidateQueries({ queryKey: [queryKey] })
       return result
     },
-    onError: (error) => logError(`Error claiming points: ${error}`),
+    onError: (error) =>
+      logError(`Error claiming points: ${error}`, {
+        sendToSentry: true,
+        sentryExtra: {
+          questId: questId,
+          reward: reward,
+          error: error
+        }
+      }),
     onSuccess: async (_data, reward) => {
       await invalidateQuestPlayStreakQuery()
     }
@@ -203,7 +244,15 @@ export function RewardWrapper({
       queryClient.invalidateQueries({ queryKey: [queryKey] })
       return result
     },
-    onError: (error) => logError(`Error resyncing tasks: ${error}`),
+    onError: (error) =>
+      logError(`Error resyncing tasks: ${error}`, {
+        sendToSentry: true,
+        sentryExtra: {
+          questId: questId,
+          reward: reward,
+          error: error
+        }
+      }),
     onSuccess: async (_data, reward) => {
       await invalidateQuestPlayStreakQuery()
     }

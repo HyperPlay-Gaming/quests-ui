@@ -1,4 +1,4 @@
-import { DepositContract, Reward, RewardClaimSignature } from '@hyperplay/utils'
+import { DepositContract, LogOptions, Reward, RewardClaimSignature } from '@hyperplay/utils'
 import { questRewardAbi } from '../abis/RewardsAbi'
 import { WriteContractMutateAsync } from 'wagmi/query'
 import { Config } from 'wagmi'
@@ -16,7 +16,7 @@ export async function mintReward({
   signature: RewardClaimSignature
   writeContractAsync: WriteContractMutateAsync<Config, unknown>
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
-  logError: (message: string) => void
+  logError: (message: string, options?: LogOptions) => void
 }) {
   if (reward.chain_id === null) {
     throw Error('chain id is not set for reward when trying to mint')
@@ -38,7 +38,14 @@ export async function mintReward({
   }
 
   const logMintingError = (error: Error) => {
-    logError(`Error minting reward: ${error.message}`)
+    logError(`Error claiming reward: ${error.message}`, {
+      sendToSentry: true,
+      sentryExtra: {
+        questId: questId,
+        reward: reward,
+        error: error
+      }
+    })
   }
 
   if (

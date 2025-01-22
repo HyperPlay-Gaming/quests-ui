@@ -58,7 +58,15 @@ export function useGetRewards({
             ).toString()
           } catch (e) {
             logError(
-              `Error getting external task credits for reward id ${reward_i}: ${e}`
+              `Error getting external task credits for reward id ${reward_i}: ${e}`,
+              {
+                sendToSentry: true,
+                sentryExtra: {
+                  questId: questId,
+                  reward: reward_i,
+                  error: e
+                }
+              }
             )
           }
         }
