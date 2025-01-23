@@ -172,6 +172,13 @@ export function RewardWrapper({
       }
     },
     onError: (error) => {
+      console.error('Error claiming rewards:', error)
+
+      if (error instanceof WarningError) {
+        logError(`Error claiming rewards: ${error}`)
+        return
+      }
+
       trackEvent({
         event: 'Reward Claim Error',
         properties: {
@@ -180,7 +187,7 @@ export function RewardWrapper({
           connector: connectorName
         }
       })
-      console.error('Error claiming rewards:', error)
+
       logError(`Error claiming rewards: ${error}`, {
         sentryException: error,
         sentryExtra: {
