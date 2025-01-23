@@ -107,7 +107,8 @@ export function RewardWrapper({
                 error: error
               },
               sentryTags: {
-                action: 'claim_on_chain_reward'
+                action: 'claim_on_chain_reward',
+                feature: 'quests'
               }
             }
           )
@@ -129,7 +130,8 @@ export function RewardWrapper({
             error: error
           },
           sentryTags: {
-            action: 'switch_chain'
+            action: 'switch_chain',
+            feature: 'quests'
           }
         })
     }
@@ -182,7 +184,8 @@ export function RewardWrapper({
           error: String(error)
         },
         sentryTags: {
-          action: 'claim_on_chain_reward'
+          action: 'claim_on_chain_reward',
+          feature: 'quests'
         }
       })
     }
@@ -214,7 +217,8 @@ export function RewardWrapper({
             address: account?.address
           },
           sentryTags: {
-            action: 'confirm_claim_on_chain_reward'
+            action: 'confirm_claim_on_chain_reward',
+            feature: 'quests'
           }
         }
       )
@@ -237,7 +241,8 @@ export function RewardWrapper({
           error: error
         },
         sentryTags: {
-          action: 'claim_points_reward'
+          action: 'claim_points_reward',
+          feature: 'quests'
         }
       }),
     onSuccess: async (_data, reward) => {

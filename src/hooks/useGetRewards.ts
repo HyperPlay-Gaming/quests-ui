@@ -67,7 +67,8 @@ export function useGetRewards({
                   error: e
                 },
                 sentryTags: {
-                  action: 'get_external_task_credits'
+                  action: 'get_external_task_credits',
+                  feature: 'quests'
                 }
               }
             )

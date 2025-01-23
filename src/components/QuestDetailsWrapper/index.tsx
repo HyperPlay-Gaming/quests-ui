@@ -118,7 +118,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
           error: error
         },
         sentryTags: {
-          action: 'resync_external_tasks'
+          action: 'resync_external_tasks',
+          feature: 'quests'
         }
       })
     },

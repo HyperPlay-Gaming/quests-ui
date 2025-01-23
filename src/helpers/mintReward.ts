@@ -51,7 +51,8 @@ export async function mintReward({
         error: error
       },
       sentryTags: {
-        action: 'claim_on_chain_reward'
+        action: 'claim_on_chain_reward',
+        feature: 'quests'
       }
     })
   }
