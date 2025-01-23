@@ -48,7 +48,7 @@ export async function mintReward({
       sentryExtra: {
         questId: questId,
         reward: reward,
-        error: error,
+        error: error
       },
       sentryTags: {
         action: 'claim_on_chain_reward'

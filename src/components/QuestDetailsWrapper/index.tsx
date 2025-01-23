@@ -115,7 +115,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
         sentryException: error,
         sentryExtra: {
           questId: selectedQuestId,
-          error: error,
+          error: error
         },
         sentryTags: {
           action: 'resync_external_tasks'

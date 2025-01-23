@@ -64,7 +64,7 @@ export function useGetRewards({
                 sentryExtra: {
                   questId: questId,
                   reward: reward_i,
-                  error: e,
+                  error: e
                 },
                 sentryTags: {
                   action: 'get_external_task_credits'

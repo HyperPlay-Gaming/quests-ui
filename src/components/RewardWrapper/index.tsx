@@ -104,7 +104,7 @@ export function RewardWrapper({
               sentryExtra: {
                 questId: questId,
                 reward: reward,
-                error: error,
+                error: error
               },
               sentryTags: {
                 action: 'claim_on_chain_reward'
@@ -126,7 +126,7 @@ export function RewardWrapper({
           sentryExtra: {
             questId: questId,
             reward: reward,
-            error: error,
+            error: error
           },
           sentryTags: {
             action: 'switch_chain'
@@ -176,7 +176,7 @@ export function RewardWrapper({
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: String(error),
+          error: String(error)
         },
         sentryTags: {
           action: 'claim_on_chain_reward'
@@ -208,7 +208,7 @@ export function RewardWrapper({
             reward: reward,
             error: error,
             variables: variables,
-            address: account?.address,
+            address: account?.address
           },
           sentryTags: {
             action: 'confirm_claim_on_chain_reward'
@@ -231,7 +231,7 @@ export function RewardWrapper({
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: error,
+          error: error
         },
         sentryTags: {
           action: 'claim_points_reward'
@@ -268,7 +268,7 @@ export function RewardWrapper({
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: error,
+          error: error
         },
         sentryTags: {
           action: 'complete_external_task'
