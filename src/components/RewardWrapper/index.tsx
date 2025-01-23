@@ -176,7 +176,8 @@ export function RewardWrapper({
         event: 'Reward Claim Error',
         properties: {
           ...getClaimEventProperties(reward, questId),
-          error: String(error)
+          error: String(error),
+          connector: connectorName
         }
       })
       console.error('Error claiming rewards:', error)
