@@ -53,7 +53,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     hideClaim
   } = props
 
-  const { connector } = useAccount();
+  const { connector } = useAccount()
   const queryClient = useQueryClient()
 
   const [warningMessage, setWarningMessage] = useState<{
@@ -118,7 +118,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
         sentryExtra: {
           questId: selectedQuestId,
           error: error,
-          connector: String(connector?.name),
+          connector: String(connector?.name)
         },
         sentryTags: {
           action: 'resync_external_tasks',

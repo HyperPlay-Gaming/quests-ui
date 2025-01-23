@@ -92,7 +92,7 @@ export function RewardWrapper({
     Error | WarningError | ClaimError | null
   >(null)
 
-  const connectorName = String(account?.connector?.name);
+  const connectorName = String(account?.connector?.name)
 
   // Contract interactions
   const { writeContractAsync, isPending: isPendingWriteContract } =
@@ -107,7 +107,7 @@ export function RewardWrapper({
                 questId: questId,
                 reward: reward,
                 error: error,
-                connector: connectorName,
+                connector: connectorName
               },
               sentryTags: {
                 action: 'claim_on_chain_reward',
@@ -131,7 +131,7 @@ export function RewardWrapper({
             questId: questId,
             reward: reward,
             error: error,
-            connector: connectorName,
+            connector: connectorName
           },
           sentryTags: {
             action: 'switch_chain',
@@ -246,7 +246,7 @@ export function RewardWrapper({
           questId: questId,
           reward: reward,
           error: error,
-          connector: connectorName,
+          connector: connectorName
         },
         sentryTags: {
           action: 'claim_points_reward',
@@ -285,7 +285,7 @@ export function RewardWrapper({
           questId: questId,
           reward: reward,
           error: error,
-          connector: connectorName,
+          connector: connectorName
         },
         sentryTags: {
           action: 'complete_external_task'
