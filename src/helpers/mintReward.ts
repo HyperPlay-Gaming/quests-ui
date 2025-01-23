@@ -14,6 +14,7 @@ export async function mintReward({
   signature,
   writeContractAsync,
   getDepositContracts,
+  connectorName,
   logError
 }: {
   reward: Reward
@@ -22,6 +23,7 @@ export async function mintReward({
   writeContractAsync: WriteContractMutateAsync<Config, unknown>
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
   logError: (message: string, options?: LogOptions) => void
+  connectorName?: string
 }) {
   if (reward.chain_id === null) {
     throw Error('chain id is not set for reward when trying to mint')
@@ -48,7 +50,8 @@ export async function mintReward({
       sentryExtra: {
         questId: questId,
         reward: reward,
-        error: error
+        error: error,
+        connector: connectorName
       },
       sentryTags: {
         action: 'claim_on_chain_reward',
