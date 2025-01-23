@@ -100,11 +100,14 @@ export function RewardWrapper({
           logError(
             `Error interacting with contract for reward claim:  ${reward.title}`,
             {
-              sendToSentry: true,
+              sentryException: error,
               sentryExtra: {
                 questId: questId,
                 reward: reward,
-                error: error
+                error: error,
+              },
+              sentryTags: {
+                action: 'claim_on_chain_reward'
               }
             }
           )
@@ -119,11 +122,14 @@ export function RewardWrapper({
     mutation: {
       onError: (error) =>
         logError(`Error switching chain: ${error}`, {
-          sendToSentry: true,
+          sentryException: error,
           sentryExtra: {
             questId: questId,
             reward: reward,
-            error: error
+            error: error,
+          },
+          sentryTags: {
+            action: 'switch_chain'
           }
         })
     }
@@ -166,11 +172,14 @@ export function RewardWrapper({
       })
       console.error('Error claiming rewards:', error)
       logError(`Error claiming rewards: ${error}`, {
-        sendToSentry: true,
+        sentryException: error,
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: error
+          error: String(error),
+        },
+        sentryTags: {
+          action: 'claim_on_chain_reward'
         }
       })
     }
@@ -193,13 +202,16 @@ export function RewardWrapper({
           }
         )}`,
         {
-          sendToSentry: true,
+          sentryException: error,
           sentryExtra: {
             questId: questId,
             reward: reward,
             error: error,
             variables: variables,
-            address: account?.address
+            address: account?.address,
+          },
+          sentryTags: {
+            action: 'confirm_claim_on_chain_reward'
           }
         }
       )
@@ -215,11 +227,14 @@ export function RewardWrapper({
     },
     onError: (error) =>
       logError(`Error claiming points: ${error}`, {
-        sendToSentry: true,
+        sentryException: error,
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: error
+          error: error,
+        },
+        sentryTags: {
+          action: 'claim_points_reward'
         }
       }),
     onSuccess: async (_data, reward) => {
@@ -249,11 +264,14 @@ export function RewardWrapper({
     },
     onError: (error) =>
       logError(`Error resyncing tasks: ${error}`, {
-        sendToSentry: true,
+        sentryException: error,
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: error
+          error: error,
+        },
+        sentryTags: {
+          action: 'complete_external_task'
         }
       }),
     onSuccess: async (_data, reward) => {

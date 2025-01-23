@@ -112,10 +112,13 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     },
     onError: (error) => {
       logError(`Error resyncing tasks: ${error}`, {
-        sendToSentry: true,
+        sentryException: error,
         sentryExtra: {
           questId: selectedQuestId,
-          error: error
+          error: error,
+        },
+        sentryTags: {
+          action: 'resync_external_tasks'
         }
       })
     },

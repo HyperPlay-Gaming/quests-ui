@@ -60,11 +60,14 @@ export function useGetRewards({
             logError(
               `Error getting external task credits for reward id ${reward_i}: ${e}`,
               {
-                sendToSentry: true,
+                sentryException: e,
                 sentryExtra: {
                   questId: questId,
                   reward: reward_i,
-                  error: e
+                  error: e,
+                },
+                sentryTags: {
+                  action: 'get_external_task_credits'
                 }
               }
             )

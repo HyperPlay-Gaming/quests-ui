@@ -44,11 +44,14 @@ export async function mintReward({
 
   const logMintingError = (error: Error) => {
     logError(`Error claiming reward: ${error.message}`, {
-      sendToSentry: true,
+      sentryException: error,
       sentryExtra: {
         questId: questId,
         reward: reward,
-        error: error
+        error: error,
+      },
+      sentryTags: {
+        action: 'claim_on_chain_reward'
       }
     })
   }
