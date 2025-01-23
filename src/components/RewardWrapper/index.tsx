@@ -168,7 +168,10 @@ export function RewardWrapper({
     onError: (error) => {
       trackEvent({
         event: 'Reward Claim Error',
-        properties: getClaimEventProperties(reward, questId)
+        properties: {
+          ...getClaimEventProperties(reward, questId),
+          error: String(error)
+        }
       })
       console.error('Error claiming rewards:', error)
       logError(`Error claiming rewards: ${error}`, {
