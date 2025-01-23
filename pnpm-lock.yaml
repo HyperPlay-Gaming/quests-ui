@@ -22,8 +22,8 @@ importers:
         specifier: ^1.8.21
         version: 1.8.21(@emotion/react@11.13.5(@types/react@18.3.12)(react@18.3.1))(@mantine/carousel@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-autoplay@8.5.1(embla-carousel@8.5.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)
       '@hyperplay/utils':
-        specifier: 0.3.7-alpha.1
-        version: 0.3.7-alpha.1
+        specifier: ^0.3.7
+        version: 0.3.7
       '@mantine/core':
         specifier: ^7.5.1
         version: 7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -749,8 +749,8 @@ packages:
       react-dom: ^17.0.0 || ^18.0.0
       react-markdown: 9.0.1
 
-  '@hyperplay/utils@0.3.7-alpha.1':
-    resolution: {integrity: sha512-9kLsPOm9Duhr7Dhk081j9na99VdKHVwuK4YDXbVCb7Rp4zvtmKVtGGnZ8qmasXXfP9xAl9oEMy/bpK8rv/195A==}
+  '@hyperplay/utils@0.3.7':
+    resolution: {integrity: sha512-8VE3YMsK35JPkVts9UHOweDV8bdG4CDUQ+cxY+511/UJ4IRdsaHUosc0sw+6VSQsi1GgkNe/J2y+JPYJsnraGQ==}
 
   '@istanbuljs/load-nyc-config@1.1.0':
     resolution: {integrity: sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ==}
@@ -5938,7 +5938,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       react-markdown: 9.0.1(@types/react@18.3.12)(react@18.3.1)
 
-  '@hyperplay/utils@0.3.7-alpha.1':
+  '@hyperplay/utils@0.3.7':
     dependencies:
       bignumber.js: 9.1.2
 
