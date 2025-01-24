@@ -6,7 +6,8 @@ import {
   Reward,
   RewardClaimSignature,
   Runner,
-  UserPlayStreak
+  UserPlayStreak,
+  LogOptions
 } from '@hyperplay/utils'
 import { TFunction } from 'i18next'
 import { TrackEventFn } from './analytics'
@@ -59,7 +60,7 @@ export interface QuestWrapperContextValue {
   trackEvent: TrackEventFn
   signInWithSteamAccount: () => void
   openSignInModal: () => void
-  logError: (msg: string) => void
+  logError: (msg: string, options?: LogOptions) => void
   claimPoints: (reward: Reward) => Promise<any>
   completeExternalTask: (reward: Reward) => Promise<any>
   getQuestRewardSignature: (

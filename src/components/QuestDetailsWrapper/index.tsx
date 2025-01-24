@@ -21,6 +21,7 @@ import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { PlayStreakEligibilityWrapper } from '../PlayStreakEligibilityWrapper'
 import { RewardsWrapper } from '../RewardsWrapper'
 import { QuestWrapperContextValue } from '@/types/quests'
+import { useAccount } from 'wagmi'
 
 export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   selectedQuestId: number | null
@@ -52,6 +53,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     hideClaim
   } = props
 
+  const { connector } = useAccount()
   const queryClient = useQueryClient()
 
   const [warningMessage, setWarningMessage] = useState<{
@@ -111,7 +113,18 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       return result
     },
     onError: (error) => {
-      logError(`Error resyncing tasks: ${error}`)
+      logError(`Error resyncing tasks: ${error}`, {
+        sentryException: error,
+        sentryExtra: {
+          questId: selectedQuestId,
+          error: error,
+          connector: String(connector?.name)
+        },
+        sentryTags: {
+          action: 'resync_external_tasks',
+          feature: 'quests'
+        }
+      })
     },
     onSuccess: async () => {
       await questPlayStreakResult.invalidateQuery()
