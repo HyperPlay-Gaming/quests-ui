@@ -151,8 +151,8 @@ export default function ActiveWalletSection() {
         })
       }
 
-      if (!response.ok) {
-        throw new Error(await response.text())
+      if (!response.success) {
+        throw new Error(response.message)
       }
 
       await queryClient.invalidateQueries({
@@ -224,7 +224,7 @@ export default function ActiveWalletSection() {
       {isPending ? (
         <LoadingSpinner className={styles.loadingSpinner} />
       ) : (
-        t('wallet.action.set', 'Set')
+        t('gameplayWallet.action.set', 'Set')
       )}
     </Button>
   )

@@ -96,7 +96,7 @@ const mockProps: QuestDetailsWrapperProps = {
   },
   setActiveWallet: async (wallet) => {
     alert(`setActiveWallet ${wallet}`)
-    return new Response('OK')
+    return { success: true, status: 200 }
   },
   onRewardClaimed: () => {
     alert('This is when we show the claim success modal')
@@ -278,7 +278,7 @@ export const ActiveWalletConnectDefault: Story = {
           setActiveWallet(wallet)
           // wait for wallet state to be updated so that the query is invalidated (this is only because we're mocking a remote state with a local react state)
           await new Promise((resolve) => setTimeout(resolve, 1000))
-          return new Response('OK')
+          return { success: true, status: 200 }
         }}
       />
     )
@@ -302,7 +302,7 @@ export const ActiveWalletSwitchWallet: Story = {
           setActiveWallet(wallet)
           // wait for wallet state to be updated so that the query is invalidated (this is only because we're mocking a remote state with a local react state)
           await new Promise((resolve) => setTimeout(resolve, 1000))
-          return new Response('OK')
+          return { success: true, status: 200 }
         }}
       />
     )
@@ -319,7 +319,7 @@ export const ActiveWalletSwitchWalletError: Story = {
         {...args}
         setActiveWallet={async () => {
           await new Promise((resolve) => setTimeout(resolve, 1000))
-          return new Response('Error', { status: 500 })
+          return { success: false, status: 500, message: 'Error' }
         }}
       />
     )
@@ -336,7 +336,7 @@ export const ActiveWalletSwitchWalletAlreadyLinked: Story = {
         {...args}
         setActiveWallet={async () => {
           await new Promise((resolve) => setTimeout(resolve, 1000))
-          return new Response(null, { status: 409 })
+          return { success: false, status: 409, message: 'Wallet already linked' }
         }}
       />
     )
