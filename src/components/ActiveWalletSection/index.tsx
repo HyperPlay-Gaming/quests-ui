@@ -36,11 +36,11 @@ function ActiveWalletInfoTooltip() {
       </Popover.Target>
       <Popover.Dropdown>
         <div className="menu-time weight--medium">
-          {t('wallet.info.title', 'What is a Gameplay Wallet?')}
+          {t('gameplayWallet.info.title', 'What is a Gameplay Wallet?')}
         </div>
         <div className="caption-sm color-neutral-400">
           <Trans
-            i18nKey="wallet.info.description"
+            i18nKey="gameplayWallet.info.description"
             components={{ br: <br /> }}
           />
         </div>
@@ -198,16 +198,16 @@ export default function ActiveWalletSection() {
   )
 
   const newWalletDetected = (
-    <InfoAlert title={t('wallet.new.title', 'New Wallet Detected')}>
+    <InfoAlert title={t('gameplayWallet.new.title', 'New Wallet Detected')}>
       <span className="body-sm">
         {t(
-          'wallet.new.message',
+          'gameplayWallet.new.message',
           "Your connected wallet doesn't match any Gameplay wallet tracked for this Quest. To track progress with this wallet, add it as a Gameplay Wallet below by setting it."
         )}
       </span>{' '}
       <span className={cn('body-sm', styles.verifyText)}>
         {t(
-          'wallet.verify.message',
+          'gameplayWallet.verify.message',
           'You only need to verify each address once and can switch freely at any time.'
         )}
       </span>
@@ -244,16 +244,16 @@ export default function ActiveWalletSection() {
       <>
         <Alert
           message={t(
-            'wallet.noWallet.message',
+            'gameplayWallet.noWallet.message',
             'No wallet connected. Connect wallet to track Quest progress.'
           )}
           variant="warning"
         />
         <InputLikeContainer
-          title={t('wallet.active.title', 'Active Gameplay Wallet')}
+          title={t('gameplayWallet.active.title', 'Active Gameplay Wallet')}
         >
           <InputLikeBox className={styles.noWallet}>
-            {t('wallet.noWallet.status', 'No wallet connected')}
+            {t('gameplayWallet.noWallet.status', 'No wallet connected')}
           </InputLikeBox>
         </InputLikeContainer>
       </>
@@ -265,7 +265,7 @@ export default function ActiveWalletSection() {
       <>
         {onlyConnectedWallet}
         <InputLikeContainer
-          title={t('wallet.connected.title', 'Connected Wallet')}
+          title={t('gameplayWallet.connected.title', 'Connected Wallet')}
         >
           <div className={styles.setActiveWalletContainer}>
             <InputLikeBox className={styles.setConnectedWalletInput}>
@@ -281,7 +281,7 @@ export default function ActiveWalletSection() {
   if (hasOnlyActiveWallet) {
     content = (
       <InputLikeContainer
-        title={t('wallet.active.title', 'Active Gameplay Wallet')}
+        title={t('gameplayWallet.active.title', 'Active Gameplay Wallet')}
         tooltip={<ActiveWalletInfoTooltip />}
       >
         <InputLikeBox className={styles.activeWallet}>
@@ -293,7 +293,9 @@ export default function ActiveWalletSection() {
 
   if (hasMatchingWallets) {
     content = (
-      <InputLikeContainer title={t('wallet.connected.title', 'Active Wallet')}>
+      <InputLikeContainer
+        title={t('gameplayWallet.connected.title', 'Active Wallet')}
+      >
         <InputLikeBox className={styles.activeWallet}>
           {truncateEthAddress(activeWallet ?? '')}
         </InputLikeBox>
@@ -306,7 +308,7 @@ export default function ActiveWalletSection() {
       <>
         {newWalletDetected}
         <InputLikeContainer
-          title={t('wallet.active.title', 'Active Gameplay Wallet')}
+          title={t('gameplayWallet.active.title', 'Active Gameplay Wallet')}
           tooltip={<ActiveWalletInfoTooltip />}
         >
           <InputLikeBox className={styles.activeWallet}>
@@ -314,7 +316,7 @@ export default function ActiveWalletSection() {
           </InputLikeBox>
         </InputLikeContainer>
         <InputLikeContainer
-          title={t('wallet.setConnected.title', 'Set Connected Wallet')}
+          title={t('gameplayWallet.setConnected.title', 'Set Connected Wallet')}
         >
           <div className={styles.setActiveWalletContainer}>
             <InputLikeBox className={styles.setConnectedWalletInput}>
@@ -329,23 +331,23 @@ export default function ActiveWalletSection() {
 
   const alertProps: InfoAlertProps = {
     showClose: false,
-    title: t('wallet.error.title', 'Something went wrong'),
+    title: t('gameplayWallet.error.title', 'Something went wrong'),
     message: t(
-      'wallet.error.message',
+      'gameplayWallet.error.message',
       "Please try once more. If it still doesn't work, create a Discord support ticket."
     ),
-    actionText: t('wallet.error.action', 'Create Discord Ticket'),
+    actionText: t('gameplayWallet.error.action', 'Create Discord Ticket'),
     onActionClick: () => openDiscordLink(),
     variant: 'danger' as const
   }
 
   if (error?.cause === 'wallet_already_linked') {
     alertProps.title = t(
-      'wallet.error.alreadyLinked.title',
+      'gameplayWallet.error.alreadyLinked.title',
       'Wallet already linked'
     )
     alertProps.message = t(
-      'wallet.error.alreadyLinked.message',
+      'gameplayWallet.error.alreadyLinked.message',
       'This address is already linked to another account. Try another address.'
     )
     alertProps.onActionClick = undefined
