@@ -39,7 +39,7 @@ function ActiveWalletInfoTooltip() {
           {t('wallet.info.title', 'What is a Gameplay Wallet?')}
         </div>
         <div className="caption-sm color-neutral-400">
-          <Trans i18nKey="wallet.info.description" />
+          <Trans i18nKey="wallet.info.description" components={{ br: <br /> }} />
         </div>
       </Popover.Dropdown>
     </Popover>
