@@ -7,7 +7,7 @@ import { initReactI18next } from 'react-i18next'
 const resources = {
   en: {
     translation: {
-      wallet: {
+      gameplayWallet: {
         info: {
           title: 'What is a Gameplay Wallet?',
           description:
