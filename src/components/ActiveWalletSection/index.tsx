@@ -1,12 +1,50 @@
 import { Button, Images, Alert, LoadingSpinner, AlertCard } from '@hyperplay/ui'
 import styles from './index.module.scss'
 import cn from 'classnames'
-import { useTranslation } from 'react-i18next'
+import { useTranslation, Trans } from 'react-i18next'
 import { truncateEthAddress } from '../truncateAddress'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { useAccount } from 'wagmi'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
+import { Popover } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
+
+function ActiveWalletInfoTooltip() {
+  const { tOverride } = useQuestWrapper()
+  const [opened, { close, open }] = useDisclosure(false)
+  const { t: tOriginal } = useTranslation()
+  const t = tOverride || tOriginal
+
+  return (
+    <Popover
+      width={250}
+      position="bottom-start"
+      shadow="md"
+      opened={opened}
+      withArrow
+      offset={0}
+      classNames={{
+        dropdown: styles.popoverDropdown,
+        arrow: styles.popoverArrow
+      }}
+    >
+      <Popover.Target>
+        <span onMouseEnter={open} onMouseLeave={close}>
+          <Images.Info className={styles.infoIcon} />
+        </span>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <div className="menu-time weight--medium">
+          {t('wallet.info.title', 'What is a Gameplay Wallet?')}
+        </div>
+        <div className="caption-sm color-neutral-400">
+          <Trans i18nKey="wallet.info.description" />
+        </div>
+      </Popover.Dropdown>
+    </Popover>
+  )
+}
 
 function InfoAlert({
   title,
@@ -48,15 +86,20 @@ function InputLikeBox({
 function InputLikeContainer({
   children,
   className,
-  title
+  title,
+  tooltip
 }: {
   children: React.ReactNode
   className?: string
   title: string
+  tooltip?: React.ReactNode
 }) {
   return (
     <div className={cn(styles.container, className)}>
-      <span className={cn(styles.label, 'caption')}>{title}</span>
+      <div className={styles.labelContainer}>
+        <span className={cn(styles.label, 'caption')}>{title}</span>
+        {tooltip}
+      </div>
       <div>{children}</div>
     </div>
   )
@@ -236,6 +279,7 @@ export default function ActiveWalletSection() {
     content = (
       <InputLikeContainer
         title={t('wallet.active.title', 'Active Gameplay Wallet')}
+        tooltip={<ActiveWalletInfoTooltip />}
       >
         <InputLikeBox className={styles.activeWallet}>
           {truncateEthAddress(activeWallet)}
@@ -260,6 +304,7 @@ export default function ActiveWalletSection() {
         {newWalletDetected}
         <InputLikeContainer
           title={t('wallet.active.title', 'Active Gameplay Wallet')}
+          tooltip={<ActiveWalletInfoTooltip />}
         >
           <InputLikeBox className={styles.activeWallet}>
             {truncateEthAddress(activeWallet ?? '')}

@@ -91,6 +91,29 @@
   color: var(--color-neutral-400);
 }
 
+.labelContainer {
+  display: flex;
+  gap: var(--space-2xs);
+}
+
 .loadingSpinner {
   font-size: var(--text-xs);
+}
+
+.infoIcon {
+  width: 16px;
+  height: 16px;
+  fill: var(--color-neutral-400);
+}
+
+.popoverDropdown {
+  background-color: var(--color-neutral-600);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.popoverArrow {
+  border: none;
 }
