@@ -2,10 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
+import { useState } from 'react'
+import { verifyMessage, BrowserProvider } from 'ethers'
+import { generateNonce, SiweMessage } from 'siwe'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
-  title: 'Components/QuestDetailsWrapper',
+  title: 'Components/QuestDetailsWrapper/PlayStreak',
   render: (args) => (
     <div style={{ height: 'calc(100vh - 100px)' }}>
       {<QuestDetailsWrapper {...args} />}
@@ -88,6 +91,13 @@ const mockUserPlayStreak: UserPlayStreak = {
 const mockProps: QuestDetailsWrapperProps = {
   className: styles.root,
   selectedQuestId: 1,
+  getActiveWallet: async () => {
+    return null
+  },
+  setActiveWallet: async (wallet) => {
+    alert(`setActiveWallet ${wallet}`)
+    return new Response('OK')
+  },
   onRewardClaimed: () => {
     alert('This is when we show the claim success modal')
   },
@@ -157,6 +167,34 @@ const mockProps: QuestDetailsWrapperProps = {
   },
   syncPlayStreakWithExternalSource: async () => {
     alert('sync play streak with external source')
+  },
+  getActiveWalletSignature: async () => {
+    try {
+      const provider = new BrowserProvider(window.ethereum)
+      const signer = await provider.getSigner()
+
+      const siweMessage = new SiweMessage({
+        domain: window.location.host,
+        address: signer.address,
+        statement: 'Sign in with Ethereum to the app.',
+        uri: window.location.origin,
+        version: '1',
+        chainId: 1,
+        nonce: generateNonce()
+      })
+
+      const message = siweMessage.prepareMessage()
+
+      const signature = await signer.signMessage(message)
+
+      return {
+        message,
+        signature
+      }
+    } catch (error) {
+      console.error('Error getting active wallet signature', error)
+      throw error
+    }
   }
 }
 
@@ -222,5 +260,85 @@ export const PendingExternalSync: Story = {
     getPendingExternalSync: async () => {
       return true
     }
+  }
+}
+
+export const ActiveWalletConnectDefault: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    const [activeWallet, setActiveWallet] = useState<string | null>(null)
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        setActiveWallet={async ({ message, signature }) => {
+          const wallet = verifyMessage(message, signature)
+          setActiveWallet(wallet)
+          // wait for wallet state to be updated so that the query is invalidated (this is only because we're mocking a remote state with a local react state)
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+          return new Response('OK')
+        }}
+      />
+    )
+  }
+}
+
+export const ActiveWalletSwitchWallet: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    const [activeWallet, setActiveWallet] = useState<string | null>(
+      '0x5a241425BF9AAA8503af0CE1Ec30651c30AeACB8'
+    )
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        setActiveWallet={async ({ message, signature }) => {
+          const wallet = verifyMessage(message, signature)
+          setActiveWallet(wallet)
+          // wait for wallet state to be updated so that the query is invalidated (this is only because we're mocking a remote state with a local react state)
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+          return new Response('OK')
+        }}
+      />
+    )
+  }
+}
+
+export const ActiveWalletSwitchWalletError: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        setActiveWallet={async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+          return new Response('Error', { status: 500 })
+        }}
+      />
+    )
+  }
+}
+
+export const ActiveWalletSwitchWalletAlreadyLinked: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        setActiveWallet={async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+          return new Response(null, { status: 409 })
+        }}
+      />
+    )
   }
 }
