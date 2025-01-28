@@ -6,6 +6,7 @@ import { truncateEthAddress } from '../truncateAddress'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { useAccount } from 'wagmi'
+import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
 
 function InfoAlert({
   title,
@@ -63,7 +64,7 @@ function InputLikeContainer({
 
 export default function ActiveWalletSection() {
   const queryClient = useQueryClient()
-  const { address: connectedWallet } = useAccount()
+  const { address: connectedWallet, connector } = useAccount()
   const {
     getActiveWallet,
     setActiveWallet,
@@ -72,6 +73,8 @@ export default function ActiveWalletSection() {
     openDiscordLink,
     getActiveWalletSignature
   } = useQuestWrapper()
+
+  const connectorName = String(connector?.name)
 
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
@@ -86,20 +89,48 @@ export default function ActiveWalletSection() {
   const {
     mutate: setActiveWalletMutation,
     isPending,
-    error
+    error,
+    reset: resetError
   } = useMutation({
     mutationFn: async () => {
       if (!connectedWallet) {
         throw new Error('No address found')
       }
       const signatureData = await getActiveWalletSignature()
-      await setActiveWallet(signatureData)
+      const response = await setActiveWallet(signatureData)
+
+      if (response.status === 409) {
+        throw new Error('Wallet already linked to another account', {
+          cause: 'wallet_already_linked'
+        })
+      }
+
+      if (!response.ok) {
+        throw new Error(await response.text())
+      }
+
       await queryClient.invalidateQueries({
         queryKey: ['activeWallet']
       })
     },
     onError: (error) => {
-      logError(`Error setting active wallet: ${error.message}`)
+      let sentryProps = undefined
+
+      if (error.cause !== 'wallet_already_linked') {
+        sentryProps = {
+          sentryException: error,
+          sentryExtra: {
+            error: error,
+            connector: connectorName
+          },
+          sentryTags: {
+            action: 'set_active_wallet',
+            feature: 'quests'
+          }
+        }
+      }
+
+      logError(`Error setting active wallet: ${error.message}`, sentryProps)
     }
   })
 
@@ -248,7 +279,7 @@ export default function ActiveWalletSection() {
     )
   }
 
-  const alertProps = {
+  const alertProps: InfoAlertProps = {
     showClose: false,
     title: t('wallet.error.title', 'Something went wrong'),
     message: t(
@@ -258,6 +289,21 @@ export default function ActiveWalletSection() {
     actionText: t('wallet.error.action', 'Create Discord Ticket'),
     onActionClick: () => openDiscordLink(),
     variant: 'danger' as const
+  }
+
+  if (error?.cause === 'wallet_already_linked') {
+    alertProps.title = t(
+      'wallet.error.alreadyLinked.title',
+      'Wallet already linked'
+    )
+    alertProps.message = t(
+      'wallet.error.alreadyLinked.message',
+      'This address is already linked to another account. Try another address.'
+    )
+    alertProps.onActionClick = undefined
+    alertProps.actionText = undefined
+    alertProps.showClose = true;
+    alertProps.onClose = resetError;
   }
 
   return (

@@ -50,7 +50,7 @@ export interface QuestWrapperContextValue {
   }: {
     message: string
     signature: string
-  }) => Promise<void>
+  }) => Promise<Response>
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
   getSteamGameMetadata: (id: number) => Promise<{
     name?: string
