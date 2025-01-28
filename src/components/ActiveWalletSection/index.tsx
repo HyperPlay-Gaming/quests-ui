@@ -302,8 +302,8 @@ export default function ActiveWalletSection() {
     )
     alertProps.onActionClick = undefined
     alertProps.actionText = undefined
-    alertProps.showClose = true;
-    alertProps.onClose = resetError;
+    alertProps.showClose = true
+    alertProps.onClose = resetError
   }
 
   return (
