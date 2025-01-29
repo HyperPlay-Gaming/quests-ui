@@ -5,6 +5,7 @@ import { Quest, UserPlayStreak } from '@hyperplay/utils'
 import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
+import { useAccount } from 'wagmi'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -114,6 +115,12 @@ const mockProps: QuestDetailsWrapperProps = {
   onPlayClick: () => alert('onPlayClick'),
   getQuest: async () => {
     return mockQuest
+  },
+  getGameplayWallets: async () => {
+    return []
+  },
+  updateActiveWallet: async () => {
+    return Promise.resolve()
   },
   getUserPlayStreak: async () => {
     return mockUserPlayStreak
@@ -326,7 +333,7 @@ export const ActiveWalletSwitchWalletError: Story = {
   }
 }
 
-export const ActiveWalletSwitchWalletAlreadyLinked: Story = {
+export const ActiveWalletSwitchWalletAlreadyLinkedToAnotherAccount: Story = {
   args: {
     ...mockProps
   },
@@ -336,7 +343,36 @@ export const ActiveWalletSwitchWalletAlreadyLinked: Story = {
         {...args}
         setActiveWallet={async () => {
           await new Promise((resolve) => setTimeout(resolve, 1000))
-          return { success: false, status: 409, message: 'Wallet already linked' }
+          return {
+            success: false,
+            status: 409,
+            message: 'Wallet already linked'
+          }
+        }}
+      />
+    )
+  }
+}
+
+export const ActiveWalletSwitchWalletExistingWalletSkipSignature: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    const [activeWallet, setActiveWallet] = useState<string | null>(null)
+    const { address } = useAccount()
+    console.log('activeWallet', activeWallet)
+    return (
+      <QuestDetailsWrapper
+        key={address}
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        getGameplayWallets={async () => [
+          { id: 1, wallet_address: address ?? '' }
+        ]}
+        updateActiveWallet={async () => {
+          console.log('updateActiveWallet', address)
+          setActiveWallet(address ?? '')
         }}
       />
     )

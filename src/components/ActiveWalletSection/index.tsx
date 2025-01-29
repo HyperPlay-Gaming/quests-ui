@@ -117,7 +117,9 @@ export default function ActiveWalletSection() {
     tOverride,
     logError,
     openDiscordLink,
-    getActiveWalletSignature
+    getActiveWalletSignature,
+    getGameplayWallets,
+    updateActiveWallet
   } = useQuestWrapper()
 
   const connectorName = String(connector?.name)
@@ -132,12 +134,29 @@ export default function ActiveWalletSection() {
     }
   })
 
-  const {
-    mutate: setActiveWalletMutation,
-    isPending,
-    error,
-    reset: resetError
-  } = useMutation({
+  const invalidateQueries = () => {
+    queryClient.invalidateQueries({
+      predicate: (query) => 
+        query.queryKey[0] === 'activeWallet' || 
+        query.queryKey[0] === 'gameplayWallets'
+    })
+  }
+
+  const { data: gameplayWallets, refetch: refetchGameplayWallets } = useQuery({
+    queryKey: ['gameplayWallets'],
+    queryFn: async () => {
+      return getGameplayWallets()
+    }
+  })
+
+  const updateActiveWalletMutation = useMutation({
+    mutationFn: async (walletId: number) => {
+      await updateActiveWallet(walletId)
+    },
+    onSuccess: invalidateQueries
+  })
+
+  const addGameplayWalletMutation = useMutation({
     mutationFn: async () => {
       if (!connectedWallet) {
         throw new Error('No address found')
@@ -154,11 +173,8 @@ export default function ActiveWalletSection() {
       if (!response.success) {
         throw new Error(response.message)
       }
-
-      await queryClient.invalidateQueries({
-        queryKey: ['activeWallet']
-      })
     },
+    onSuccess: invalidateQueries,
     onError: (error) => {
       let sentryProps = undefined
 
@@ -214,12 +230,51 @@ export default function ActiveWalletSection() {
     </InfoAlert>
   )
 
+  const setActiveWalletMutation = useMutation({
+    mutationFn: async () => {
+      addGameplayWalletMutation.reset()
+      updateActiveWalletMutation.reset()
+
+      let userGameplayWallets = gameplayWallets
+
+      if (!userGameplayWallets) {
+        const { data: newGameplayWallets } = await refetchGameplayWallets()
+        userGameplayWallets = newGameplayWallets
+      }
+
+      const existingWallet = userGameplayWallets?.find(
+        (wallet) => wallet.wallet_address === connectedWallet
+      )
+
+      if (existingWallet) {
+        updateActiveWalletMutation.mutate(existingWallet.id)
+      } else {
+        addGameplayWalletMutation.mutate()
+      }
+    },
+    onError: (error) => {
+      logError(`Error setting active wallet: ${error.message}`, {
+        sentryException: error,
+        sentryExtra: {
+          error: error,
+          connector: connectorName
+        },
+        sentryTags: { action: 'set_active_wallet', feature: 'quests' }
+      })
+    }
+  })
+
+  const isPending =
+    addGameplayWalletMutation.isPending ||
+    updateActiveWalletMutation.isPending ||
+    setActiveWalletMutation.isPending
+
   const setButton = (
     <Button
       disabled={isPending}
       type="secondaryGradient"
       className={styles.setButton}
-      onClick={() => setActiveWalletMutation()}
+      onClick={() => setActiveWalletMutation.mutate()}
     >
       {isPending ? (
         <LoadingSpinner className={styles.loadingSpinner} />
@@ -341,6 +396,11 @@ export default function ActiveWalletSection() {
     variant: 'danger' as const
   }
 
+  const error =
+    addGameplayWalletMutation.error ??
+    updateActiveWalletMutation.error ??
+    setActiveWalletMutation.error
+
   if (error?.cause === 'wallet_already_linked') {
     alertProps.title = t(
       'gameplayWallet.error.alreadyLinked.title',
@@ -353,7 +413,11 @@ export default function ActiveWalletSection() {
     alertProps.onActionClick = undefined
     alertProps.actionText = undefined
     alertProps.showClose = true
-    alertProps.onClose = resetError
+    alertProps.onClose = () => {
+      addGameplayWalletMutation.reset()
+      updateActiveWalletMutation.reset()
+      setActiveWalletMutation.reset()
+    }
   }
 
   return (
