@@ -136,8 +136,8 @@ export default function ActiveWalletSection() {
 
   const invalidateQueries = () => {
     queryClient.invalidateQueries({
-      predicate: (query) => 
-        query.queryKey[0] === 'activeWallet' || 
+      predicate: (query) =>
+        query.queryKey[0] === 'activeWallet' ||
         query.queryKey[0] === 'gameplayWallets'
     })
   }
