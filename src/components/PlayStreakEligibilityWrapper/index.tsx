@@ -19,7 +19,8 @@ export function PlayStreakEligibilityWrapper({
     syncPlayStreakWithExternalSource,
     getPendingExternalSync,
     getUserPlayStreak,
-    getQuest
+    getQuest,
+    isSignedIn
   } = useQuestWrapper()
   const { t } = useTranslation()
   const { data: questMeta } = useGetQuest(questId, getQuest)
@@ -97,7 +98,7 @@ export function PlayStreakEligibilityWrapper({
 
   return (
     <div className={styles.container}>
-      <ActiveWalletSection />
+      {isSignedIn ? <ActiveWalletSection /> : null}
       <StreakProgress
         {...getPlaystreakArgsFromQuestData({
           questMeta: questMeta.data,
