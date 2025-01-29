@@ -119,7 +119,8 @@ export default function ActiveWalletSection() {
     openDiscordLink,
     getActiveWalletSignature,
     getGameplayWallets,
-    updateActiveWallet
+    updateActiveWallet,
+    isSignedIn
   } = useQuestWrapper()
 
   const connectorName = String(connector?.name)
@@ -131,7 +132,8 @@ export default function ActiveWalletSection() {
     queryKey: ['activeWallet'],
     queryFn: async () => {
       return getActiveWallet()
-    }
+    },
+    enabled: isSignedIn
   })
 
   const invalidateQueries = () => {
@@ -146,7 +148,8 @@ export default function ActiveWalletSection() {
     queryKey: ['gameplayWallets'],
     queryFn: async () => {
       return getGameplayWallets()
-    }
+    },
+    enabled: isSignedIn
   })
 
   const updateActiveWalletMutation = useMutation({

@@ -132,7 +132,7 @@ const mockProps: QuestDetailsWrapperProps = {
       capsule_image: 'https://test.com/image.png'
     }
   },
-  isSignedIn: false,
+  isSignedIn: true,
   trackEvent: () => {},
   signInWithSteamAccount: () => {},
   openSignInModal: () => alert('openSignInModal'),
@@ -267,6 +267,13 @@ export const PendingExternalSync: Story = {
     getPendingExternalSync: async () => {
       return true
     }
+  }
+}
+
+export const ActiveWalletNotSignedIn: Story = {
+  args: {
+    ...mockProps,
+    isSignedIn: false
   }
 }
 
