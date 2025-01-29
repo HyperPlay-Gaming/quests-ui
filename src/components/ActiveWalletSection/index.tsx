@@ -197,16 +197,16 @@ export default function ActiveWalletSection() {
   })
 
   const onlyConnectedWallet = (
-    <InfoAlert title={t('wallet.detected.title', 'Wallet Detected')}>
+    <InfoAlert title={t('gameplayWallet.detected.title', 'Wallet Detected')}>
       <span className="body-sm">
         {t(
-          'wallet.detected.message',
+          'gameplayWallet.detected.message',
           'To track progress with this wallet, add it as a Gameplay Wallet below by setting it.'
         )}
       </span>{' '}
       <span className={cn('body-sm', styles.verifyText)}>
         {t(
-          'wallet.verify.message',
+          'gameplayWallet.verify.message',
           'You only need to verify each address once and can switch freely at any time.'
         )}
       </span>
@@ -292,6 +292,11 @@ export default function ActiveWalletSection() {
   const hasDifferentWallets =
     Boolean(activeWallet && connectedWallet) && !hasMatchingWallets
 
+  const isNewWalletDetected =
+    activeWallet &&
+    gameplayWallets &&
+    !gameplayWallets.some((wallet) => wallet.wallet_address === activeWallet)
+
   let content = null
 
   if (hasNoWallets) {
@@ -349,7 +354,8 @@ export default function ActiveWalletSection() {
   if (hasMatchingWallets) {
     content = (
       <InputLikeContainer
-        title={t('gameplayWallet.connected.title', 'Active Wallet')}
+        title={t('gameplayWallet.active.title', 'Active Gameplay Wallet')}
+        tooltip={<ActiveWalletInfoTooltip />}
       >
         <InputLikeBox className={styles.activeWallet}>
           {truncateEthAddress(activeWallet ?? '')}
@@ -361,7 +367,7 @@ export default function ActiveWalletSection() {
   if (hasDifferentWallets) {
     content = (
       <>
-        {newWalletDetected}
+        {isNewWalletDetected ? newWalletDetected : null}
         <InputLikeContainer
           title={t('gameplayWallet.active.title', 'Active Gameplay Wallet')}
           tooltip={<ActiveWalletInfoTooltip />}

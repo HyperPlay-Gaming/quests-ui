@@ -316,6 +316,40 @@ export const ActiveWalletSwitchWallet: Story = {
   }
 }
 
+export const ActiveWalletSwitchWalletAlreadyLinked: Story = {
+  args: {
+    ...mockProps
+  },
+  render: (args) => {
+    const { addresses, address } = useAccount()
+    const [activeWallet, setActiveWallet] = useState<string | null>()
+    return (
+      <QuestDetailsWrapper
+        key={address}
+        {...args}
+        getGameplayWallets={async () =>
+          addresses?.map((address, index) => ({
+            id: index,
+            wallet_address: address
+          })) ?? []
+        }
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        updateActiveWallet={async () => {
+          setActiveWallet(address)
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+        }}
+        setActiveWallet={async ({ message, signature }) => {
+          const wallet = verifyMessage(message, signature)
+          setActiveWallet(wallet)
+          // wait for wallet state to be updated so that the query is invalidated (this is only because we're mocking a remote state with a local react state)
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+          return { success: true, status: 200 }
+        }}
+      />
+    )
+  }
+}
+
 export const ActiveWalletSwitchWalletError: Story = {
   args: {
     ...mockProps
