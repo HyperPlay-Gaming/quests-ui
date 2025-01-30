@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
+import { Listing } from '@valist/sdk/dist/typesApi'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -19,7 +20,7 @@ type Story = StoryObj<typeof QuestDetailsWrapper>
 
 const mockQuest: Quest = {
   id: 1,
-  project_id: 'test-project',
+  project_id: 'craft-world',
   name: "🦖 Craft World's Ultimate Play Streak Quest 🔥 🚀",
   type: 'PLAYSTREAK',
   status: 'ACTIVE',
@@ -67,8 +68,36 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       minimum_session_time_in_seconds: 1
     }
   },
-  quest_external_game: null,
+  quest_external_game: {
+    store_redirect_url: 'https://hyperplay.xyz/game/craft-world',
+    runner: {
+      name: 'Craft World',
+      steam_app_id: '123456',
+      store_redirect_url: 'https://hyperplay.xyz/game/craft-world'
+    }
+  },
   num_of_times_repeatable: 10
+}
+
+const mockListings: Record<string, Listing> = {
+  'craft-world': {
+    project_meta: {
+      name: 'Craft World',
+      networks: []
+    },
+    channels: [],
+    project_id: 'craft-world',
+    disabled: false,
+    updated_at: '2024-01-01T00:00:00Z',
+    account_meta: {},
+    account_name: 'hyperplay',
+    project_name: 'craft-world',
+    timestamp: 45154848,
+    is_metamask_in_game: false,
+    is_metamask_verified: false,
+    is_metamask_compatible: false,
+    download_badge_verified: false
+  }
 }
 
 const eligibleUserPlayStreak: UserPlayStreak = {
@@ -157,7 +186,8 @@ const mockProps: QuestDetailsWrapperProps = {
   },
   syncPlayStreakWithExternalSource: async () => {
     alert('sync play streak with external source')
-  }
+  }, 
+  listings: mockListings
 }
 
 export const QuestPageNotSignedIn: Story = {
