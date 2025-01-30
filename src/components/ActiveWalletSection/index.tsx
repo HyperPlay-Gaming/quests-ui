@@ -31,7 +31,7 @@ function ActiveWalletInfoTooltip() {
     >
       <Popover.Target>
         <span onMouseEnter={open} onMouseLeave={close}>
-          <Images.Info className={styles.infoIcon} />
+          <Images.Info className={styles.tooltipInfoIcon} />
         </span>
       </Popover.Target>
       <Popover.Dropdown>
