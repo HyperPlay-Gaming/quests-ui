@@ -296,9 +296,9 @@ export default function ActiveWalletSection() {
     Boolean(activeWallet && connectedWallet) && !hasMatchingWallets
 
   const isNewWalletDetected =
-    activeWallet &&
+    connectedWallet &&
     gameplayWallets &&
-    !gameplayWallets.some((wallet) => wallet.wallet_address === activeWallet)
+    !gameplayWallets.some((wallet) => wallet.wallet_address === connectedWallet)
 
   let content = null
 
