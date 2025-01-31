@@ -92,6 +92,8 @@ export function RewardWrapper({
     Error | WarningError | ClaimError | null
   >(null)
 
+  const connectorName = String(account?.connector?.name)
+
   // Contract interactions
   const { writeContractAsync, isPending: isPendingWriteContract } =
     useWriteContract({
@@ -104,7 +106,8 @@ export function RewardWrapper({
               sentryExtra: {
                 questId: questId,
                 reward: reward,
-                error: error
+                error: error,
+                connector: connectorName
               },
               sentryTags: {
                 action: 'claim_on_chain_reward',
@@ -127,7 +130,8 @@ export function RewardWrapper({
           sentryExtra: {
             questId: questId,
             reward: reward,
-            error: error
+            error: error,
+            connector: connectorName
           },
           sentryTags: {
             action: 'switch_chain',
@@ -168,19 +172,28 @@ export function RewardWrapper({
       }
     },
     onError: (error) => {
+      console.error('Error claiming rewards:', error)
+
+      if (error instanceof WarningError) {
+        logError(`Error claiming rewards: ${error}`)
+        return
+      }
+
       trackEvent({
         event: 'Reward Claim Error',
         properties: {
           ...getClaimEventProperties(reward, questId),
-          error: String(error)
+          error: String(error),
+          connector: connectorName
         }
       })
-      console.error('Error claiming rewards:', error)
+
       logError(`Error claiming rewards: ${error}`, {
         sentryException: error,
         sentryExtra: {
           questId: questId,
           reward: reward,
+          connector: connectorName,
           error: String(error)
         },
         sentryTags: {
@@ -214,6 +227,7 @@ export function RewardWrapper({
             reward: reward,
             error: error,
             variables: variables,
+            connector: connectorName,
             address: account?.address
           },
           sentryTags: {
@@ -238,7 +252,8 @@ export function RewardWrapper({
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: error
+          error: error,
+          connector: connectorName
         },
         sentryTags: {
           action: 'claim_points_reward',
@@ -276,7 +291,8 @@ export function RewardWrapper({
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: error
+          error: error,
+          connector: connectorName
         },
         sentryTags: {
           action: 'complete_external_task'
@@ -372,7 +388,8 @@ export function RewardWrapper({
       reward,
       writeContractAsync,
       getDepositContracts,
-      logError
+      logError,
+      connectorName
     })
 
     await confirmClaimMutation.mutateAsync({

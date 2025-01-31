@@ -23,6 +23,7 @@ import { RewardsWrapper } from '../RewardsWrapper'
 import { QuestWrapperContextValue } from '@/types/quests'
 import { Listing } from '@valist/sdk/dist/typesApi'
 
+import { useAccount } from 'wagmi'
 
 export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   selectedQuestId: number | null
@@ -56,6 +57,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     listings
   } = props
 
+  const { connector } = useAccount()
   const queryClient = useQueryClient()
 
   const [warningMessage, setWarningMessage] = useState<{
@@ -121,7 +123,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
         sentryException: error,
         sentryExtra: {
           questId: selectedQuestId,
-          error: error
+          error: error,
+          connector: String(connector?.name)
         },
         sentryTags: {
           action: 'resync_external_tasks',

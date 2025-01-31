@@ -1,0 +1,119 @@
+.newWalletDetectedContainer {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--space-xs-fixed);
+  background-color: var(--color-tertiary-400);
+  color: var(--color-neutral-800);
+}
+
+.verifyText {
+  font-weight: var(--bold);
+}
+
+.infoIconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.infoIcon {
+  width: 24px;
+  height: 24px;
+  fill: var(--color-neutral-800);
+}
+
+.infoTextContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.walletContainer {
+  display: flex;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--space-xs-fixed);
+  border: 1px solid var(--color-stroke-01);
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-neutral-700);
+}
+
+.noWallet {
+  color: var(--color-neutral-500);
+}
+
+.activeWallet {
+  color: var(--color-success-300);
+}
+
+.inputLikeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.setActiveWalletContainer {
+  display: flex;
+  gap: var(--space-2xs);
+}
+
+.setConnectedWalletInput {
+  flex: 1;
+}
+
+.setButton {
+  min-width: 120px;
+}
+
+.walletIcon {
+  width: 18px;
+  height: 18px;
+  fill: var(--color-neutral-400);
+}
+
+.label {
+  font-weight: var(--semibold);
+  color: var(--color-neutral-400);
+}
+
+.labelContainer {
+  display: flex;
+  gap: var(--space-2xs);
+}
+
+.loadingSpinner {
+  font-size: var(--text-xs);
+}
+
+.tooltipInfoIcon {
+  width: 16px;
+  height: 16px;
+  fill: var(--color-neutral-400);
+}
+
+.popoverDropdown {
+  background-color: var(--color-neutral-600);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.popoverArrow {
+  border: none;
+}
