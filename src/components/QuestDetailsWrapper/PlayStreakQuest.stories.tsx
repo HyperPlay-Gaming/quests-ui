@@ -203,7 +203,7 @@ const mockProps: QuestDetailsWrapperProps = {
   },
   syncPlayStreakWithExternalSource: async () => {
     alert('sync play streak with external source')
-  }, 
+  },
   listings: mockListings,
   getActiveWalletSignature: async () => {
     try {
