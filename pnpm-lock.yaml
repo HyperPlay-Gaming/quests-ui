@@ -22,8 +22,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0(bufferutil@4.0.8)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.22.4)
       '@hyperplay/ui':
-        specifier: ^1.8.21
-        version: 1.8.21(@emotion/react@11.13.5(@types/react@18.3.12)(react@18.3.1))(@mantine/carousel@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-autoplay@8.5.1(embla-carousel@8.5.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)
+        specifier: ^1.9.2
+        version: 1.9.2(@emotion/react@11.13.5(@types/react@18.3.12)(react@18.3.1))(@mantine/carousel@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(bufferutil@4.0.8)(embla-carousel-autoplay@8.5.1(embla-carousel@8.5.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
       '@hyperplay/utils':
         specifier: ^0.3.7
         version: 0.3.7
@@ -797,6 +797,28 @@ packages:
   '@floating-ui/utils@0.2.8':
     resolution: {integrity: sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==}
 
+  '@fortawesome/fontawesome-common-types@6.7.2':
+    resolution: {integrity: sha512-Zs+YeHUC5fkt7Mg1l6XTniei3k4bwG/yo3iFUtZWd/pMx9g3fdvkSK9E0FOC+++phXOka78uJcYb8JaFkW52Xg==}
+    engines: {node: '>=6'}
+
+  '@fortawesome/fontawesome-svg-core@6.7.2':
+    resolution: {integrity: sha512-yxtOBWDrdi5DD5o1pmVdq3WMCvnobT0LU6R8RyyVXPvFRd2o79/0NCuQoCjNTeZz9EzA9xS3JxNWfv54RIHFEA==}
+    engines: {node: '>=6'}
+
+  '@fortawesome/free-regular-svg-icons@6.7.2':
+    resolution: {integrity: sha512-7Z/ur0gvCMW8G93dXIQOkQqHo2M5HLhYrRVC0//fakJXxcF1VmMPsxnG6Ee8qEylA8b8Q3peQXWMNZ62lYF28g==}
+    engines: {node: '>=6'}
+
+  '@fortawesome/free-solid-svg-icons@6.7.2':
+    resolution: {integrity: sha512-GsBrnOzU8uj0LECDfD5zomZJIjrPhIlWU82AHwa2s40FKH+kcxQaBvBo3Z4TxyZHIyX8XTDxsyA33/Vx9eFuQA==}
+    engines: {node: '>=6'}
+
+  '@fortawesome/react-fontawesome@0.2.2':
+    resolution: {integrity: sha512-EnkrprPNqI6SXJl//m29hpaNzOp1bruISWaOiRtkMi/xSvHJlzc2j2JAYS7egxt/EbjSNV/k6Xy0AQI6vB2+1g==}
+    peerDependencies:
+      '@fortawesome/fontawesome-svg-core': ~1 || ~6
+      react: '>=16.3'
+
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
     engines: {node: '>=10.10.0'}
@@ -810,21 +832,24 @@ packages:
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     deprecated: Use @eslint/object-schema instead
 
+  '@hyperplay/chains@0.2.10':
+    resolution: {integrity: sha512-TUe9vJo9jXx23pb5QlGuW6xo6JmXYjqXKJSma//aUPZ99HU8I/lATlyqdXwozPfQ2qGsAYn58FCTo2kbF+J+8w==}
+
   '@hyperplay/chains@0.3.0':
     resolution: {integrity: sha512-7FcQSR6bIZnfJXpwDHEX4tcjMJQw/oW97h6qT+Q0eDsMdipa9m6ZJm3hybqq9asLpxlX0BV5cn01S8nRHOg9Pg==}
 
-  '@hyperplay/ui@1.8.21':
-    resolution: {integrity: sha512-ZQkkC06S1Wik/EcMe2sgg+9iIOA8k8Z+JTgUZKcKsmmYpMCXxBXqWH4LGXiMjtMTl5RG0Ta0Tzp3YXA4nrVDGw==}
+  '@hyperplay/ui@1.9.2':
+    resolution: {integrity: sha512-Q6GuE0IASW/5fvTlhrEnargDvCk6yVQKkYyBOTF5s7y7U6tnjnFETyJPq6LwzoWmCSJINIyaKCAzh0qHZxh8RQ==}
     peerDependencies:
       '@emotion/react': ^11.11.0
-      '@mantine/carousel': ^7.5.1
-      '@mantine/core': ^7.5.1
-      '@mantine/dropzone': ^7.5.1
-      '@mantine/hooks': ^7.5.1
+      '@mantine/carousel': ^7.15.0
+      '@mantine/core': ^7.15.0
+      '@mantine/dropzone': ^7.15.0
+      '@mantine/hooks': ^7.15.0
       embla-carousel-autoplay: '>=7.0.0'
       embla-carousel-react: '>=7.0.0'
-      react: ^17.0.0 || ^18.0.0
-      react-dom: ^17.0.0 || ^18.0.0
+      react: ^18.0.0
+      react-dom: ^18.0.0
       react-markdown: 9.0.1
 
   '@hyperplay/utils@0.3.7':
@@ -1737,6 +1762,14 @@ packages:
 
   '@swc/types@0.1.17':
     resolution: {integrity: sha512-V5gRru+aD8YVyCOMAjMpWR1Ui577DD5KSJsHP8RAxopAH22jFz6GZd/qxqjO6MJHQhcsjvjOFXyDhyLQUnMveQ==}
+
+  '@tabler/icons-react@2.47.0':
+    resolution: {integrity: sha512-iqly2FvCF/qUbgmvS8E40rVeYY7laltc5GUjRxQj59DuX0x/6CpKHTXt86YlI2whg4czvd/c8Ce8YR08uEku0g==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+
+  '@tabler/icons@2.47.0':
+    resolution: {integrity: sha512-4w5evLh+7FUUiA1GucvGj2ReX2TvOjEr4ejXdwL/bsjoSkof6r1gQmzqI+VHrE2CpJpB3al7bCTulOkFa/RcyA==}
 
   '@tanstack/query-core@5.62.2':
     resolution: {integrity: sha512-LcwVcC5qpsDpHcqlXUUL5o9SaOBwhNkGeV+B06s0GBoyBr8FqXPuXT29XzYXR36lchhnerp6XO+CWc84/vh7Zg==}
@@ -3003,6 +3036,9 @@ packages:
 
   eth-rpc-errors@4.0.3:
     resolution: {integrity: sha512-Z3ymjopaoft7JDoxZcEb3pwdGh7yiYMhOwm2doUt6ASXlMavpNlK6Cre0+IMl2VSGyEU9rkiperQhp5iRxn5Pg==}
+
+  ethereum-blockies-base64@1.0.2:
+    resolution: {integrity: sha512-Vg2HTm7slcWNKaRhCUl/L3b4KrB8ohQXdd5Pu3OI897EcR6tVRvUqdTwAyx+dnmoDzj8e2bwBLDQ50ByFmcz6w==}
 
   ethereum-cryptography@2.2.1:
     resolution: {integrity: sha512-r/W8lkHSiTLxUxW8Rf3u4HGB0xQweG2RyETjywylKZSzLWoWAijRz8WCuOtJ6wah+avllXBqZuk29HCCvhEIRg==}
@@ -4300,6 +4336,9 @@ packages:
   pngjs@5.0.0:
     resolution: {integrity: sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==}
     engines: {node: '>=10.13.0'}
+
+  pnglib@0.0.1:
+    resolution: {integrity: sha512-95ChzOoYLOPIyVmL+Y6X+abKGXUJlvOVLkB1QQkyXl7Uczc6FElUy/x01NS7r2GX6GRezloO/ecCX9h4U9KadA==}
 
   polished@4.3.1:
     resolution: {integrity: sha512-OBatVyC/N7SCW/FaDHrSd+vn0o5cS855TOmYi4OkdWUMSJCET/xip//ch8xGUvtr3i44X9LVyWwQlRMTN3pwSA==}
@@ -6254,6 +6293,26 @@ snapshots:
 
   '@floating-ui/utils@0.2.8': {}
 
+  '@fortawesome/fontawesome-common-types@6.7.2': {}
+
+  '@fortawesome/fontawesome-svg-core@6.7.2':
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 6.7.2
+
+  '@fortawesome/free-regular-svg-icons@6.7.2':
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 6.7.2
+
+  '@fortawesome/free-solid-svg-icons@6.7.2':
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 6.7.2
+
+  '@fortawesome/react-fontawesome@0.2.2(@fortawesome/fontawesome-svg-core@6.7.2)(react@18.3.1)':
+    dependencies:
+      '@fortawesome/fontawesome-svg-core': 6.7.2
+      prop-types: 15.8.1
+      react: 18.3.1
+
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
       '@humanwhocodes/object-schema': 2.0.3
@@ -6266,6 +6325,12 @@ snapshots:
 
   '@humanwhocodes/object-schema@2.0.3': {}
 
+  '@hyperplay/chains@0.2.10':
+    dependencies:
+      axios: 1.7.8
+    transitivePeerDependencies:
+      - debug
+
   '@hyperplay/chains@0.3.0(bufferutil@4.0.8)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.22.4)':
     dependencies:
       axios: 1.7.8
@@ -6277,18 +6342,32 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@hyperplay/ui@1.8.21(@emotion/react@11.13.5(@types/react@18.3.12)(react@18.3.1))(@mantine/carousel@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-autoplay@8.5.1(embla-carousel@8.5.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)':
+  '@hyperplay/ui@1.9.2(@emotion/react@11.13.5(@types/react@18.3.12)(react@18.3.1))(@mantine/carousel@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(bufferutil@4.0.8)(embla-carousel-autoplay@8.5.1(embla-carousel@8.5.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
       '@emotion/react': 11.13.5(@types/react@18.3.12)(react@18.3.1)
+      '@fortawesome/fontawesome-svg-core': 6.7.2
+      '@fortawesome/free-regular-svg-icons': 6.7.2
+      '@fortawesome/free-solid-svg-icons': 6.7.2
+      '@fortawesome/react-fontawesome': 0.2.2(@fortawesome/fontawesome-svg-core@6.7.2)(react@18.3.1)
+      '@hyperplay/chains': 0.2.10
+      '@hyperplay/utils': 0.3.7
       '@mantine/carousel': 7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.1(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mantine/core': 7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mantine/dropzone': 7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mantine/hooks': 7.14.3(react@18.3.1)
+      '@tabler/icons-react': 2.47.0(react@18.3.1)
+      '@valist/sdk': 2.10.5(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       embla-carousel-autoplay: 8.5.1(embla-carousel@8.5.1)
       embla-carousel-react: 8.5.1(react@18.3.1)
+      ethereum-blockies-base64: 1.0.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-markdown: 9.0.1(@types/react@18.3.12)(react@18.3.1)
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - encoding
+      - utf-8-validate
 
   '@hyperplay/utils@0.3.7':
     dependencies:
@@ -7652,6 +7731,14 @@ snapshots:
   '@swc/types@0.1.17':
     dependencies:
       '@swc/counter': 0.1.3
+
+  '@tabler/icons-react@2.47.0(react@18.3.1)':
+    dependencies:
+      '@tabler/icons': 2.47.0
+      prop-types: 15.8.1
+      react: 18.3.1
+
+  '@tabler/icons@2.47.0': {}
 
   '@tanstack/query-core@5.62.2': {}
 
@@ -9599,6 +9686,10 @@ snapshots:
     dependencies:
       fast-safe-stringify: 2.1.1
 
+  ethereum-blockies-base64@1.0.2:
+    dependencies:
+      pnglib: 0.0.1
+
   ethereum-cryptography@2.2.1:
     dependencies:
       '@noble/curves': 1.4.2
@@ -11234,6 +11325,8 @@ snapshots:
       pathe: 1.1.2
 
   pngjs@5.0.0: {}
+
+  pnglib@0.0.1: {}
 
   polished@4.3.1:
     dependencies:
