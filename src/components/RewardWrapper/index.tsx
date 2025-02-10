@@ -179,11 +179,14 @@ export function RewardWrapper({
         return
       }
 
+      const errorMessage =
+        error instanceof Error ? error.message : JSON.stringify(error, null, 2)
+
       trackEvent({
         event: 'Reward Claim Error',
         properties: {
           ...getClaimEventProperties(reward, questId),
-          error: String(error),
+          error: errorMessage,
           connector: connectorName
         }
       })
@@ -194,7 +197,7 @@ export function RewardWrapper({
           questId: questId,
           reward: reward,
           connector: connectorName,
-          error: String(error)
+          error: errorMessage
         },
         sentryTags: {
           action: 'claim_on_chain_reward',
