@@ -20,7 +20,8 @@ export function PlayStreakEligibilityWrapper({
     getPendingExternalSync,
     getUserPlayStreak,
     getQuest,
-    isSignedIn
+    isSignedIn,
+    isQuestsPage
   } = useQuestWrapper()
   const { t } = useTranslation()
   const { data: questMeta } = useGetQuest(questId, getQuest)
@@ -93,8 +94,14 @@ export function PlayStreakEligibilityWrapper({
     return null
   }
 
-  const dateTimeCurrentSessionStartedInMsSinceEpoch =
-    questPlayStreakData.dataUpdatedAt ?? Date.now()
+  let dateTimeCurrentSessionStartedInMsSinceEpoch
+
+  if (isQuestsPage) {
+    dateTimeCurrentSessionStartedInMsSinceEpoch = 0;
+  } else {
+    dateTimeCurrentSessionStartedInMsSinceEpoch =
+      questPlayStreakData?.dataUpdatedAt ?? Date.now()
+  }
 
   return (
     <div className={styles.container}>
