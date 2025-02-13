@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
-import { Listing } from '@valist/sdk/dist/typesApi'
 import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
@@ -24,7 +23,8 @@ type Story = StoryObj<typeof QuestDetailsWrapper>
 
 const mockQuest: Quest = {
   id: 1,
-  project_id: 'craft-world',
+  project_id:
+    '0x36484d1723bba04a21430c5b50fc62737e4eca581cd806a36665a931e20d6f06',
   name: "🦖 Craft World's Ultimate Play Streak Quest 🔥 🚀",
   type: 'PLAYSTREAK',
   status: 'ACTIVE',
@@ -81,27 +81,6 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
     }
   },
   num_of_times_repeatable: 10
-}
-
-const mockListings: Record<string, Listing> = {
-  'craft-world': {
-    project_meta: {
-      name: 'Craft World',
-      networks: []
-    },
-    channels: [],
-    project_id: 'craft-world',
-    disabled: false,
-    updated_at: '2024-01-01T00:00:00Z',
-    account_meta: {},
-    account_name: 'hyperplay',
-    project_name: 'craft-world',
-    timestamp: 45154848,
-    is_metamask_in_game: false,
-    is_metamask_verified: false,
-    is_metamask_compatible: false,
-    download_badge_verified: false
-  }
 }
 
 const eligibleUserPlayStreak: UserPlayStreak = {
@@ -204,7 +183,6 @@ const mockProps: QuestDetailsWrapperProps = {
   syncPlayStreakWithExternalSource: async () => {
     alert('sync play streak with external source')
   },
-  listings: mockListings,
   getActiveWalletSignature: async () => {
     try {
       const provider = new BrowserProvider(window.ethereum)
