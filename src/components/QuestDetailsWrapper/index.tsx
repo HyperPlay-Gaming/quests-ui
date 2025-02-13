@@ -21,9 +21,9 @@ import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { PlayStreakEligibilityWrapper } from '../PlayStreakEligibilityWrapper'
 import { RewardsWrapper } from '../RewardsWrapper'
 import { QuestWrapperContextValue } from '@/types/quests'
-import { Listing } from '@valist/sdk/dist/typesApi'
 
 import { useAccount } from 'wagmi'
+import { useGetGameNameByProjectId } from '../../hooks/useGetGameNameByProjectId'
 
 export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   selectedQuestId: number | null
@@ -31,7 +31,6 @@ export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   ctaComponent?: React.ReactNode
   hideEligibilitySection?: boolean
   hideClaim?: boolean
-  listings?: Record<string, Listing> | null
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
@@ -53,8 +52,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     className,
     ctaComponent,
     hideEligibilitySection,
-    hideClaim,
-    listings
+    hideClaim
   } = props
 
   const { connector } = useAccount()
@@ -73,7 +71,11 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
   const questResult = useGetQuest(selectedQuestId, getQuest)
   const questMeta = questResult.data?.data
   const projectId = questMeta?.project_id
-  const gameName = projectId && listings?.[projectId]?.project_meta?.name
+
+  const { data: listingsFromHook, isLoading: isListingsLoading } =
+    useGetGameNameByProjectId(projectId ?? '')
+
+  const gameName = projectId && listingsFromHook?.project_meta?.name
 
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
@@ -158,6 +160,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       'Connect Steam account'
     ),
     questType: {
+      REPUTATION: t('quest.type.reputation', 'Reputation'),
       PLAYSTREAK: t('quest.type.playstreak', 'Play Streak'),
       GAME: gameName
     },
@@ -244,7 +247,11 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
         }streak${!!questPlayStreakData}isSignedIn${!!isSignedIn}`}
       />
     )
-  } else if (questResult.isLoading || questPlayStreakResult?.isLoading) {
+  } else if (
+    questResult.isLoading ||
+    questPlayStreakResult?.isLoading ||
+    isListingsLoading
+  ) {
     questDetails = (
       <DarkContainer className={cn(styles.loadingContainer, className)}>
         <LoadingSpinner className={styles.loadingSpinner} />
