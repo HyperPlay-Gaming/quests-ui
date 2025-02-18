@@ -23,7 +23,8 @@ type Story = StoryObj<typeof QuestDetailsWrapper>
 
 const mockQuest: Quest = {
   id: 1,
-  project_id: 'test-project',
+  project_id:
+    '0x36484d1723bba04a21430c5b50fc62737e4eca581cd806a36665a931e20d6f06',
   name: "🦖 Craft World's Ultimate Play Streak Quest 🔥 🚀",
   type: 'PLAYSTREAK',
   status: 'ACTIVE',
@@ -71,7 +72,14 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       minimum_session_time_in_seconds: 1
     }
   },
-  quest_external_game: null,
+  quest_external_game: {
+    store_redirect_url: 'https://hyperplay.xyz/game/craft-world',
+    runner: {
+      name: 'Craft World',
+      steam_app_id: '123456',
+      store_redirect_url: 'https://hyperplay.xyz/game/craft-world'
+    }
+  },
   num_of_times_repeatable: 10
 }
 

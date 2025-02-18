@@ -21,7 +21,9 @@ import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { PlayStreakEligibilityWrapper } from '../PlayStreakEligibilityWrapper'
 import { RewardsWrapper } from '../RewardsWrapper'
 import { QuestWrapperContextValue } from '@/types/quests'
+
 import { useAccount } from 'wagmi'
+import { useGetGameNameByProjectId } from '../../hooks/useGetGameNameByProjectId'
 
 export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   selectedQuestId: number | null
@@ -68,6 +70,12 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
 
   const questResult = useGetQuest(selectedQuestId, getQuest)
   const questMeta = questResult.data?.data
+  const projectId = questMeta?.project_id
+
+  const { data: listingsFromHook, isLoading: isListingsLoading } =
+    useGetGameNameByProjectId(projectId ?? '')
+
+  const gameName = projectId && listingsFromHook?.project_meta?.name
 
   const questPlayStreakResult = useGetUserPlayStreak(
     selectedQuestId,
@@ -153,7 +161,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     ),
     questType: {
       REPUTATION: t('quest.type.reputation', 'Reputation'),
-      PLAYSTREAK: t('quest.type.playstreak', 'Play Streak')
+      PLAYSTREAK: t('quest.type.playstreak', 'Play Streak'),
+      GAME: gameName
     },
     sync: t('quest.sync', 'Sync'),
     streakProgressI18n: {
@@ -202,6 +211,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       className,
       alertProps,
       onPlayClick: onPlayClickHandler,
+      gameTitle: gameName || '',
       questType: questMeta.type,
       title: questMeta.name,
       description: (
@@ -237,7 +247,11 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
         }streak${!!questPlayStreakData}isSignedIn${!!isSignedIn}`}
       />
     )
-  } else if (questResult?.isLoading || questPlayStreakResult?.isLoading) {
+  } else if (
+    questResult.isLoading ||
+    questPlayStreakResult?.isLoading ||
+    isListingsLoading
+  ) {
     questDetails = (
       <DarkContainer className={cn(styles.loadingContainer, className)}>
         <LoadingSpinner className={styles.loadingSpinner} />
