@@ -97,7 +97,7 @@ export function PlayStreakEligibilityWrapper({
   let dateTimeCurrentSessionStartedInMsSinceEpoch
 
   if (isQuestsPage) {
-    dateTimeCurrentSessionStartedInMsSinceEpoch = 0;
+    dateTimeCurrentSessionStartedInMsSinceEpoch = 0
   } else {
     dateTimeCurrentSessionStartedInMsSinceEpoch =
       questPlayStreakData?.dataUpdatedAt ?? Date.now()
