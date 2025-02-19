@@ -20,10 +20,15 @@ export function PlayStreakEligibilityWrapper({
     getPendingExternalSync,
     getUserPlayStreak,
     getQuest,
-    isSignedIn
+    isSignedIn,
+    flags
   } = useQuestWrapper()
   const { t } = useTranslation()
   const { data: questMeta } = useGetQuest(questId, getQuest)
+
+  const gameplayWalletSectionVisible = Boolean(
+    flags.gameplayWalletSectionVisible
+  )
 
   const {
     data: questPlayStreakData,
@@ -96,9 +101,12 @@ export function PlayStreakEligibilityWrapper({
   const dateTimeCurrentSessionStartedInMsSinceEpoch =
     questPlayStreakData.dataUpdatedAt ?? Date.now()
 
+  const shouldShowActiveWalletSection =
+    isSignedIn && gameplayWalletSectionVisible
+
   return (
     <div className={styles.container}>
-      {isSignedIn ? <ActiveWalletSection /> : null}
+      {shouldShowActiveWalletSection ? <ActiveWalletSection /> : null}
       <StreakProgress
         {...getPlaystreakArgsFromQuestData({
           questMeta: questMeta.data,
