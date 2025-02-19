@@ -36,6 +36,7 @@ export class WarningError extends Error {
 export interface QuestWrapperContextValue {
   flags: {
     rewardTypeClaimEnabled: Record<Reward['reward_type'], boolean>
+    gameplayWalletSectionVisible: boolean
     questsOverlayClaimCtaEnabled?: boolean
   }
   getQuest: (questId: number) => Promise<Quest>

@@ -110,7 +110,8 @@ const mockProps: QuestDetailsWrapperProps = {
       POINTS: true,
       'EXTERNAL-TASKS': true
     },
-    questsOverlayClaimCtaEnabled: false
+    questsOverlayClaimCtaEnabled: false,
+    gameplayWalletSectionVisible: true
   },
   onPlayClick: () => alert('onPlayClick'),
   getQuest: async () => {
@@ -267,6 +268,13 @@ export const PendingExternalSync: Story = {
     getPendingExternalSync: async () => {
       return true
     }
+  }
+}
+
+export const ActiveWalletSectionNotVisible: Story = {
+  args: {
+    ...mockProps,
+    flags: { ...mockProps.flags, gameplayWalletSectionVisible: false }
   }
 }
 
