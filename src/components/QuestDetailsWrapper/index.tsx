@@ -232,7 +232,10 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       i18n,
       isSignedIn,
       eligibilityComponent: hideEligibilitySection ? null : (
-        <PlayStreakEligibilityWrapper questId={selectedQuestId} streakIsProgressing={props.streakIsProgressing} />
+        <PlayStreakEligibilityWrapper
+          questId={selectedQuestId}
+          streakIsProgressing={props.streakIsProgressing}
+        />
       ),
       rewardsComponent: (
         <RewardsWrapper questId={selectedQuestId} hideClaim={hideClaim} />
