@@ -11,9 +11,11 @@ import styles from './index.module.scss'
 import ActiveWalletSection from '../ActiveWalletSection'
 
 export function PlayStreakEligibilityWrapper({
-  questId
+  questId,
+  streakIsProgressing
 }: {
   questId: number | null
+  streakIsProgressing?: boolean
 }) {
   const {
     syncPlayStreakWithExternalSource,
@@ -114,6 +116,7 @@ export function PlayStreakEligibilityWrapper({
           dateTimeCurrentSessionStartedInMsSinceEpoch,
           rightSection: streakRightSection
         })}
+        streakIsProgressing={streakIsProgressing}
       />
     </div>
   )
