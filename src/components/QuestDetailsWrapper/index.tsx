@@ -31,6 +31,7 @@ export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   ctaComponent?: React.ReactNode
   hideEligibilitySection?: boolean
   hideClaim?: boolean
+  streakIsProgressing?: boolean
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
@@ -231,7 +232,10 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       i18n,
       isSignedIn,
       eligibilityComponent: hideEligibilitySection ? null : (
-        <PlayStreakEligibilityWrapper questId={selectedQuestId} />
+        <PlayStreakEligibilityWrapper
+          questId={selectedQuestId}
+          streakIsProgressing={props.streakIsProgressing}
+        />
       ),
       rewardsComponent: (
         <RewardsWrapper questId={selectedQuestId} hideClaim={hideClaim} />
