@@ -180,7 +180,9 @@ export function RewardWrapper({
       }
 
       const errorMessage =
-        error instanceof Error ? error.message : JSON.stringify(error, null, 2)
+        error instanceof Error
+          ? JSON.stringify(error.message, null, 2)
+          : JSON.stringify(error, null, 2)
 
       trackEvent({
         event: 'Reward Claim Error',
