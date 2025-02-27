@@ -428,8 +428,7 @@ export function RewardWrapper({
       reward,
       writeContractAsync,
       getDepositContracts,
-      logError,
-      connectorName,
+      onError: trackRewardClaimMutationError,
       config
     })
 
