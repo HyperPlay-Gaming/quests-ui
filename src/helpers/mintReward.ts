@@ -63,7 +63,10 @@ export async function mintReward({
     })
   }
 
-  // simulateContract will throw if the contract write will fail
+  /**
+   * @dev simulateContract will throw if the contract write will fail.
+   * This is the recommended usage from https://viem.sh/docs/contract/writeContract#usage
+   */
   if (
     reward.reward_type === 'ERC20' &&
     reward.amount_per_user &&
