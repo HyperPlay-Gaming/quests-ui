@@ -129,7 +129,7 @@ export function RewardWrapper({
     error: switchChainError
   } = useSwitchChain({
     mutation: {
-      onError: (error) => {
+      onError: (error) =>
         logError(`Error switching chain: ${error}`, {
           sentryException: error,
           sentryExtra: {
@@ -143,16 +143,6 @@ export function RewardWrapper({
             feature: 'quests'
           }
         })
-
-        trackEvent({
-          event: 'Error Switching Chain',
-          properties: {
-            error: JSON.stringify(error, null, 2),
-            connector: connectorName,
-            ...getClaimEventProperties(reward, questId)
-          }
-        })
-      }
     }
   })
 
