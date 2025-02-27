@@ -16,7 +16,12 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { createPublicClient, http } from 'viem'
+import {
+  BaseError,
+  ContractFunctionRevertedError,
+  createPublicClient,
+  http
+} from 'viem'
 import {
   useAccount,
   useConfig,
@@ -154,6 +159,50 @@ export function RewardWrapper({
     isEligible = playstreakQuestStatus === 'READY_FOR_CLAIM'
   }
 
+  function trackRewardClaimMutationError(error: Error) {
+    console.error('Error claiming rewards:', error)
+
+    let errorMessage = 'Error during reward claim'
+
+    /**
+     * @dev this block gets a useful error message in the mutate onError handler for tracking and logging purposes
+     */
+    if (error instanceof BaseError) {
+      // @dev this is the suggested approach for simulateContract errors https://viem.sh/docs/contract/simulateContract#handling-custom-errors
+      const revertError = error.walk(
+        (err) => err instanceof ContractFunctionRevertedError
+      )
+      if (revertError instanceof ContractFunctionRevertedError) {
+        const errorName = revertError.data?.errorName ?? ''
+        // do something with `errorName`
+        errorMessage = errorName
+      } else if (!!revertError) {
+        errorMessage = `BaseError: ${revertError.name} ${revertError.message}`
+      } else {
+        errorMessage = `Unknown BaseError`
+      }
+    } else if (error instanceof WarningError) {
+      // thrown for low balance and g7 account link errors
+      logError(`Error claiming rewards: ${error}`)
+      errorMessage = error.title
+    } else if (error instanceof Error) {
+      errorMessage = JSON.stringify(error.message, null, 2)
+    } else {
+      errorMessage = JSON.stringify(error, null, 2)
+    }
+
+    trackEvent({
+      event: 'Reward Claim Error',
+      properties: {
+        ...getClaimEventProperties(reward, questId),
+        error: errorMessage,
+        connector: connectorName
+      }
+    })
+
+    return errorMessage
+  }
+
   // Mutations
   const claimRewardMutation = useMutation({
     mutationFn: async (params: Reward) => claimReward(params),
@@ -172,26 +221,7 @@ export function RewardWrapper({
       }
     },
     onError: (error) => {
-      console.error('Error claiming rewards:', error)
-
-      if (error instanceof WarningError) {
-        logError(`Error claiming rewards: ${error}`)
-        return
-      }
-
-      const errorMessage =
-        error instanceof Error
-          ? JSON.stringify(error.message, null, 2)
-          : JSON.stringify(error, null, 2)
-
-      trackEvent({
-        event: 'Reward Claim Error',
-        properties: {
-          ...getClaimEventProperties(reward, questId),
-          error: errorMessage,
-          connector: connectorName
-        }
-      })
+      const errorMessage = trackRewardClaimMutationError(error)
 
       logError(`Error claiming rewards: ${error}`, {
         sentryException: error,
@@ -251,20 +281,22 @@ export function RewardWrapper({
       queryClient.invalidateQueries({ queryKey: [queryKey] })
       return result
     },
-    onError: (error) =>
+    onError: (error) => {
+      const errorMessage = trackRewardClaimMutationError(error)
       logError(`Error claiming points: ${error}`, {
         sentryException: error,
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: error,
+          error: errorMessage,
           connector: connectorName
         },
         sentryTags: {
           action: 'claim_points_reward',
           feature: 'quests'
         }
-      }),
+      })
+    },
     onSuccess: async (_data, reward) => {
       await invalidateQuestPlayStreakQuery()
     }
@@ -276,7 +308,7 @@ export function RewardWrapper({
 
       if (!isConnectedToG7) {
         throw new WarningError(
-          t('quest.noG7ConnectionSync.title', 'No G7 account linked'),
+          'No G7 Account Linked',
           t(
             'quest.noG7ConnectionSync.message',
             `You need to have a Game7 account linked to ${sessionEmail ?? 'your email'} to claim your rewards.`,
@@ -290,19 +322,21 @@ export function RewardWrapper({
       queryClient.invalidateQueries({ queryKey: [queryKey] })
       return result
     },
-    onError: (error) =>
+    onError: (error) => {
+      const errorMessage = trackRewardClaimMutationError(error)
       logError(`Error resyncing tasks: ${error}`, {
         sentryException: error,
         sentryExtra: {
           questId: questId,
           reward: reward,
-          error: error,
+          error: errorMessage,
           connector: connectorName
         },
         sentryTags: {
           action: 'complete_external_task'
         }
-      }),
+      })
+    },
     onSuccess: async (_data, reward) => {
       await invalidateQuestPlayStreakQuery()
     }
@@ -372,7 +406,7 @@ export function RewardWrapper({
         `Not enough balance in the connected wallet to cover the gas fee associated with this Quest Reward claim. Current balance: ${walletBalance}, gas needed: ${gasNeeded}`
       )
       throw new WarningError(
-        t('quest.notEnoughBalance.title', 'Low balance'),
+        'Low Balance',
         t(
           'quest.notEnoughGas.message',
           'Insufficient wallet balance to claim your reward due to gas fees. Try a different wallet or replenish this one before retrying.'
@@ -401,7 +435,8 @@ export function RewardWrapper({
       writeContractAsync,
       getDepositContracts,
       logError,
-      connectorName
+      connectorName,
+      publicClient
     })
 
     await confirmClaimMutation.mutateAsync({

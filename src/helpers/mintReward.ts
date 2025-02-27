@@ -7,6 +7,7 @@ import {
 import { questRewardAbi } from '../abis/RewardsAbi'
 import { WriteContractMutateAsync } from 'wagmi/query'
 import { Config } from 'wagmi'
+import { PublicClient } from 'viem'
 
 export async function mintReward({
   reward,
@@ -15,7 +16,8 @@ export async function mintReward({
   writeContractAsync,
   getDepositContracts,
   connectorName,
-  logError
+  logError,
+  publicClient
 }: {
   reward: Reward
   questId: number
@@ -24,6 +26,7 @@ export async function mintReward({
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
   logError: (message: string, options?: LogOptions) => void
   connectorName?: string
+  publicClient: PublicClient
 }) {
   if (reward.chain_id === null) {
     throw Error('chain id is not set for reward when trying to mint')
@@ -60,69 +63,64 @@ export async function mintReward({
     })
   }
 
+  // simulateContract will throw if the contract write will fail
   if (
     reward.reward_type === 'ERC20' &&
     reward.amount_per_user &&
     reward.decimals
   ) {
-    return writeContractAsync(
-      {
-        address: depositContractAddress,
-        abi: questRewardAbi,
-        functionName: 'withdrawERC20',
-        args: [
-          BigInt(questId),
-          reward.contract_address,
-          BigInt(reward.amount_per_user),
-          BigInt(signature.nonce),
-          BigInt(signature.expiration),
-          signature.signature
-        ]
-      },
-      {
-        onError: logMintingError
-      }
-    )
+    const { request } = await publicClient.simulateContract({
+      address: depositContractAddress,
+      abi: questRewardAbi,
+      functionName: 'withdrawERC20',
+      args: [
+        BigInt(questId),
+        reward.contract_address,
+        BigInt(reward.amount_per_user),
+        BigInt(signature.nonce),
+        BigInt(signature.expiration),
+        signature.signature
+      ]
+    })
+    return writeContractAsync(request, {
+      onError: logMintingError
+    })
   } else if (isERC1155Reward && reward.decimals !== null) {
     const { token_id, amount_per_user } = reward.token_ids[0]
-    return writeContractAsync(
-      {
-        address: depositContractAddress,
-        abi: questRewardAbi,
-        functionName: 'withdrawERC1155',
-        args: [
-          BigInt(questId),
-          reward.contract_address,
-          BigInt(token_id),
-          BigInt(amount_per_user),
-          BigInt(signature.nonce),
-          BigInt(signature.expiration),
-          signature.signature
-        ]
-      },
-      {
-        onError: logMintingError
-      }
-    )
+    const { request } = await publicClient.simulateContract({
+      address: depositContractAddress,
+      abi: questRewardAbi,
+      functionName: 'withdrawERC1155',
+      args: [
+        BigInt(questId),
+        reward.contract_address,
+        BigInt(token_id),
+        BigInt(amount_per_user),
+        BigInt(signature.nonce),
+        BigInt(signature.expiration),
+        signature.signature
+      ]
+    })
+    return writeContractAsync(request, {
+      onError: logMintingError
+    })
   } else if (reward.reward_type === 'ERC721' && reward.amount_per_user) {
-    return writeContractAsync(
-      {
-        address: depositContractAddress,
-        abi: questRewardAbi,
-        functionName: 'withdrawERC721',
-        args: [
-          BigInt(questId),
-          reward.contract_address,
-          BigInt(signature.tokenIds[0]),
-          BigInt(signature.nonce),
-          BigInt(signature.expiration),
-          signature.signature
-        ]
-      },
-      {
-        onError: logMintingError
-      }
-    )
+    const { request } = await publicClient.simulateContract({
+      address: depositContractAddress,
+      abi: questRewardAbi,
+      functionName: 'withdrawERC721',
+      args: [
+        BigInt(questId),
+        reward.contract_address,
+        BigInt(signature.tokenIds[0]),
+        BigInt(signature.nonce),
+        BigInt(signature.expiration),
+        signature.signature
+      ]
+    })
+    return writeContractAsync(request, {
+      onError: logMintingError
+    })
   }
 
   throw Error('Unsupported reward type')
