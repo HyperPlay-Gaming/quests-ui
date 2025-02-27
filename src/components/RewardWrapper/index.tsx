@@ -178,7 +178,7 @@ export function RewardWrapper({
         const errorName = revertError.data?.errorName ?? ''
         // do something with `errorName`
         errorMessage = errorName
-      } else if (!!revertError) {
+      } else if (revertError) {
         errorMessage = `BaseError: ${revertError.name} ${revertError.message}`
       } else {
         errorMessage = `Unknown BaseError`
