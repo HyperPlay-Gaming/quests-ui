@@ -175,9 +175,7 @@ export function RewardWrapper({
         (err) => err instanceof ContractFunctionRevertedError
       )
       if (revertError instanceof ContractFunctionRevertedError) {
-        const errorName = revertError.data?.errorName ?? ''
-        // do something with `errorName`
-        errorMessage = errorName
+        errorMessage = revertError.reason ?? 'Unknown BaseError revert reason'
       } else if (revertError) {
         errorMessage = `BaseError: ${revertError.name} ${revertError.message}`
       } else {
