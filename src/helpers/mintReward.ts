@@ -1,9 +1,4 @@
-import {
-  DepositContract,
-  LogOptions,
-  Reward,
-  RewardClaimSignature
-} from '@hyperplay/utils'
+import { DepositContract, Reward, RewardClaimSignature } from '@hyperplay/utils'
 import { questRewardAbi } from '../abis/RewardsAbi'
 import { WriteContractMutateAsync } from 'wagmi/query'
 import { Config } from 'wagmi'
@@ -15,8 +10,7 @@ export async function mintReward({
   signature,
   writeContractAsync,
   getDepositContracts,
-  connectorName,
-  logError,
+  onError,
   config
 }: {
   reward: Reward
@@ -24,8 +18,7 @@ export async function mintReward({
   signature: RewardClaimSignature
   writeContractAsync: WriteContractMutateAsync<Config, unknown>
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
-  logError: (message: string, options?: LogOptions) => void
-  connectorName?: string
+  onError: (error: Error) => void
   config: Config
 }) {
   if (reward.chain_id === null) {
@@ -45,22 +38,6 @@ export async function mintReward({
     throw Error(
       `Deposit contract address undefined for quest ${questId} and chain id ${reward.chain_id}`
     )
-  }
-
-  const logMintingError = (error: Error) => {
-    logError(`Error claiming reward: ${error.message}`, {
-      sentryException: error,
-      sentryExtra: {
-        questId: questId,
-        reward: reward,
-        error: error,
-        connector: connectorName
-      },
-      sentryTags: {
-        action: 'claim_on_chain_reward',
-        feature: 'quests'
-      }
-    })
   }
 
   /**
@@ -86,7 +63,7 @@ export async function mintReward({
       ]
     })
     return writeContractAsync(request, {
-      onError: logMintingError
+      onError: onError
     })
   } else if (isERC1155Reward && reward.decimals !== null) {
     const { token_id, amount_per_user } = reward.token_ids[0]
@@ -105,7 +82,7 @@ export async function mintReward({
       ]
     })
     return writeContractAsync(request, {
-      onError: logMintingError
+      onError: onError
     })
   } else if (reward.reward_type === 'ERC721' && reward.amount_per_user) {
     const { request } = await simulateContract(config, {
@@ -122,7 +99,7 @@ export async function mintReward({
       ]
     })
     return writeContractAsync(request, {
-      onError: logMintingError
+      onError: onError
     })
   }
 
