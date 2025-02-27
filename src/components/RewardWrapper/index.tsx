@@ -169,7 +169,7 @@ export function RewardWrapper({
      * @dev this block gets a useful error message in the mutate onError handler for tracking and logging purposes
      */
     if (error instanceof BaseError) {
-      errorSeverity = 'Warning'
+      errorSeverity = 'Error'
       // @dev this is the suggested approach for simulateContract errors https://viem.sh/docs/contract/simulateContract#handling-custom-errors
       const revertError = error.walk(
         (err) => err instanceof ContractFunctionRevertedError
@@ -179,7 +179,7 @@ export function RewardWrapper({
       } else if (revertError) {
         errorMessage = `BaseError: ${revertError.name} ${revertError.message}`
       } else {
-        errorMessage = `Unknown BaseError`
+        errorMessage = JSON.stringify(error, null, 2)
       }
     } else if (error instanceof WarningError) {
       errorSeverity = 'Warning'
