@@ -432,7 +432,7 @@ export function RewardWrapper({
       getDepositContracts,
       logError,
       connectorName,
-      publicClient
+      config
     })
 
     await confirmClaimMutation.mutateAsync({

@@ -7,7 +7,7 @@ import {
 import { questRewardAbi } from '../abis/RewardsAbi'
 import { WriteContractMutateAsync } from 'wagmi/query'
 import { Config } from 'wagmi'
-import { PublicClient } from 'viem'
+import { simulateContract } from '@wagmi/core'
 
 export async function mintReward({
   reward,
@@ -17,7 +17,7 @@ export async function mintReward({
   getDepositContracts,
   connectorName,
   logError,
-  publicClient
+  config
 }: {
   reward: Reward
   questId: number
@@ -26,7 +26,7 @@ export async function mintReward({
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
   logError: (message: string, options?: LogOptions) => void
   connectorName?: string
-  publicClient: PublicClient
+  config: Config
 }) {
   if (reward.chain_id === null) {
     throw Error('chain id is not set for reward when trying to mint')
@@ -72,7 +72,7 @@ export async function mintReward({
     reward.amount_per_user &&
     reward.decimals
   ) {
-    const { request } = await publicClient.simulateContract({
+    const { request } = await simulateContract(config, {
       address: depositContractAddress,
       abi: questRewardAbi,
       functionName: 'withdrawERC20',
@@ -90,7 +90,7 @@ export async function mintReward({
     })
   } else if (isERC1155Reward && reward.decimals !== null) {
     const { token_id, amount_per_user } = reward.token_ids[0]
-    const { request } = await publicClient.simulateContract({
+    const { request } = await simulateContract(config, {
       address: depositContractAddress,
       abi: questRewardAbi,
       functionName: 'withdrawERC1155',
@@ -108,7 +108,7 @@ export async function mintReward({
       onError: logMintingError
     })
   } else if (reward.reward_type === 'ERC721' && reward.amount_per_user) {
-    const { request } = await publicClient.simulateContract({
+    const { request } = await simulateContract(config, {
       address: depositContractAddress,
       abi: questRewardAbi,
       functionName: 'withdrawERC721',
