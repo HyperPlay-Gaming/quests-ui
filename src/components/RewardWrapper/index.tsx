@@ -163,11 +163,13 @@ export function RewardWrapper({
     console.error('Error claiming rewards:', error)
 
     let errorMessage = 'Error during reward claim'
+    let errorSeverity = 'Error'
 
     /**
      * @dev this block gets a useful error message in the mutate onError handler for tracking and logging purposes
      */
     if (error instanceof BaseError) {
+      errorSeverity = 'Warning'
       // @dev this is the suggested approach for simulateContract errors https://viem.sh/docs/contract/simulateContract#handling-custom-errors
       const revertError = error.walk(
         (err) => err instanceof ContractFunctionRevertedError
@@ -182,6 +184,7 @@ export function RewardWrapper({
         errorMessage = `Unknown BaseError`
       }
     } else if (error instanceof WarningError) {
+      errorSeverity = 'Warning'
       // thrown for low balance and g7 account link errors
       logError(`Error claiming rewards: ${error}`)
       errorMessage = error.title
@@ -192,7 +195,7 @@ export function RewardWrapper({
     }
 
     trackEvent({
-      event: 'Reward Claim Error',
+      event: `Reward Claim ${errorSeverity}`,
       properties: {
         ...getClaimEventProperties(reward, questId),
         error: errorMessage,
