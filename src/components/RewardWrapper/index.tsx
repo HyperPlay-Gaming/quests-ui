@@ -1,7 +1,7 @@
 import { getPlaystreakQuestStatus } from '@/helpers/getPlaystreakQuestStatus'
 import { getGetQuestLogInfoQueryKey } from '@/helpers/getQueryKeys'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
-import { mintReward } from '@/helpers/mintReward'
+import { getClaimErrorMessages, mintReward } from '@/helpers/mintReward'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { ClaimError, UseGetRewardsData, WarningError } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
@@ -16,12 +16,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  BaseError,
-  ContractFunctionRevertedError,
-  createPublicClient,
-  http
-} from 'viem'
+import { createPublicClient, http } from 'viem'
 import {
   useAccount,
   useConfig,
@@ -162,35 +157,7 @@ export function RewardWrapper({
   function trackRewardClaimMutationError(error: Error) {
     console.error('Error claiming rewards:', error)
 
-    let errorMessage = 'Error during reward claim'
-    let errorSeverity = 'Error'
-
-    /**
-     * @dev this block gets a useful error message in the mutate onError handler for tracking and logging purposes
-     */
-    if (error instanceof BaseError) {
-      errorSeverity = 'Warning'
-      // @dev this is the suggested approach for simulateContract errors https://viem.sh/docs/contract/simulateContract#handling-custom-errors
-      const revertError = error.walk(
-        (err) => err instanceof ContractFunctionRevertedError
-      )
-      if (revertError instanceof ContractFunctionRevertedError) {
-        errorMessage = revertError.reason ?? 'Unknown BaseError revert reason'
-      } else if (revertError) {
-        errorMessage = `BaseError: ${revertError.name} ${revertError.message}`
-      } else {
-        errorMessage = `Unknown BaseError`
-      }
-    } else if (error instanceof WarningError) {
-      errorSeverity = 'Warning'
-      // thrown for low balance and g7 account link errors
-      logError(`Error claiming rewards: ${error}`)
-      errorMessage = error.title
-    } else if (error instanceof Error) {
-      errorMessage = JSON.stringify(error.message, null, 2)
-    } else {
-      errorMessage = JSON.stringify(error, null, 2)
-    }
+    const { errorMessage, errorSeverity } = getClaimErrorMessages(error)
 
     trackEvent({
       event: `Reward Claim ${errorSeverity}`,
