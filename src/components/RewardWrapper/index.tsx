@@ -398,13 +398,6 @@ export function RewardWrapper({
     logInfo(`Current wallet gas: ${walletBalance}`)
 
     if (!hasEnoughBalance) {
-      trackEvent({
-        event: 'Not enough gas to claim',
-        properties: {
-          ...getClaimEventProperties(reward, questId),
-          gasNeeded: gasNeeded.toString()
-        }
-      })
       logError(
         `Not enough balance in the connected wallet to cover the gas fee associated with this Quest Reward claim. Current balance: ${walletBalance}, gas needed: ${gasNeeded}`
       )
