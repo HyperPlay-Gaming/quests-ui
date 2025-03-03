@@ -162,10 +162,21 @@ export function RewardWrapper({
 
       onRewardClaimed?.(reward)
       await invalidateQuestPlayStreakQuery()
+
       if (questId !== null) {
         await queryClient.invalidateQueries({
           queryKey: [getGetQuestLogInfoQueryKey(questId.toString())]
         })
+      }
+
+      if (reward.reward_type === 'POINTS') {
+        const queryKey = `getPointsBalancesForProject:${questMeta?.project_id}`
+        queryClient.invalidateQueries({ queryKey: [queryKey] })
+      }
+
+      if (reward.reward_type === 'EXTERNAL-TASKS') {
+        const queryKey = `useGetG7UserCredits`
+        queryClient.invalidateQueries({ queryKey: [queryKey] })
       }
     },
     onError: (error) => {
@@ -187,14 +198,7 @@ export function RewardWrapper({
     }
   })
 
-  const claimPointsMutation = async (reward: Reward) => {
-    await claimPoints(reward)
-    const queryKey = `getPointsBalancesForProject:${questMeta?.project_id}`
-    queryClient.invalidateQueries({ queryKey: [queryKey] })
-    await invalidateQuestPlayStreakQuery()
-  }
-
-  const completeTaskMutation = async (reward: Reward) => {
+  const completeTask = async (reward: Reward) => {
     const isConnectedToG7 = await checkG7ConnectionStatus()
 
     if (!isConnectedToG7) {
@@ -208,11 +212,7 @@ export function RewardWrapper({
       )
     }
 
-    const result = await completeExternalTask(reward)
-    const queryKey = `useGetG7UserCredits`
-    queryClient.invalidateQueries({ queryKey: [queryKey] })
-    await invalidateQuestPlayStreakQuery()
-    return result
+    await completeExternalTask(reward)
   }
 
   // Handlers
@@ -306,7 +306,6 @@ export function RewardWrapper({
       signature: claimSignature.signature,
       transactionHash: hash
     })
-    await invalidateQuestPlayStreakQuery()
   }
 
   async function claimReward(reward: Reward) {
@@ -333,10 +332,10 @@ export function RewardWrapper({
         await mintOnChainReward(reward)
         break
       case 'POINTS':
-        await claimPointsMutation(reward)
+        await claimPoints(reward)
         break
       case 'EXTERNAL-TASKS':
-        await completeTaskMutation(reward)
+        await completeTask(reward)
         break
       default:
         throw new Error(`unknown reward type ${reward.reward_type}`)
@@ -390,12 +389,8 @@ export function RewardWrapper({
 
   useEffect(() => {
     const error = claimRewardMutation.error
-
     setClaimError(error)
   }, [claimRewardMutation.error])
-
-  // Loading states
-  const isClaiming = claimRewardMutation.isPending
 
   let networkName = ''
 
@@ -431,7 +426,7 @@ export function RewardWrapper({
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
-        reward={{ ...reward, claimPending: isClaiming }}
+        reward={{ ...reward, claimPending: claimRewardMutation.isPending }}
         key={reward.title}
         onClaim={async () => onClaim(reward)}
         hideClaim={hideClaim}
