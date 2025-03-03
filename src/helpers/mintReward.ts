@@ -1,24 +1,19 @@
 import { DepositContract, Reward, RewardClaimSignature } from '@hyperplay/utils'
 import { questRewardAbi } from '../abis/RewardsAbi'
-import { WriteContractMutateAsync } from 'wagmi/query'
 import { Config } from 'wagmi'
-import { simulateContract } from '@wagmi/core'
+import { simulateContract, writeContract } from '@wagmi/core'
 
 export async function mintReward({
   reward,
   questId,
   signature,
-  writeContractAsync,
   getDepositContracts,
-  onError,
   config
 }: {
   reward: Reward
   questId: number
   signature: RewardClaimSignature
-  writeContractAsync: WriteContractMutateAsync<Config, unknown>
   getDepositContracts: (questId: number) => Promise<DepositContract[]>
-  onError: (error: Error) => void
   config: Config
 }) {
   if (reward.chain_id === null) {
@@ -62,9 +57,7 @@ export async function mintReward({
         signature.signature
       ]
     })
-    return writeContractAsync(request, {
-      onError: onError
-    })
+    return writeContract(config, request)
   } else if (isERC1155Reward && reward.decimals !== null) {
     const { token_id, amount_per_user } = reward.token_ids[0]
     const { request } = await simulateContract(config, {
@@ -81,9 +74,7 @@ export async function mintReward({
         signature.signature
       ]
     })
-    return writeContractAsync(request, {
-      onError: onError
-    })
+    return writeContract(config, request)
   } else if (reward.reward_type === 'ERC721' && reward.amount_per_user) {
     const { request } = await simulateContract(config, {
       address: depositContractAddress,
@@ -98,9 +89,7 @@ export async function mintReward({
         signature.signature
       ]
     })
-    return writeContractAsync(request, {
-      onError: onError
-    })
+    return writeContract(config, request)
   }
 
   throw Error('Unsupported reward type')
