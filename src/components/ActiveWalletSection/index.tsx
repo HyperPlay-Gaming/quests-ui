@@ -365,7 +365,7 @@ export default function ActiveWalletSection() {
           </InputLikeBox>
         </InputLikeContainer>
         <InputLikeContainer
-          title={t('gameplayWallet.setConnected.title', 'Set Connected Wallet')}
+          title={t('gameplayWallet.setConnected.title', 'Set New Active Wallet')}
         >
           <div className={styles.setActiveWalletContainer}>
             <InputLikeBox className={styles.setConnectedWalletInput}>
