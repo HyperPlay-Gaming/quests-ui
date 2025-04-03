@@ -298,10 +298,10 @@ export default function ActiveWalletSection() {
           variant="warning"
         />
         <InputLikeContainer
-          title={t('gameplayWallet.active.title', 'Active Wallet')}
+          title={t('gameplayWallet.active.title', 'Connected Wallet')}
         >
           <InputLikeBox className={styles.noWallet}>
-            {t('gameplayWallet.noWallet.status', 'Not connected')}
+            {t('gameplayWallet.noWallet.status', 'No wallet connected')}
           </InputLikeBox>
         </InputLikeContainer>
       </>
@@ -313,7 +313,7 @@ export default function ActiveWalletSection() {
       <>
         {onlyConnectedWallet}
         <InputLikeContainer
-          title={t('gameplayWallet.connected.title', 'Active Wallet')}
+          title={t('gameplayWallet.connected.title', 'Connected Wallet')}
         >
           <div className={styles.setActiveWalletContainer}>
             <InputLikeBox className={styles.setConnectedWalletInput}>
