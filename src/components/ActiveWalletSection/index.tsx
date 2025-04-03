@@ -38,7 +38,7 @@ function ActiveWalletInfoTooltip() {
         <div className="caption-sm color-neutral-400">
           {t(
             'gameplayWallet.info.description',
-            'This wallet address is now set to track your quest eligibility. You can switch to a different wallet address at anytime—quest eligibility is saved to each wallet address separately.'
+            'This wallet address is set to track your quest eligibility. You can switch to a different wallet address at anytime—quest eligibility is saved to each wallet address separately.'
           )}
         </div>
       </Popover.Dropdown>
@@ -208,17 +208,11 @@ export default function ActiveWalletSection() {
   )
 
   const newWalletDetected = (
-    <InfoAlert title={t('gameplayWallet.new.title', 'New Wallet Detected')}>
+    <InfoAlert title={t('gameplayWallet.new.title', 'New Wallet Connected')}>
       <span className="body-sm">
         {t(
           'gameplayWallet.new.message',
-          "Your connected wallet doesn't match any Gameplay wallet tracked for this Quest. To track progress with this wallet, add it as a Gameplay Wallet below by setting it."
-        )}
-      </span>{' '}
-      <span className={cn('body-sm', styles.verifyText)}>
-        {t(
-          'gameplayWallet.verify.message',
-          'You only need to verify each address once and can switch freely at any time.'
+          'To track your quest eligibility on this new wallet, set it as your active wallet.'
         )}
       </span>
     </InfoAlert>
