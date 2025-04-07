@@ -9,7 +9,7 @@ import { useAccount } from 'wagmi'
 import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
 import { Popover } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-
+import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 function ActiveWalletInfoTooltip() {
   const { tOverride } = useQuestWrapper()
   const [opened, { close, open }] = useDisclosure(false)
@@ -125,11 +125,8 @@ export default function ActiveWalletSection() {
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
 
-  const { data: activeWallet } = useQuery({
-    queryKey: ['activeWallet'],
-    queryFn: async () => {
-      return getActiveWallet()
-    },
+  const { activeWallet } = useGetActiveWallet({
+    getActiveWallet,
     enabled: isSignedIn
   })
 

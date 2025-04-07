@@ -217,6 +217,7 @@ const mockProps: QuestDetailsWrapperProps = {
 export const QuestPageNotSignedIn: Story = {
   args: {
     ...mockProps,
+    isSignedIn: false,
     isQuestsPage: true
   }
 }

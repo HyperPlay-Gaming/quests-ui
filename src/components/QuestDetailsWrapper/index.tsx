@@ -21,6 +21,7 @@ import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { PlayStreakEligibilityWrapper } from '../PlayStreakEligibilityWrapper'
 import { RewardsWrapper } from '../RewardsWrapper'
 import { QuestWrapperContextValue } from '@/types/quests'
+import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 
 import { useAccount } from 'wagmi'
 import { useGetGameNameByProjectId } from '../../hooks/useGetGameNameByProjectId'
@@ -53,7 +54,9 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     className,
     ctaComponent,
     hideEligibilitySection,
-    hideClaim
+    hideClaim,
+    flags,
+    getActiveWallet
   } = props
 
   const { connector } = useAccount()
@@ -63,6 +66,10 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     title: string
     message: string
   }>()
+
+  const gameplayWalletSectionVisible = Boolean(
+    flags.gameplayWalletSectionVisible
+  )
 
   useTrackQuestViewed(selectedQuestId, trackEvent)
 
@@ -75,6 +82,11 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
 
   const { data: listingsFromHook, isLoading: isListingsLoading } =
     useGetGameNameByProjectId(projectId ?? '')
+
+  const { activeWallet } = useGetActiveWallet({
+    getActiveWallet,
+    enabled: isSignedIn
+  })
 
   const gameName = projectId && listingsFromHook?.project_meta?.name
 
@@ -208,6 +220,20 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       }
     }
 
+    let ctaDisabled = false
+
+    // ** Decision Matrix **
+    // If the quest is on the quests page, and the user is not signed in, the cta is disabled
+    // If the quest is on the quests page, and the user is signed but there is no active wallet, the cta is disabled
+    // If the quest is not on the quests page (e.g. in the overlay), the cta is enabled
+    if (isQuestsPage) {
+      if (!isSignedIn) {
+        ctaDisabled = true
+      } else if (gameplayWalletSectionVisible && !activeWallet) {
+        ctaDisabled = true
+      }
+    }
+
     const questDetailsProps: QuestDetailsProps = {
       className,
       alertProps,
@@ -222,7 +248,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       ),
       onSignInClick: openSignInModal,
       onConnectSteamAccountClick: signInWithSteamAccount,
-      ctaDisabled: false,
+      ctaDisabled,
       showSync: showResyncButton,
       onSyncClick: () => {
         resyncMutation.mutateAsync(questMeta.rewards ?? [])
