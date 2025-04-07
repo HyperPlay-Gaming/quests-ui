@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
+import { within, expect, waitForElementToBeRemoved } from '@storybook/test'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -214,11 +215,27 @@ const mockProps: QuestDetailsWrapperProps = {
   }
 }
 
+async function waitForLoadingToBeRemoved(canvasElement: HTMLElement) {
+  // if we rerun tests, the loading element already and waitForElementToBeRemoved throws an error
+  const loading = within(canvasElement).queryByLabelText('Loading')
+  if (loading) {
+    await waitForElementToBeRemoved(() => loading)
+  }
+}
+
 export const QuestPageNotSignedIn: Story = {
   args: {
     ...mockProps,
     isSignedIn: false,
     isQuestsPage: true
+  },
+  play: async ({ canvasElement }) => {
+    await waitForLoadingToBeRemoved(canvasElement)
+    const canvas = within(canvasElement)
+    expect(
+      canvas.getByText('Log into HyperPlay to track quest eligibility')
+    ).toBeVisible()
+    expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
   }
 }
 
@@ -227,6 +244,47 @@ export const QuestPageSignedIn: Story = {
     ...mockProps,
     isQuestsPage: true,
     isSignedIn: true
+  },
+  play: async ({ canvasElement }) => {
+    await waitForLoadingToBeRemoved(canvasElement)
+    const canvas = within(canvasElement)
+    expect(
+      canvas.queryByText('Log into HyperPlay to track quest eligibility')
+    ).not.toBeInTheDocument()
+  }
+}
+
+export const QuestPageSignedInNoActiveWallet: Story = {
+  args: {
+    ...mockProps,
+    isQuestsPage: true,
+    isSignedIn: true
+  },
+  play: async ({ canvasElement }) => {
+    await waitForLoadingToBeRemoved(canvasElement)
+    const canvas = within(canvasElement)
+    expect(
+      canvas.getByText(
+        'Connect your wallet to start tracking eligibility for this Quest.'
+      )
+    ).toBeVisible()
+    expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
+  }
+}
+
+export const QuestPageSignedInWithActiveWallet: Story = {
+  args: {
+    ...mockProps,
+    isQuestsPage: true,
+    isSignedIn: true,
+    getActiveWallet: async () => {
+      return '0x123'
+    }
+  },
+  play: async ({ canvasElement }) => {
+    await waitForLoadingToBeRemoved(canvasElement)
+    const canvas = within(canvasElement)
+    expect(canvas.getByRole('button', { name: /play/i })).toBeEnabled()
   }
 }
 
