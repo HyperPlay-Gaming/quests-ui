@@ -223,13 +223,17 @@ export const QuestPageNotSignedIn: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    
-    // Wait for the loading spinner to disappear
-    await waitForElementToBeRemoved(() => canvas.getByLabelText('loading quest details'))
 
     // Wait for the loading spinner to disappear
-    await waitForElementToBeRemoved(() => canvas.getByLabelText('loading rewards'))
-    
+    await waitForElementToBeRemoved(() =>
+      canvas.getByLabelText('loading quest details')
+    )
+
+    // Wait for the loading spinner to disappear
+    await waitForElementToBeRemoved(() =>
+      canvas.getByLabelText('loading rewards')
+    )
+
     expect(
       canvas.getByText('Log into HyperPlay to track quest eligibility')
     ).toBeVisible()
