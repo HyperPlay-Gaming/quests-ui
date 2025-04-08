@@ -224,35 +224,6 @@ const mockProps: QuestDetailsWrapperProps = {
   }
 }
 
-// TODO: with this current setup, we're purposefully waiting for the loading spinners to disappear ONLY on the FIRST play because in following tests, the value is cached by react query.
-// We should find a better way to handle this in the future. Tests pass in the CI but in the storybook UI, the loading spinners are not visible and the tests fail.
-
-export const QuestPageNotSignedIn: Story = {
-  args: {
-    ...mockProps,
-    isSignedIn: false,
-    isQuestsPage: true
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-
-    // Wait for the loading spinner to disappear
-    await waitForElementToBeRemoved(() =>
-      canvas.getByLabelText('loading quest details')
-    )
-
-    // Wait for the loading spinner to disappear
-    await waitForElementToBeRemoved(() =>
-      canvas.getByLabelText('loading rewards')
-    )
-
-    expect(
-      canvas.getByText('Log into HyperPlay to track quest eligibility')
-    ).toBeVisible()
-    expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
-  }
-}
-
 async function waitForLoadingSpinnerToDisappear(
   canvas: ReturnType<typeof within>
 ) {
@@ -263,6 +234,22 @@ async function waitForLoadingSpinnerToDisappear(
   await waitForElementToBeRemoved(() =>
     canvas.getByLabelText('loading rewards')
   )
+}
+
+export const QuestPageNotSignedIn: Story = {
+  args: {
+    ...mockProps,
+    isSignedIn: false,
+    isQuestsPage: true
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(
+      canvas.getByText('Log into HyperPlay to track quest eligibility')
+    ).toBeVisible()
+    expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
+  }
 }
 
 export const QuestPageSignedIn: Story = {
