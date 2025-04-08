@@ -6,7 +6,12 @@ import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
-import { within, expect, waitForElementToBeRemoved, waitFor } from '@storybook/test'
+import {
+  within,
+  expect,
+  waitForElementToBeRemoved,
+  waitFor
+} from '@storybook/test'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -266,7 +271,11 @@ export const QuestPageSignedInNoActiveWallet: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(canvas.getByText('Connect your wallet to start tracking eligibility for this Quest.')).toBeVisible()
+    expect(
+      canvas.getByText(
+        'Connect your wallet to start tracking eligibility for this Quest.'
+      )
+    ).toBeVisible()
     expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
   }
 }
