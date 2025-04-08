@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
-import { within, expect, waitForElementToBeRemoved } from '@storybook/test'
+import { within, expect, waitForElementToBeRemoved, waitFor } from '@storybook/test'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -215,6 +215,9 @@ const mockProps: QuestDetailsWrapperProps = {
   }
 }
 
+// TODO: with this current setup, we're purposefully waiting for the loading spinners to disappear ONLY on the FIRST play because in following tests, the value is cached by react query.
+// We should find a better way to handle this in the future. Tests pass in the CI but in the storybook UI, the loading spinners are not visible and the tests fail.
+
 export const QuestPageNotSignedIn: Story = {
   args: {
     ...mockProps,
@@ -246,6 +249,12 @@ export const QuestPageSignedIn: Story = {
     ...mockProps,
     isQuestsPage: true,
     isSignedIn: true
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    expect(
+      canvas.queryByText('Log into HyperPlay to track quest eligibility')
+    ).not.toBeInTheDocument()
   }
 }
 
@@ -254,6 +263,11 @@ export const QuestPageSignedInNoActiveWallet: Story = {
     ...mockProps,
     isQuestsPage: true,
     isSignedIn: true
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    expect(canvas.getByText('Connect your wallet to start tracking eligibility for this Quest.')).toBeVisible()
+    expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
   }
 }
 
@@ -265,6 +279,15 @@ export const QuestPageSignedInWithActiveWallet: Story = {
     getActiveWallet: async () => {
       return '0x123'
     }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await waitFor(() => {
+      expect(canvas.queryByText('0x123')).toBeInTheDocument()
+    })
+
+    expect(canvas.getByRole('button', { name: /play/i })).toBeEnabled()
   }
 }
 
