@@ -40,7 +40,7 @@ export function RewardsWrapper({
   if (rewardsQuery.isLoading) {
     return (
       <Rewards>
-        <LoadingSpinner className={styles.loadingSpinner} />
+        <LoadingSpinner className={styles.loadingSpinner} aria-label="loading rewards" />
       </Rewards>
     )
   }

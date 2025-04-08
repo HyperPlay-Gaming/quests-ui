@@ -215,14 +215,6 @@ const mockProps: QuestDetailsWrapperProps = {
   }
 }
 
-async function waitForLoadingToBeRemoved(canvasElement: HTMLElement) {
-  // if we rerun tests, the loading element already and waitForElementToBeRemoved throws an error
-  const loading = within(canvasElement).queryByLabelText('Loading')
-  if (loading) {
-    await waitForElementToBeRemoved(() => loading)
-  }
-}
-
 export const QuestPageNotSignedIn: Story = {
   args: {
     ...mockProps,
@@ -230,8 +222,14 @@ export const QuestPageNotSignedIn: Story = {
     isQuestsPage: true
   },
   play: async ({ canvasElement }) => {
-    await waitForLoadingToBeRemoved(canvasElement)
     const canvas = within(canvasElement)
+    
+    // Wait for the loading spinner to disappear
+    await waitForElementToBeRemoved(() => canvas.getByLabelText('loading quest details'))
+
+    // Wait for the loading spinner to disappear
+    await waitForElementToBeRemoved(() => canvas.getByLabelText('loading rewards'))
+    
     expect(
       canvas.getByText('Log into HyperPlay to track quest eligibility')
     ).toBeVisible()
@@ -244,7 +242,7 @@ export const QuestPageSignedIn: Story = {
     ...mockProps,
     isQuestsPage: true,
     isSignedIn: true
-  },
+  }
 }
 
 export const QuestPageSignedInNoActiveWallet: Story = {
@@ -252,7 +250,7 @@ export const QuestPageSignedInNoActiveWallet: Story = {
     ...mockProps,
     isQuestsPage: true,
     isSignedIn: true
-  },
+  }
 }
 
 export const QuestPageSignedInWithActiveWallet: Story = {
@@ -263,7 +261,7 @@ export const QuestPageSignedInWithActiveWallet: Story = {
     getActiveWallet: async () => {
       return '0x123'
     }
-  },
+  }
 }
 
 export const QuestPageSignedInEligible: Story = {

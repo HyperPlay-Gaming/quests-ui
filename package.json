@@ -10,7 +10,7 @@
     "prettier-fix": "prettier --write .",
     "storybook": "storybook dev -p 6007",
     "build-storybook": "storybook build",
-    "test-storybook": "test-storybook",
+    "test-storybook": "test-storybook --skipTags=\"skip-test\" --url http://localhost:6007",
     "test": "jest"
   },
   "keywords": [],

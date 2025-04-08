@@ -284,7 +284,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
   ) {
     questDetails = (
       <DarkContainer className={cn(styles.loadingContainer, className)}>
-        <LoadingSpinner className={styles.loadingSpinner} />
+        <LoadingSpinner className={styles.loadingSpinner} aria-label="loading quest details" />
       </DarkContainer>
     )
   }
