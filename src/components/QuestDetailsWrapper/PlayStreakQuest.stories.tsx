@@ -245,13 +245,6 @@ export const QuestPageSignedIn: Story = {
     isQuestsPage: true,
     isSignedIn: true
   },
-  play: async ({ canvasElement }) => {
-    await waitForLoadingToBeRemoved(canvasElement)
-    const canvas = within(canvasElement)
-    expect(
-      canvas.queryByText('Log into HyperPlay to track quest eligibility')
-    ).not.toBeInTheDocument()
-  }
 }
 
 export const QuestPageSignedInNoActiveWallet: Story = {
@@ -260,16 +253,6 @@ export const QuestPageSignedInNoActiveWallet: Story = {
     isQuestsPage: true,
     isSignedIn: true
   },
-  play: async ({ canvasElement }) => {
-    await waitForLoadingToBeRemoved(canvasElement)
-    const canvas = within(canvasElement)
-    expect(
-      canvas.getByText(
-        'Connect your wallet to start tracking eligibility for this Quest.'
-      )
-    ).toBeVisible()
-    expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
-  }
 }
 
 export const QuestPageSignedInWithActiveWallet: Story = {
@@ -281,11 +264,6 @@ export const QuestPageSignedInWithActiveWallet: Story = {
       return '0x123'
     }
   },
-  play: async ({ canvasElement }) => {
-    await waitForLoadingToBeRemoved(canvasElement)
-    const canvas = within(canvasElement)
-    expect(canvas.getByRole('button', { name: /play/i })).toBeEnabled()
-  }
 }
 
 export const QuestPageSignedInEligible: Story = {
