@@ -12,15 +12,19 @@ import {
   waitForElementToBeRemoved,
   waitFor
 } from '@storybook/test'
+import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
   title: 'Components/QuestDetailsWrapper/PlayStreak',
-  render: (args) => (
-    <div style={{ height: 'calc(100vh - 100px)' }}>
-      {<QuestDetailsWrapper {...args} />}
-    </div>
-  )
+  decorators: [createQueryClientDecorator],
+  render: (args) => {
+    return (
+      <div style={{ height: 'calc(100vh - 100px)' }}>
+        {<QuestDetailsWrapper {...args} />}
+      </div>
+    )
+  }
 }
 
 export default meta
@@ -249,6 +253,18 @@ export const QuestPageNotSignedIn: Story = {
   }
 }
 
+async function waitForLoadingSpinnerToDisappear(
+  canvas: ReturnType<typeof within>
+) {
+  await waitForElementToBeRemoved(() =>
+    canvas.getByLabelText('loading quest details')
+  )
+
+  await waitForElementToBeRemoved(() =>
+    canvas.getByLabelText('loading rewards')
+  )
+}
+
 export const QuestPageSignedIn: Story = {
   args: {
     ...mockProps,
@@ -257,6 +273,7 @@ export const QuestPageSignedIn: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
     expect(
       canvas.queryByText('Log into HyperPlay to track quest eligibility')
     ).not.toBeInTheDocument()
@@ -271,6 +288,7 @@ export const QuestPageSignedInNoActiveWallet: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
     expect(
       canvas.getByText(
         'Connect your wallet to start tracking eligibility for this Quest.'
@@ -291,6 +309,8 @@ export const QuestPageSignedInWithActiveWallet: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
+
+    await waitForLoadingSpinnerToDisappear(canvas)
 
     await waitFor(() => {
       expect(canvas.queryByText('0x123')).toBeInTheDocument()
