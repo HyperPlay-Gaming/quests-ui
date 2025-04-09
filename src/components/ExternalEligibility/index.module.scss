@@ -1,0 +1,25 @@
+.root {
+  background-color: var(--color-neutral-800);
+  padding: var(--space-2lg) var(--space-md);
+  border: 2px solid var(--color-stroke-01);
+  border-radius: var(--space-xs-fixed);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.link {
+  border: 1px solid var(--color-secondary-300);
+  color: var(--color-secondary-300) !important;
+  border-radius: var(--space-xs-fixed);
+  padding: var(--space-2xs) var(--space-sm);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
