@@ -18,11 +18,10 @@ import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
 import { useTrackQuestViewed } from '../../hooks/useTrackQuestViewed'
 import cn from 'classnames'
 import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
-import { PlayStreakEligibilityWrapper } from '../PlayStreakEligibilityWrapper'
 import { RewardsWrapper } from '../RewardsWrapper'
 import { QuestWrapperContextValue } from '@/types/quests'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
-
+import { Eligibility } from '../Eligibility'
 import { useAccount } from 'wagmi'
 import { useGetGameNameByProjectId } from '../../hooks/useGetGameNameByProjectId'
 
@@ -165,6 +164,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       ?.length
 
   const i18n: QuestDetailsTranslations = {
+    endsOn: t('quest.endsOn', 'Quest ends'),
+    endedOn: t('quest.endedOn', 'Quest ended'),
     rewards: t('quest.reward', 'Rewards'),
     claim: t('quest.claim', 'Claim'),
     signIn: t('quest.signIn', 'Sign in'),
@@ -240,6 +241,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       onPlayClick: onPlayClickHandler,
       gameTitle: gameName || '',
       questType: questMeta.type,
+      endDate: questMeta.end_date,
       title: questMeta.name,
       description: (
         <MarkdownDescription classNames={{ root: styles.markdownDescription }}>
@@ -258,10 +260,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       i18n,
       isSignedIn,
       eligibilityComponent: hideEligibilitySection ? null : (
-        <PlayStreakEligibilityWrapper
-          questId={selectedQuestId}
-          streakIsProgressing={props.streakIsProgressing}
-        />
+        <Eligibility quest={questMeta} {...props} />
       ),
       rewardsComponent: (
         <RewardsWrapper questId={selectedQuestId} hideClaim={hideClaim} />

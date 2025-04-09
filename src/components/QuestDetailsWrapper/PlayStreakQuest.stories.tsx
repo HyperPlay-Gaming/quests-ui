@@ -33,6 +33,8 @@ type Story = StoryObj<typeof QuestDetailsWrapper>
 
 const mockQuest: Quest = {
   id: 1,
+  end_date: null,
+  start_date: null,
   project_id:
     '0x36484d1723bba04a21430c5b50fc62737e4eca581cd806a36665a931e20d6f06',
   name: "🦖 Craft World's Ultimate Play Streak Quest 🔥 🚀",
