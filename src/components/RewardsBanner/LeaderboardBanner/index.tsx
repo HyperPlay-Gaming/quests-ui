@@ -3,8 +3,10 @@ import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { Quest } from '@hyperplay/utils'
 import styles from './index.module.scss'
 import cn from 'classnames'
-import { getQuestRewardsClaimPeriod } from '@/helpers/rewards'
+import { canClaimLeaderboardReward } from '@/helpers/rewards'
 import { HTMLAttributes } from 'react'
+import dayjs from 'dayjs'
+
 export type LeaderboardBannerProps = HTMLAttributes<HTMLDivElement> & {
   quest: Quest
 }
@@ -20,50 +22,52 @@ export function LeaderboardBanner({
     enabled: isSignedIn
   })
 
-  if (!quest.end_date || isLoading) {
+  const shouldHideBanner = !quest.end_date || isLoading
+  
+  if (shouldHideBanner) {
     return null
   }
 
-  const isQuestCompleted = quest.status === 'COMPLETED'
+  const questEndDate = dayjs(quest.end_date)
+  const questHasNotEndedYet = questEndDate.isAfter(dayjs())
 
-  if (!isQuestCompleted) {
+  console.log('questHasNotEndedYet', questHasNotEndedYet)
+  
+  if (questHasNotEndedYet) {
     return null
   }
 
-  const { isInWaitPeriod, isInClaimPeriod } = getQuestRewardsClaimPeriod(
-    quest.end_date
+  const finalizingMessage = (
+    <div className={cn(styles.root, styles.finalizing, className)}>
+      Thanks for participating! The game studio is finalizing results. You'll be
+      notified when you're able to claim your reward here.*
+    </div>
   )
 
-  if (isInWaitPeriod) {
-    // blue state
-    return (
-      <div className={cn(styles.root, styles.finalizing, className)}>
-        Thanks for participating! The game studio is finalizing results. You’ll
-        be notified when you’re able to claim your reward here.*
-      </div>
-    )
+  const notEligibleMessage = (
+    <div className={cn(styles.root, styles.notEligible, className)}>
+      You didn't qualify for a reward. HyperPlay has tons of quests to try—the
+      next might be yours!
+    </div>
+  )
+
+  const claimableMessage = (
+    <div className={cn(styles.root, styles.claimable, className)}>
+      Thanks for participating! The game studio is finalizing results. You'll be
+      notified when you're able to claim your reward here.*
+    </div>
+  )
+
+  const isQuestClaimable = quest.status === 'CLAIMABLE'
+  
+  if (!isQuestClaimable) {
+    return finalizingMessage
   }
 
-  if (isInClaimPeriod) {
-    const isEligible = (eligibilityData?.amount ?? 0) > 0
-    if (isEligible) {
-      // green state
-      return (
-        <div className={cn(styles.root, styles.claimable, className)}>
-          Thanks for participating! The game studio is finalizing results.
-          You’ll be notified when you’re able to claim your reward here.*
-        </div>
-      )
-    } else {
-      // red state
-      return (
-        <div className={cn(styles.root, styles.notEligible, className)}>
-          You didn’t qualify for a reward You didn't qualify this time, but
-          HyperPlay has tons of quests to try—the next might be yours!
-        </div>
-      )
-    }
+  if (!eligibilityData) {
+    return notEligibleMessage
   }
 
-  return null
+  const userCanClaimReward = canClaimLeaderboardReward(quest, eligibilityData)
+  return userCanClaimReward ? claimableMessage : notEligibleMessage
 }
