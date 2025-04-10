@@ -3,15 +3,15 @@ import { ExternalEligibility, Quest, UserPlayStreak } from '@hyperplay/utils'
 
 export function canClaimLeaderboardReward(
   quest: Quest,
-  externalEligibility: ExternalEligibility | null | undefined
+  externalEligibility: ExternalEligibility
 ) {
   if (quest.status !== 'CLAIMABLE') {
     return false
   }
-  return externalEligibility?.amount > 0
+  return externalEligibility.amount > 0
 }
 
-export function canClaimPlayStreakReward(
+function canClaimPlayStreakReward(
   quest: Quest,
   questPlayStreakData: UserPlayStreak
 ) {
