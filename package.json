@@ -12,7 +12,7 @@
     "storybook": "storybook dev -p 6007",
     "build-storybook": "storybook build",
     "test-storybook": "test-storybook --skipTags=\"skip-test\" --url http://localhost:6007",
-    "test": "jest"
+    "test:unit": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -65,7 +65,6 @@
     "eslint-plugin-storybook": "^0.9.0",
     "ethers": "^6.13.5",
     "i18next": "^23.12.3",
-    "jest": "^29.7.0",
     "mobx": "^6.13.3",
     "postcss": "^8.4.47",
     "postcss-preset-mantine": "^1.17.0",
@@ -77,11 +76,11 @@
     "sass-embedded": "^1.77.8",
     "siwe": "^2.3.2",
     "storybook": "^8.3.4",
-    "ts-jest": "^29.2.5",
     "typescript": "^5.4.5",
     "viem": "^2.19.4",
     "vite": "^5.4.0",
     "vite-plugin-dts": "^4.0.3",
+    "vitest": "^3.1.1",
     "wagmi": "^2.14.12"
   },
   "peerDependencies": {
