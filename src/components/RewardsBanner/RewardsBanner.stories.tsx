@@ -1,24 +1,27 @@
-import { Quest } from '@hyperplay/utils'
 import type { Meta, StoryObj } from '@storybook/react'
-import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
+import RewardsBanner from '.'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
+import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
+import { QuestDetailsWrapperProps } from '../QuestDetailsWrapper'
+import { Quest } from '@hyperplay/utils'
+import dayjs from 'dayjs'
 import styles from './story-styles.module.scss'
 
 const mockQuest: Quest = {
   id: 1,
-  end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
+  end_date: dayjs().add(1, 'year').toISOString(),
   start_date: null,
   project_id:
     '0x36484d1723bba04a21430c5b50fc62737e4eca581cd806a36665a931e20d6f06',
   name: "🦖 Craft World's Ultimate Play Streak Quest 🔥 🚀",
   type: 'LEADERBOARD',
-  status: 'ACTIVE',
+  status: 'COMPLETED',
   description: `Embrace the Ultimate Play Streak Quest by Craft World! 🎮 Play daily to earn rewards, contribute to the Masterpiece, and climb the leaderboard. 🏆
-  
-  👉 Quest: Play 5+ minutes/day for 7 consecutive days within our 30-day campaign.
-  💰 Rewards: 200,000 in-game Dyno Coins and Game7 Credits! Dyno Coins are THE in-game currency for resources.
-  
-  Rise among Craft World's top ranks. 🚀 Join now and make your mark before the masterpiece is completed! 🔥🎮`,
+    
+    👉 Quest: Play 5+ minutes/day for 7 consecutive days within our 30-day campaign.
+    💰 Rewards: 200,000 in-game Dyno Coins and Game7 Credits! Dyno Coins are THE in-game currency for resources.
+    
+    Rise among Craft World's top ranks. 🚀 Join now and make your mark before the masterpiece is completed! 🔥🎮`,
   rewards: [
     {
       id: 1,
@@ -55,7 +58,6 @@ const mockQuest: Quest = {
 }
 
 const mockProps: QuestDetailsWrapperProps = {
-  className: styles.root,
   selectedQuestId: 1,
   getExternalEligibility: async () => {
     return null
@@ -156,36 +158,72 @@ const mockProps: QuestDetailsWrapperProps = {
   }
 }
 
-const meta: Meta<typeof QuestDetailsWrapper> = {
-  component: QuestDetailsWrapper,
-  title: 'Components/QuestDetailsWrapper/Leaderboard',
+const meta: Meta<typeof RewardsBanner> = {
+  component: RewardsBanner,
+  title: 'Components/RewardsBanner',
   decorators: [createQueryClientDecorator],
-  args: mockProps,
+  args: {
+    quest: mockQuest
+  },
   render: (args) => {
     return (
-      <div style={{ height: 'calc(100vh - 100px)' }}>
-        {<QuestDetailsWrapper {...args} />}
-      </div>
+      <QuestWrapperProvider {...mockProps}>
+        <div className={styles.root}>
+          <RewardsBanner {...args} />
+        </div>
+      </QuestWrapperProvider>
     )
   }
 }
 
 export default meta
 
-type Story = StoryObj<typeof QuestDetailsWrapper>
+type Story = StoryObj<typeof RewardsBanner>
 
-export const Default: Story = {
-  args: {}
+export const NotSignedIn: Story = {
+  render: (args) => {
+    return (
+      <QuestWrapperProvider {...mockProps} isSignedIn={false}>
+        <div className={styles.root}>
+          <RewardsBanner {...args} />
+        </div>
+      </QuestWrapperProvider>
+    )
+  }
 }
 
-export const EndedQuest: Story = {
+export const InWaitPeriod: Story = {
   args: {
-    ...mockProps,
-    getQuest: async () => {
-      return {
-        ...mockQuest,
-        end_date: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
-      }
+    quest: {
+      ...mockQuest,
+      end_date: dayjs().add(1, 'days').toISOString()
     }
+  },
+  render: (args) => {
+    return (
+      <QuestWrapperProvider {...mockProps}>
+        <div className={styles.root}>
+          <RewardsBanner {...args} />
+        </div>
+      </QuestWrapperProvider>
+    )
+  }
+}
+
+export const InClaimPeriodAndNotEligible: Story = {
+  args: {
+    quest: {
+      ...mockQuest,
+      end_date: dayjs().subtract(7, 'days').toISOString()
+    }
+  },
+  render: (args) => {
+    return (
+      <QuestWrapperProvider {...mockProps}>
+        <div className={styles.root}>
+          <RewardsBanner {...args} />
+        </div>
+      </QuestWrapperProvider>
+    )
   }
 }

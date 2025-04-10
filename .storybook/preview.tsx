@@ -45,6 +45,7 @@ createAppKit({
   }
 })
 const preview: Preview = {
+  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <I18nextProvider i18n={i18n}>

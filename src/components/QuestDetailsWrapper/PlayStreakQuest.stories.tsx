@@ -112,6 +112,9 @@ const mockUserPlayStreak: UserPlayStreak = {
 const mockProps: QuestDetailsWrapperProps = {
   className: styles.root,
   selectedQuestId: 1,
+  getExternalEligibility: async () => {
+    return null
+  },
   getActiveWallet: async () => {
     return null
   },

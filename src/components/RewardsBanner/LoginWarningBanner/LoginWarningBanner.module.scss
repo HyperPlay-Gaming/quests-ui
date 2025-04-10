@@ -1,12 +1,7 @@
 .root {
   background-color: var(--color-stroke-warning-weak);
-  width: calc(100% + 2 * var(--space-md));
-  margin-left: calc(-1 * var(--space-md));
-  margin-right: calc(-1 * var(--space-md));
-  margin-top: calc(-1 * var(--space-md-fixed));
   border-top: 1px solid var(--color-stroke-01);
   border-bottom: 1px solid var(--color-stroke-warning-weak);
-  margin-bottom: var(--space-md-fixed);
 
   display: flex;
   align-items: center;

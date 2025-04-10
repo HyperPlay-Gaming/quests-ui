@@ -6,7 +6,7 @@ import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { RewardsRow, Rewards, LoadingSpinner } from '@hyperplay/ui'
 import { RewardWrapper } from '../RewardWrapper'
 import styles from './index.module.scss'
-import { LoginWarningBanner } from './LoginWarningBanner'
+import RewardsBanner from '../RewardsBanner'
 
 export function RewardsWrapper({
   questId,
@@ -15,13 +15,8 @@ export function RewardsWrapper({
   questId: number | null
   hideClaim?: boolean
 }) {
-  const {
-    isSignedIn,
-    getQuest,
-    logError,
-    getUserPlayStreak,
-    getExternalTaskCredits
-  } = useQuestWrapper()
+  const { getQuest, logError, getUserPlayStreak, getExternalTaskCredits } =
+    useQuestWrapper()
 
   const { data: questQuery } = useGetQuest(questId, getQuest)
 
@@ -78,7 +73,8 @@ export function RewardsWrapper({
 
   return (
     <Rewards>
-      {!isSignedIn && <LoginWarningBanner />} {rewardsContent}
+      <RewardsBanner quest={questMeta} className={styles.banner} />
+      {rewardsContent}
     </Rewards>
   )
 }

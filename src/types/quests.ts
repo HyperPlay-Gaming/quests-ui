@@ -7,7 +7,8 @@ import {
   RewardClaimSignature,
   Runner,
   UserPlayStreak,
-  LogOptions
+  LogOptions,
+  ExternalEligibility
 } from '@hyperplay/utils'
 import { TFunction } from 'i18next'
 import { TrackEventFn } from './analytics'
@@ -39,6 +40,9 @@ export interface QuestWrapperContextValue {
     gameplayWalletSectionVisible: boolean
     questsOverlayClaimCtaEnabled?: boolean
   }
+  getExternalEligibility: (
+    questId: number
+  ) => Promise<ExternalEligibility | null>
   getQuest: (questId: number) => Promise<Quest>
   getActiveWallet: () => Promise<string | null | undefined>
   getGameplayWallets: () => Promise<{ id: number; wallet_address: string }[]>

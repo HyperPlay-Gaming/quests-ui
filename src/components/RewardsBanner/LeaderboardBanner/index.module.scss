@@ -1,0 +1,21 @@
+.root {
+  padding: var(--space-sm) var(--space-lg);
+}
+
+.finalizing {
+  background-color: var(--fill-info-weak);
+  border-bottom: 1px solid var(--border-info-weak);
+  border-top: 1px solid var(--color-stroke-01);
+}
+
+.claimable {
+  background-color: var(--fill-success-weak);
+  border-bottom: 1px solid var(--border-success-weak);
+  border-top: 1px solid var(--color-stroke-01);
+}
+
+.notEligible {
+  background-color: var(--fill-warning-weak);
+  border-bottom: 1px solid var(--border-warning-weak);
+  border-top: 1px solid var(--color-stroke-01);
+}
