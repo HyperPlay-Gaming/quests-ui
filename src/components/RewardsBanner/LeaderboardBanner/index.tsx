@@ -41,8 +41,6 @@ export function LeaderboardBanner({
   const questEndDate = dayjs(quest.end_date)
   const questHasNotEndedYet = questEndDate.isAfter(dayjs())
 
-  console.log('questHasNotEndedYet', questHasNotEndedYet)
-
   if (questHasNotEndedYet) {
     return null
   }

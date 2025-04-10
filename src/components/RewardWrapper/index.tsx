@@ -32,6 +32,7 @@ import {
 import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
+import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -98,6 +99,10 @@ export function RewardWrapper({
   >(null)
 
   const connectorName = String(account?.connector?.name)
+
+  const { canClaim } = useCanClaimReward({
+    questId: questMeta.id
+  })
 
   // Contract interactions
   const { writeContractAsync, isPending: isPendingWriteContract } =
@@ -576,7 +581,7 @@ export function RewardWrapper({
         reward={{ ...reward, claimPending: isClaiming }}
         key={reward.title}
         onClaim={async () => onClaim(reward)}
-        hideClaim={hideClaim}
+        hideClaim={hideClaim || !canClaim}
       />
       {alertProps ? (
         <div className={styles.alertCard}>
