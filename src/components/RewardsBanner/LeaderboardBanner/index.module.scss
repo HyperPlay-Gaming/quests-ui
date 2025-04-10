@@ -1,5 +1,7 @@
 .root {
   padding: var(--space-sm) var(--space-lg);
+  display: flex;
+  gap: var(--space-xs);
 }
 
 .finalizing {
@@ -18,4 +20,23 @@
   background-color: var(--fill-warning-weak);
   border-bottom: 1px solid var(--border-warning-weak);
   border-top: 1px solid var(--color-stroke-01);
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+}
+
+.finalizingIcon {
+  color: var(--icon-info);
+}
+
+.notEligibleIcon {
+  color: var(--icon-warning);
+}
+
+.claimableIcon {
+  color: var(--icon-success);
 }
