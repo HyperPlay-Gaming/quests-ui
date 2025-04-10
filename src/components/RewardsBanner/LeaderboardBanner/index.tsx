@@ -53,8 +53,7 @@ export function LeaderboardBanner({
 
   const claimableMessage = (
     <div className={cn(styles.root, styles.claimable, className)}>
-      Thanks for participating! The game studio is finalizing results. You'll be
-      notified when you're able to claim your reward here.*
+      You qualified for a Reward! The game studio has finalized results and you’re eligible—claim your reward below.*
     </div>
   )
 

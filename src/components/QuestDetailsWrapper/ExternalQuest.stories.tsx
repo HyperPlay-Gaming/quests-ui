@@ -3,10 +3,11 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import styles from './story-styles.module.scss'
+import dayjs from 'dayjs'
 
 const mockQuest: Quest = {
   id: 1,
-  end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
+  end_date: dayjs().add(1, 'year').toISOString(),
   start_date: null,
   project_id:
     '0x36484d1723bba04a21430c5b50fc62737e4eca581cd806a36665a931e20d6f06',
@@ -174,17 +175,56 @@ export default meta
 
 type Story = StoryObj<typeof QuestDetailsWrapper>
 
-export const Default: Story = {
+export const NotSignedIn: Story = {
+  args: {
+    ...mockProps,
+    isSignedIn: false
+  }
+}
+
+export const InProgressQuest: Story = {
   args: {}
 }
 
-export const EndedQuest: Story = {
+export const InWaitPeriod: Story = {
   args: {
     ...mockProps,
     getQuest: async () => {
       return {
         ...mockQuest,
-        end_date: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
+        end_date: dayjs().subtract(7, 'days').toISOString()
+      }
+    }
+  }
+}
+
+export const InClaimPeriodAndNotEligible: Story = {
+  args: {
+    ...mockProps,
+    getQuest: async () => {
+      return {
+        ...mockQuest,
+        status: 'CLAIMABLE',
+        end_date: dayjs().subtract(7, 'days').toISOString()
+      }
+    }
+  }
+}
+
+export const InClaimPeriodAndEligible: Story = {
+  args: {
+    ...mockProps,
+    getQuest: async () => {
+      return {
+        ...mockQuest,
+        status: 'CLAIMABLE',
+        end_date: dayjs().subtract(7, 'days').toISOString()
+      }
+    },
+    getExternalEligibility: async () => {
+      return {
+        walletOrEmail: '0x123',
+        amount: 100
       }
     }
   }

@@ -19,7 +19,7 @@ export default function RewardsBanner({
   }
 
   if (quest.type === 'LEADERBOARD') {
-    return <LeaderboardBanner quest={quest} />
+    return <LeaderboardBanner quest={quest} className={className} />
   }
 
   return null
