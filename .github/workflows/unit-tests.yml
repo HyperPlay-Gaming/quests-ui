@@ -1,0 +1,25 @@
+name: 'Storybook Tests'
+
+on:
+  pull_request:
+    branches: [main, stable]
+  workflow_dispatch:
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run tests
+        run: pnpm run test:unit
