@@ -3,7 +3,7 @@ import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { Quest } from '@hyperplay/utils'
 import styles from './index.module.scss'
 import cn from 'classnames'
-import { getQuestRewardsPeriod } from '@/helpers/getQuestRewardsPeriod'
+import { getQuestRewardsClaimPeriod } from '@/helpers/rewards'
 import { HTMLAttributes } from 'react'
 export type LeaderboardBannerProps = HTMLAttributes<HTMLDivElement> & {
   quest: Quest
@@ -30,7 +30,7 @@ export function LeaderboardBanner({
     return null
   }
 
-  const { isInWaitPeriod, isInClaimPeriod } = getQuestRewardsPeriod(
+  const { isInWaitPeriod, isInClaimPeriod } = getQuestRewardsClaimPeriod(
     quest.end_date
   )
 
