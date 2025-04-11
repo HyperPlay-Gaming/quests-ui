@@ -11,7 +11,7 @@ export function LoginWarningBanner() {
   return (
     <div className={styles.root}>
       <IconAlertTriangle className={styles.icon} />
-      <span className="eyebrow weight--bold">
+      <span className="eyebrow">
         {t(
           'quest.rewards.loginWarningBanner',
           'Log into HyperPlay to track quest eligibility'
