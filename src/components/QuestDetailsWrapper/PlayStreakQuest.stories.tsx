@@ -238,6 +238,7 @@ export const QuestPageNotSignedIn: Story = {
       canvas.getByText('Log into HyperPlay to track quest eligibility')
     ).toBeVisible()
     expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
+    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(0)
   }
 }
 
@@ -253,6 +254,7 @@ export const QuestPageSignedIn: Story = {
     expect(
       canvas.queryByText('Log into HyperPlay to track quest eligibility')
     ).not.toBeInTheDocument()
+    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(0)
   }
 }
 
@@ -271,6 +273,7 @@ export const QuestPageSignedInNoActiveWallet: Story = {
       )
     ).toBeVisible()
     expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
+    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(0)
   }
 }
 
@@ -307,6 +310,13 @@ export const QuestPageSignedInEligible: Story = {
     checkG7ConnectionStatus: async () => {
       return true
     }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(2)
+    expect(canvas.queryAllByRole('button', { name: /claim/i })[0]).toBeEnabled()
+    expect(canvas.queryAllByRole('button', { name: /claim/i })[1]).toBeEnabled()
   }
 }
 
@@ -333,6 +343,13 @@ export const OverlaySignedInEligible: Story = {
     checkG7ConnectionStatus: async () => {
       return true
     }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(2)
+    expect(canvas.queryAllByRole('button', { name: /claim/i })[0]).toBeEnabled()
+    expect(canvas.queryAllByRole('button', { name: /claim/i })[1]).toBeEnabled()
   }
 }
 
