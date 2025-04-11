@@ -1,4 +1,4 @@
-import { IconAlertTriangle } from '@tabler/icons-react'
+import { Images } from '@hyperplay/ui'
 import styles from './LoginWarningBanner.module.scss'
 import { useTranslation } from 'react-i18next'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
@@ -10,7 +10,7 @@ export function LoginWarningBanner() {
 
   return (
     <div className={styles.root}>
-      <IconAlertTriangle className={styles.icon} />
+      <Images.AlertTriangle className={styles.icon} />
       <span className="eyebrow">
         {t(
           'quest.rewards.loginWarningBanner',

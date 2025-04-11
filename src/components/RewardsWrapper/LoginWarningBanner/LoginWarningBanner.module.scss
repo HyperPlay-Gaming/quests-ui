@@ -15,5 +15,11 @@
 }
 
 .icon {
+  stroke: var(--icon-warning);
   color: var(--icon-warning);
+  width: 24px;
+  height: 24px;
+  > path {
+    stroke-width: 1px;
+  }
 }
