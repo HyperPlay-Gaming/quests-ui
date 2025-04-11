@@ -53,7 +53,7 @@ export function LeaderboardBanner({
         height={24}
       />
       <div className={styles.textContainer}>
-        <span className="eyebrow weight--bold">
+        <span className="eyebrow">
           {t(
             'quest.rewards.leaderboardBanner.finalizing.title',
             "Thanks for participating! The game studio is finalizing results. You'll be notified when you're able to claim your reward here.*"
@@ -77,7 +77,7 @@ export function LeaderboardBanner({
         height={24}
       />
       <div className={styles.textContainer}>
-        <span className="eyebrow weight--bold">
+        <span className="eyebrow">
           {t(
             'quest.rewards.leaderboardBanner.notEligible.title',
             "You didn't qualify for a reward"
@@ -101,7 +101,7 @@ export function LeaderboardBanner({
         height={24}
       />
       <div className={styles.textContainer}>
-        <span className="eyebrow weight--bold">
+        <span className="eyebrow">
           {t(
             'quest.rewards.leaderboardBanner.claimable.title',
             'You qualified for a Reward! The game studio has finalized results and you’re eligible—claim your reward below.*'
