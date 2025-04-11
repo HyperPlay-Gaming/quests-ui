@@ -181,11 +181,25 @@ export const NotSignedIn: Story = {
   args: {
     ...mockProps,
     isSignedIn: false
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(
+      canvas.getByText('Log into HyperPlay to track quest eligibility')
+    ).toBeInTheDocument()
   }
 }
 
 export const InProgressQuest: Story = {
-  args: {}
+  args: {},
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(
+      canvas.queryByRole('button', { name: 'Claim' })
+    ).not.toBeInTheDocument()
+  }
 }
 
 export const InWaitPeriod: Story = {
@@ -206,6 +220,9 @@ export const InWaitPeriod: Story = {
         "Thanks for participating! The game studio is finalizing results. You'll be notified when you're able to claim your reward here.*"
       )
     ).toBeInTheDocument()
+    expect(
+      canvas.queryByRole('button', { name: 'Claim' })
+    ).not.toBeInTheDocument()
   }
 }
 
@@ -226,6 +243,9 @@ export const InClaimPeriodAndNotEligible: Story = {
     expect(
       canvas.getByText("You didn't qualify for a reward")
     ).toBeInTheDocument()
+    expect(
+      canvas.queryByRole('button', { name: 'Claim' })
+    ).not.toBeInTheDocument()
   }
 }
 
@@ -254,5 +274,6 @@ export const InClaimPeriodAndEligible: Story = {
         "You qualified for a Reward! The game studio has finalized results and you're eligible—claim your reward below.*"
       )
     ).toBeInTheDocument()
+    expect(canvas.queryByRole('button', { name: 'Claim' })).toBeInTheDocument()
   }
 }
