@@ -78,7 +78,7 @@ export function RewardsWrapper({
 
   return (
     <Rewards>
-      {!isSignedIn && <LoginWarningBanner />} {rewardsContent}
+      {!isSignedIn ? <LoginWarningBanner /> : null} {rewardsContent}
     </Rewards>
   )
 }
