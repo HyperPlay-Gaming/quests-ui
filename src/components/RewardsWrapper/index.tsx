@@ -7,6 +7,7 @@ import { RewardsRow, Rewards, LoadingSpinner } from '@hyperplay/ui'
 import { RewardWrapper } from '../RewardWrapper'
 import styles from './index.module.scss'
 import RewardsBanner from '../RewardsBanner'
+import { useGetExternalEligibility } from '@/hooks/useGetExternalEligibility'
 
 export function RewardsWrapper({
   questId,
@@ -15,8 +16,14 @@ export function RewardsWrapper({
   questId: number | null
   hideClaim?: boolean
 }) {
-  const { getQuest, logError, getUserPlayStreak, getExternalTaskCredits } =
-    useQuestWrapper()
+  const {
+    isSignedIn,
+    getQuest,
+    logError,
+    getUserPlayStreak,
+    getExternalTaskCredits,
+    getExternalEligibility
+  } = useQuestWrapper()
 
   const { data: questQuery } = useGetQuest(questId, getQuest)
 
@@ -30,6 +37,12 @@ export function RewardsWrapper({
     getQuest,
     getExternalTaskCredits,
     logError
+  })
+
+  const { data: externalEligibilityQuery } = useGetExternalEligibility({
+    questId,
+    getExternalEligibility,
+    enabled: isSignedIn && questId !== null
   })
 
   if (rewardsQuery.isLoading) {
@@ -61,6 +74,7 @@ export function RewardsWrapper({
               reward={reward}
               questId={questId}
               questMeta={questMeta}
+              externalEligibility={externalEligibilityQuery}
               questPlayStreakData={questPlayStreakData?.userPlayStreak}
               invalidateQuestPlayStreakQuery={invalidateQuestPlayStreakQuery}
               hideClaim={hideClaim}

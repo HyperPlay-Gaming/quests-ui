@@ -6,7 +6,7 @@ import {
 import { ExternalEligibility } from '@hyperplay/utils'
 
 type UseGetExternalEligibilityProps = {
-  questId: number
+  questId: number | null
   getExternalEligibility: (
     questId: number
   ) => Promise<ExternalEligibility | null>
@@ -21,7 +21,12 @@ export function useGetExternalEligibility({
   const queryClient = useQueryClient()
   const query = useQuery({
     queryKey,
-    queryFn: async () => getExternalEligibility(questId),
+    queryFn: async () => {
+      if (!questId) {
+        return null
+      }
+      return getExternalEligibility(questId)
+    },
     ...options
   })
   return {

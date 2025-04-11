@@ -1,4 +1,3 @@
-import { getPlaystreakQuestStatus } from '@/helpers/getPlaystreakQuestStatus'
 import { getGetQuestLogInfoQueryKey } from '@/helpers/getQueryKeys'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
 import { mintReward } from '@/helpers/mintReward'
@@ -8,6 +7,7 @@ import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
 import {
   ConfirmClaimParams,
+  ExternalEligibility,
   Quest,
   Reward,
   RewardClaimSignature,
@@ -33,6 +33,7 @@ import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
+import { canClaimReward } from '@/helpers/rewards'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -54,6 +55,7 @@ interface RewardWrapperProps {
   questId: number | null
   questMeta: Quest
   questPlayStreakData: UserPlayStreak | undefined | null
+  externalEligibility: ExternalEligibility | undefined | null
   invalidateQuestPlayStreakQuery: () => Promise<void>
   hideClaim?: boolean
 }
@@ -63,6 +65,7 @@ export function RewardWrapper({
   questId,
   questMeta,
   questPlayStreakData,
+  externalEligibility,
   invalidateQuestPlayStreakQuery,
   hideClaim
 }: RewardWrapperProps) {
@@ -154,15 +157,11 @@ export function RewardWrapper({
   // Translation override
   const t = tOverride || tOriginal
 
-  let isEligible = false
-
-  if (questPlayStreakData) {
-    const playstreakQuestStatus = getPlaystreakQuestStatus(
-      questMeta,
-      questPlayStreakData
-    )
-    isEligible = playstreakQuestStatus === 'READY_FOR_CLAIM'
-  }
+  const isEligible = canClaimReward({
+    quest: questMeta,
+    externalEligibility: externalEligibility,
+    playstreakData: questPlayStreakData
+  })
 
   function trackRewardClaimMutationError(error: Error) {
     console.error('Error claiming rewards:', error)
