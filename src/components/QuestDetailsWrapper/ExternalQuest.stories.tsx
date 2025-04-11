@@ -4,6 +4,8 @@ import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import styles from './story-styles.module.scss'
 import dayjs from 'dayjs'
+import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
+import { within, expect } from '@storybook/test'
 
 const mockQuest: Quest = {
   id: 1,
@@ -195,6 +197,15 @@ export const InWaitPeriod: Story = {
         end_date: dayjs().subtract(7, 'days').toISOString()
       }
     }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(
+      canvas.getByText(
+        "Thanks for participating! The game studio is finalizing results. You'll be notified when you're able to claim your reward here.*"
+      )
+    ).toBeInTheDocument()
   }
 }
 
@@ -208,6 +219,13 @@ export const InClaimPeriodAndNotEligible: Story = {
         end_date: dayjs().subtract(7, 'days').toISOString()
       }
     }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(
+      canvas.getByText("You didn't qualify for a reward")
+    ).toBeInTheDocument()
   }
 }
 
@@ -227,5 +245,14 @@ export const InClaimPeriodAndEligible: Story = {
         amount: 100
       }
     }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(
+      canvas.getByText(
+        "You qualified for a Reward! The game studio has finalized results and you're eligible—claim your reward below.*"
+      )
+    ).toBeInTheDocument()
   }
 }

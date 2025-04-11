@@ -104,7 +104,7 @@ export function LeaderboardBanner({
         <span className="eyebrow">
           {t(
             'quest.rewards.leaderboardBanner.claimable.title',
-            'You qualified for a Reward! The game studio has finalized results and you’re eligible—claim your reward below.*'
+            "You qualified for a Reward! The game studio has finalized results and you're eligible—claim your reward below.*"
           )}
         </span>
         <span className="caption-sm">
