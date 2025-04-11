@@ -26,7 +26,9 @@ describe('canClaimReward', () => {
       end_date: null
     })
 
-    const createExternalEligibility = (amount: number): ExternalEligibility => ({
+    const createExternalEligibility = (
+      amount: number
+    ): ExternalEligibility => ({
       amount,
       walletOrEmail: 'test@example.com'
     })
