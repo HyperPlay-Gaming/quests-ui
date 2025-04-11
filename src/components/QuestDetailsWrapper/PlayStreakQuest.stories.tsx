@@ -6,13 +6,9 @@ import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
-import {
-  within,
-  expect,
-  waitForElementToBeRemoved,
-  waitFor
-} from '@storybook/test'
+import { within, expect, waitFor } from '@storybook/test'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
+import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -227,18 +223,6 @@ const mockProps: QuestDetailsWrapperProps = {
       throw error
     }
   }
-}
-
-async function waitForLoadingSpinnerToDisappear(
-  canvas: ReturnType<typeof within>
-) {
-  await waitForElementToBeRemoved(() =>
-    canvas.getByLabelText('loading quest details')
-  )
-
-  await waitForElementToBeRemoved(() =>
-    canvas.getByLabelText('loading rewards')
-  )
 }
 
 export const QuestPageNotSignedIn: Story = {
