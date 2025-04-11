@@ -6,7 +6,6 @@ import { WagmiProvider } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HyperPlayDesignProvider } from '@hyperplay/ui'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
@@ -50,15 +49,13 @@ const preview: Preview = {
     (Story) => (
       <I18nextProvider i18n={i18n}>
         <WagmiProvider config={wagmiAdapter.wagmiConfig}>
-          <QueryClientProvider client={queryClient}>
-            <HyperPlayDesignProvider>
-              <div style={{ position: 'absolute', top: 10, right: 10 }}>
-                <ConnectWallet />
-              </div>
-              <Story />
-            </HyperPlayDesignProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-          </QueryClientProvider>
+          {/* QueryClient is injected via the createQueryClientDecorator */}
+          <HyperPlayDesignProvider>
+            <div style={{ position: 'absolute', top: 10, right: 10 }}>
+              <ConnectWallet />
+            </div>
+            <Story />
+          </HyperPlayDesignProvider>
         </WagmiProvider>
       </I18nextProvider>
     )
