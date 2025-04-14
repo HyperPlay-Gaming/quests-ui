@@ -31,6 +31,7 @@ const mockQuest: Quest = {
   id: 1,
   end_date: null,
   start_date: null,
+  leaderboard_url: null,
   project_id:
     '0x36484d1723bba04a21430c5b50fc62737e4eca581cd806a36665a931e20d6f06',
   name: "🦖 Craft World's Ultimate Play Streak Quest 🔥 🚀",
@@ -238,7 +239,9 @@ export const QuestPageNotSignedIn: Story = {
       canvas.getByText('Log into HyperPlay to track quest eligibility')
     ).toBeVisible()
     expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
-    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(0)
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeDisabled()
+    })
   }
 }
 
@@ -254,7 +257,9 @@ export const QuestPageSignedIn: Story = {
     expect(
       canvas.queryByText('Log into HyperPlay to track quest eligibility')
     ).not.toBeInTheDocument()
-    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(0)
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeDisabled()
+    })
   }
 }
 
@@ -273,7 +278,9 @@ export const QuestPageSignedInNoActiveWallet: Story = {
       )
     ).toBeVisible()
     expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
-    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(0)
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeDisabled()
+    })
   }
 }
 
@@ -296,6 +303,9 @@ export const QuestPageSignedInWithActiveWallet: Story = {
     })
 
     expect(canvas.getByRole('button', { name: /play/i })).toBeEnabled()
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeDisabled()
+    })
   }
 }
 
@@ -314,9 +324,9 @@ export const QuestPageSignedInEligible: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(2)
-    expect(canvas.queryAllByRole('button', { name: /claim/i })[0]).toBeEnabled()
-    expect(canvas.queryAllByRole('button', { name: /claim/i })[1]).toBeEnabled()
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeEnabled()
+    })
   }
 }
 
@@ -347,9 +357,9 @@ export const OverlaySignedInEligible: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    expect(canvas.queryAllByRole('button', { name: /claim/i })).toHaveLength(2)
-    expect(canvas.queryAllByRole('button', { name: /claim/i })[0]).toBeEnabled()
-    expect(canvas.queryAllByRole('button', { name: /claim/i })[1]).toBeEnabled()
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeEnabled()
+    })
   }
 }
 

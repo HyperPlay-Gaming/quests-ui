@@ -9,6 +9,7 @@ import { within, expect } from '@storybook/test'
 
 const mockQuest: Quest = {
   id: 1,
+  leaderboard_url: 'https://hyperplay.xyz',
   end_date: dayjs().add(1, 'year').toISOString(),
   start_date: null,
   project_id:
@@ -188,6 +189,9 @@ export const NotSignedIn: Story = {
     expect(
       canvas.getByText('Log into HyperPlay to track quest eligibility')
     ).toBeInTheDocument()
+    expect(
+      canvas.queryByRole('button', { name: 'Claim' })
+    ).toBeDisabled()
   }
 }
 
@@ -198,7 +202,7 @@ export const InProgressQuest: Story = {
     await waitForLoadingSpinnerToDisappear(canvas)
     expect(
       canvas.queryByRole('button', { name: 'Claim' })
-    ).not.toBeInTheDocument()
+    ).toBeDisabled()
   }
 }
 
@@ -222,7 +226,7 @@ export const InWaitPeriod: Story = {
     ).toBeInTheDocument()
     expect(
       canvas.queryByRole('button', { name: 'Claim' })
-    ).not.toBeInTheDocument()
+    ).toBeDisabled()
   }
 }
 
@@ -245,7 +249,7 @@ export const InClaimPeriodAndNotEligible: Story = {
     ).toBeInTheDocument()
     expect(
       canvas.queryByRole('button', { name: 'Claim' })
-    ).not.toBeInTheDocument()
+    ).toBeDisabled()
   }
 }
 
@@ -274,6 +278,6 @@ export const InClaimPeriodAndEligible: Story = {
         "You qualified for a Reward! The game studio has finalized results and you're eligible—claim your reward below.*"
       )
     ).toBeInTheDocument()
-    expect(canvas.queryByRole('button', { name: 'Claim' })).toBeInTheDocument()
+    expect(canvas.queryByRole('button', { name: 'Claim' })).toBeEnabled()
   }
 }
