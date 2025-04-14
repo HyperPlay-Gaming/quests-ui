@@ -9,7 +9,7 @@ import {
   ConfirmClaimParams,
   Quest,
   Reward,
-  RewardClaimSignature,
+  RewardClaimSignature
 } from '@hyperplay/utils'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'

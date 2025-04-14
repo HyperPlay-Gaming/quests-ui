@@ -325,7 +325,7 @@ export const QuestPageSignedInEligible: Story = {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
 
-    // await for the claim button to be enabled 
+    // await for the claim button to be enabled
     await waitFor(() => {
       canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
         expect(button).toBeEnabled()
