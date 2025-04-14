@@ -25,11 +25,11 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0(bufferutil@4.0.8)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.22.4)
       '@hyperplay/ui':
-        specifier: 1.18.3-alpha.1
-        version: 1.18.3-alpha.1(@mantine/carousel@7.17.0(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.17.0(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(dayjs@1.11.13)(embla-carousel-autoplay@8.5.2(embla-carousel@8.5.2))(embla-carousel-react@8.5.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)
+        specifier: ^1.19.1
+        version: 1.19.1(@mantine/carousel@7.17.0(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.17.0(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(dayjs@1.11.13)(embla-carousel-autoplay@8.5.2(embla-carousel@8.5.2))(embla-carousel-react@8.5.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)
       '@hyperplay/utils':
-        specifier: 0.3.8-alpha.1
-        version: 0.3.8-alpha.1
+        specifier: ^0.3.10
+        version: 0.3.11
       '@mantine/core':
         specifier: ^7.12.0
         version: 7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -793,8 +793,8 @@ packages:
   '@hyperplay/chains@0.3.0':
     resolution: {integrity: sha512-7FcQSR6bIZnfJXpwDHEX4tcjMJQw/oW97h6qT+Q0eDsMdipa9m6ZJm3hybqq9asLpxlX0BV5cn01S8nRHOg9Pg==}
 
-  '@hyperplay/ui@1.18.3-alpha.1':
-    resolution: {integrity: sha512-UHu0B4MjgP0NNVcFk4FRpvrMNpepCfYv7cXlm0dlbFLxopuFxeheoYq+ngsFzwq4vguTHBEzPnZxAx2+g9jfmQ==}
+  '@hyperplay/ui@1.19.1':
+    resolution: {integrity: sha512-hSPziOgev4plTbM84+xjp8J8LT32wB6B+UvSN2me7+tV5uz/xTzAv8QsQSHzR43QLCvz/Xh5lNhPpuib6WQ8Fw==}
     peerDependencies:
       '@mantine/carousel': ^7.16.3
       '@mantine/core': ^7.16.3
@@ -807,8 +807,8 @@ packages:
       react-dom: ^18.0.0
       react-markdown: 9.0.1
 
-  '@hyperplay/utils@0.3.8-alpha.1':
-    resolution: {integrity: sha512-l31AIhBIc3oQxa4i8LdbHxy2YRKKpnV5JLzVz78Wsp0+LgiiYlTQZNtR7MhEoSd+qV8OrcaL0tq5+C9G56B5WQ==}
+  '@hyperplay/utils@0.3.11':
+    resolution: {integrity: sha512-6EsqKgBiqIuCxWP3QEalF97yw2ytQ4m6xBkfC6rLq1YJaLnJr8AvesyCVAaclSUZSjzOD4lFykvFBjrafn/Ehg==}
 
   '@istanbuljs/load-nyc-config@1.1.0':
     resolution: {integrity: sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ==}
@@ -6723,7 +6723,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@hyperplay/ui@1.18.3-alpha.1(@mantine/carousel@7.17.0(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.17.0(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(dayjs@1.11.13)(embla-carousel-autoplay@8.5.2(embla-carousel@8.5.2))(embla-carousel-react@8.5.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)':
+  '@hyperplay/ui@1.19.1(@mantine/carousel@7.17.0(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/dropzone@7.17.0(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(dayjs@1.11.13)(embla-carousel-autoplay@8.5.2(embla-carousel@8.5.2))(embla-carousel-react@8.5.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.0.1(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@mantine/carousel': 7.17.0(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(embla-carousel-react@8.5.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mantine/core': 7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -6736,7 +6736,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       react-markdown: 9.0.1(@types/react@18.3.12)(react@18.3.1)
 
-  '@hyperplay/utils@0.3.8-alpha.1':
+  '@hyperplay/utils@0.3.11':
     dependencies:
       bignumber.js: 9.1.2
 

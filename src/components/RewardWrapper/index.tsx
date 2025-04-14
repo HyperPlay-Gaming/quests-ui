@@ -33,7 +33,6 @@ import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
-import { canClaimReward } from '@/helpers/rewards'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -103,7 +102,7 @@ export function RewardWrapper({
 
   const connectorName = String(account?.connector?.name)
 
-  const { canClaim } = useCanClaimReward({
+  const { canClaim, isLoading: isCanClaimLoading } = useCanClaimReward({
     questId: questMeta.id
   })
 
@@ -156,12 +155,6 @@ export function RewardWrapper({
 
   // Translation override
   const t = tOverride || tOriginal
-
-  const isEligible = canClaimReward({
-    quest: questMeta,
-    externalEligibility: externalEligibility,
-    playstreakData: questPlayStreakData
-  })
 
   function trackRewardClaimMutationError(error: Error) {
     console.error('Error claiming rewards:', error)
@@ -492,19 +485,6 @@ export function RewardWrapper({
       return
     }
 
-    if (!isEligible) {
-      setClaimError(
-        new WarningError(
-          t('quest.notEligible.title', 'Not eligible yet'),
-          t(
-            'quest.notEligible.message',
-            'You have not completed the required play streak days and can not claim your reward at this time.'
-          )
-        )
-      )
-      return
-    }
-
     const isRewardOnChain = ['ERC1155', 'ERC721', 'ERC20'].includes(
       reward.reward_type
     )
@@ -577,10 +557,11 @@ export function RewardWrapper({
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
-        reward={{ ...reward, claimPending: isClaiming }}
+        reward={{ ...reward, claimPending: isClaiming || isCanClaimLoading }}
         key={reward.title}
         onClaim={async () => onClaim(reward)}
-        hideClaim={hideClaim || !canClaim}
+        hideClaim={hideClaim}
+        claimNotAvailable={!canClaim}
       />
       {alertProps ? (
         <div className={styles.alertCard}>
