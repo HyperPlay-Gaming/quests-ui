@@ -63,8 +63,6 @@ export function RewardWrapper({
   reward,
   questId,
   questMeta,
-  questPlayStreakData,
-  externalEligibility,
   invalidateQuestPlayStreakQuery,
   hideClaim
 }: RewardWrapperProps) {
@@ -91,6 +89,8 @@ export function RewardWrapper({
     checkG7ConnectionStatus,
     completeExternalTask,
     openDiscordLink,
+    getExternalEligibility,
+    getUserPlayStreak,
     onShowMetaMaskPopup
   } = useQuestWrapper()
 
@@ -103,7 +103,9 @@ export function RewardWrapper({
   const connectorName = String(account?.connector?.name)
 
   const { canClaim, isLoading: isCanClaimLoading } = useCanClaimReward({
-    questId: questMeta.id
+    quest: questMeta,
+    getExternalEligibility,
+    getUserPlayStreak
   })
 
   // Contract interactions

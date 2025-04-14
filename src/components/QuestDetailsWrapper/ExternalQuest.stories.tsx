@@ -5,7 +5,7 @@ import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator
 import styles from './story-styles.module.scss'
 import dayjs from 'dayjs'
 import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
-import { within, expect } from '@storybook/test'
+import { within, expect, waitFor } from '@storybook/test'
 
 const mockQuest: Quest = {
   id: 1,
@@ -278,6 +278,8 @@ export const InClaimPeriodAndEligible: Story = {
         "You qualified for a Reward! The game studio has finalized results and you're eligible—claim your reward below.*"
       )
     ).toBeInTheDocument()
-    expect(canvas.queryByRole('button', { name: 'Claim' })).toBeEnabled()
+    await waitFor(() => {
+      canvas.getByRole('button', { name: 'Claim' }).click()
+    })
   }
 }

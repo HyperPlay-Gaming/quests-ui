@@ -324,8 +324,12 @@ export const QuestPageSignedInEligible: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
-      expect(button).toBeEnabled()
+
+    // await for the claim button to be enabled 
+    await waitFor(() => {
+      canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+        expect(button).toBeEnabled()
+      })
     })
   }
 }
@@ -357,8 +361,10 @@ export const OverlaySignedInEligible: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
-      expect(button).toBeEnabled()
+    await waitFor(() => {
+      canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+        expect(button).toBeEnabled()
+      })
     })
   }
 }

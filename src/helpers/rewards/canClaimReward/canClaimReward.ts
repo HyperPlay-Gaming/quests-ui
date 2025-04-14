@@ -11,7 +11,7 @@ export function canClaimLeaderboardReward(
   return externalEligibility.amount > 0
 }
 
-function canClaimPlayStreakReward(
+export function canClaimPlayStreakReward(
   quest: Quest,
   questPlayStreakData: UserPlayStreak
 ) {
