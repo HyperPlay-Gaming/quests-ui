@@ -12,6 +12,7 @@ import {
   IconCircleCheck,
   IconInfoCircle
 } from '@tabler/icons-react'
+import { RewardBanner } from '@/components/RewardBanner'
 
 export type LeaderboardBannerProps = HTMLAttributes<HTMLDivElement> & {
   quest: Quest
@@ -46,75 +47,66 @@ export function LeaderboardBanner({
   }
 
   const finalizingMessage = (
-    <div className={cn(styles.root, styles.finalizing, className)}>
-      <IconInfoCircle
-        className={styles.finalizingIcon}
-        width={24}
-        height={24}
-      />
-      <div className={styles.textContainer}>
-        <span className="eyebrow">
-          {t(
-            'quest.rewards.leaderboardBanner.finalizing.title',
-            "Thanks for participating! The game studio is finalizing results. You'll be notified when you're able to claim your reward here.*"
-          )}
-        </span>
-        <span className="caption-sm">
-          {t(
-            'quest.rewards.leaderboardBanner.finalizing.disclaimer',
-            '*Note: Eligibility is verified by the game studio, not HyperPlay.'
-          )}
-        </span>
-      </div>
-    </div>
+    <RewardBanner
+      className={cn(styles.finalizing, className)}
+      icon={
+        <IconInfoCircle
+          width={24}
+          height={24}
+          className={styles.finalizingIcon}
+        />
+      }
+      title={t(
+        'quest.rewards.leaderboardBanner.finalizing.title',
+        "Thanks for participating! The game studio is finalizing results. You'll be notified when you're able to claim your reward here.*"
+      )}
+      disclaimer={t(
+        'quest.rewards.leaderboardBanner.finalizing.disclaimer',
+        '*Note: Eligibility is verified by the game studio, not HyperPlay.'
+      )}
+    />
   )
 
   const notEligibleMessage = (
-    <div className={cn(styles.root, styles.notEligible, className)}>
-      <IconAlertTriangle
-        className={styles.notEligibleIcon}
-        width={24}
-        height={24}
-      />
-      <div className={styles.textContainer}>
-        <span className="eyebrow">
-          {t(
-            'quest.rewards.leaderboardBanner.notEligible.title',
-            "You didn't qualify for a reward"
-          )}
-        </span>
-        <span className="caption-sm">
-          {t(
-            'quest.rewards.leaderboardBanner.notEligible.disclaimer',
-            "You didn't qualify this time, but HyperPlay has tons of quests to try—the next might be yours!"
-          )}
-        </span>
-      </div>
-    </div>
+    <RewardBanner
+      className={cn(styles.notEligibleIcon, className)}
+      icon={
+        <IconAlertTriangle
+          width={24}
+          height={24}
+          className={styles.notEligibleIcon}
+        />
+      }
+      title={t(
+        'quest.rewards.leaderboardBanner.notEligible.title',
+        "You didn't qualify for a reward"
+      )}
+      disclaimer={t(
+        'quest.rewards.leaderboardBanner.notEligible.disclaimer',
+        "You didn't qualify this time, but HyperPlay has tons of quests to try—the next might be yours!"
+      )}
+    />
   )
 
   const claimableMessage = (
-    <div className={cn(styles.root, styles.claimable, className)}>
-      <IconCircleCheck
-        className={styles.claimableIcon}
-        width={24}
-        height={24}
-      />
-      <div className={styles.textContainer}>
-        <span className="eyebrow">
-          {t(
-            'quest.rewards.leaderboardBanner.claimable.title',
-            "You qualified for a Reward! The game studio has finalized results and you're eligible—claim your reward below.*"
-          )}
-        </span>
-        <span className="caption-sm">
-          {t(
-            'quest.rewards.leaderboardBanner.claimable.disclaimer',
-            '*Note: Eligibility is verified by the game studio, not HyperPlay.'
-          )}
-        </span>
-      </div>
-    </div>
+    <RewardBanner
+      className={cn(styles.claimable, className)}
+      icon={
+        <IconCircleCheck
+          width={24}
+          height={24}
+          className={styles.claimableIcon}
+        />
+      }
+      title={t(
+        'quest.rewards.leaderboardBanner.claimable.title',
+        "You qualified for a Reward! The game studio has finalized results and you're eligible—claim your reward below.*"
+      )}
+      disclaimer={t(
+        'quest.rewards.leaderboardBanner.claimable.disclaimer',
+        '*Note: Eligibility is verified by the game studio, not HyperPlay.'
+      )}
+    />
   )
 
   const isQuestClaimable = quest.status === 'CLAIMABLE'

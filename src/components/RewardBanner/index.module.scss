@@ -1,0 +1,12 @@
+.root {
+  padding: var(--space-sm) var(--space-lg);
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+}
