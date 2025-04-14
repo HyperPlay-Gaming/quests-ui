@@ -1,4 +1,4 @@
-name: 'Storybook Tests'
+name: 'Unit Tests'
 
 on:
   pull_request:
