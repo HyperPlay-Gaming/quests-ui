@@ -276,8 +276,6 @@ export const InClaimPeriodAndEligible: Story = {
         )
       ).toBeInTheDocument()
     })
-    await waitFor(() => {
-      canvas.getByRole('button', { name: 'Claim' }).click()
-    })
+    expect(canvas.getByRole('button', { name: 'Claim' })).toBeEnabled()
   }
 }
