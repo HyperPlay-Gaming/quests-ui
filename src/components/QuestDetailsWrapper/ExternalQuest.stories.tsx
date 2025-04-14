@@ -189,9 +189,7 @@ export const NotSignedIn: Story = {
     expect(
       canvas.getByText('Log into HyperPlay to track quest eligibility')
     ).toBeInTheDocument()
-    expect(
-      canvas.queryByRole('button', { name: 'Claim' })
-    ).toBeDisabled()
+    expect(canvas.queryByRole('button', { name: 'Claim' })).toBeDisabled()
   }
 }
 
@@ -200,9 +198,7 @@ export const InProgressQuest: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    expect(
-      canvas.queryByRole('button', { name: 'Claim' })
-    ).toBeDisabled()
+    expect(canvas.queryByRole('button', { name: 'Claim' })).toBeDisabled()
   }
 }
 
@@ -219,14 +215,14 @@ export const InWaitPeriod: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    expect(
-      canvas.getByText(
-        "Thanks for participating! The game studio is finalizing results. You'll be notified when you're able to claim your reward here.*"
-      )
-    ).toBeInTheDocument()
-    expect(
-      canvas.queryByRole('button', { name: 'Claim' })
-    ).toBeDisabled()
+    await waitFor(() => {
+      expect(
+        canvas.getByText(
+          "Thanks for participating! The game studio is finalizing results. You'll be notified when you're able to claim your reward here.*"
+        )
+      ).toBeInTheDocument()
+    })
+    expect(canvas.queryByRole('button', { name: 'Claim' })).toBeDisabled()
   }
 }
 
@@ -244,12 +240,12 @@ export const InClaimPeriodAndNotEligible: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    expect(
-      canvas.getByText("You didn't qualify for a reward")
-    ).toBeInTheDocument()
-    expect(
-      canvas.queryByRole('button', { name: 'Claim' })
-    ).toBeDisabled()
+    await waitFor(() => {
+      expect(
+        canvas.getByText("You didn't qualify for a reward")
+      ).toBeInTheDocument()
+    })
+    expect(canvas.queryByRole('button', { name: 'Claim' })).toBeDisabled()
   }
 }
 
@@ -273,11 +269,13 @@ export const InClaimPeriodAndEligible: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    expect(
-      canvas.getByText(
-        "You qualified for a Reward! The game studio has finalized results and you're eligible—claim your reward below.*"
-      )
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        canvas.getByText(
+          "You qualified for a Reward! The game studio has finalized results and you're eligible—claim your reward below.*"
+        )
+      ).toBeInTheDocument()
+    })
     await waitFor(() => {
       canvas.getByRole('button', { name: 'Claim' }).click()
     })

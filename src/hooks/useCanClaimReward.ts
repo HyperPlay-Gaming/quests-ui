@@ -3,19 +3,26 @@ import {
   canClaimPlayStreakReward
 } from '@/helpers/rewards'
 import { Quest, ExternalEligibility, UserPlayStreak } from '@hyperplay/utils'
-import { useQueryClient, useQuery } from '@tanstack/react-query'
+import {
+  useQueryClient,
+  useQuery,
+  UseQueryOptions
+} from '@tanstack/react-query'
 
-export function useCanClaimReward({
-  quest,
-  getExternalEligibility,
-  getUserPlayStreak
-}: {
+type Props = {
   quest: Quest
   getExternalEligibility: (
     questId: number
   ) => Promise<ExternalEligibility | null>
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
-}) {
+} & Omit<UseQueryOptions<boolean>, 'queryKey' | 'queryFn'>
+
+export function useCanClaimReward({
+  quest,
+  getExternalEligibility,
+  getUserPlayStreak,
+  ...options
+}: Props) {
   const queryClient = useQueryClient()
   const queryKey = ['canClaimReward', quest.id]
   const query = useQuery({
@@ -38,7 +45,8 @@ export function useCanClaimReward({
       }
 
       throw new Error('Invalid quest type')
-    }
+    },
+    ...options
   })
   return {
     canClaim: query.data,

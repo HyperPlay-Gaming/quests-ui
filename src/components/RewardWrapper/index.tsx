@@ -7,11 +7,9 @@ import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
 import {
   ConfirmClaimParams,
-  ExternalEligibility,
   Quest,
   Reward,
   RewardClaimSignature,
-  UserPlayStreak
 } from '@hyperplay/utils'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -33,6 +31,7 @@ import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
+import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -53,9 +52,6 @@ interface RewardWrapperProps {
   reward: UseGetRewardsData
   questId: number | null
   questMeta: Quest
-  questPlayStreakData: UserPlayStreak | undefined | null
-  externalEligibility: ExternalEligibility | undefined | null
-  invalidateQuestPlayStreakQuery: () => Promise<void>
   hideClaim?: boolean
 }
 
@@ -63,7 +59,6 @@ export function RewardWrapper({
   reward,
   questId,
   questMeta,
-  invalidateQuestPlayStreakQuery,
   hideClaim
 }: RewardWrapperProps) {
   const queryClient = useQueryClient()
@@ -105,8 +100,12 @@ export function RewardWrapper({
   const { canClaim, isLoading: isCanClaimLoading } = useCanClaimReward({
     quest: questMeta,
     getExternalEligibility,
-    getUserPlayStreak
+    getUserPlayStreak,
+    enabled: isSignedIn
   })
+
+  const { invalidateQuery: invalidateQuestPlayStreakQuery } =
+    useGetUserPlayStreak(questId, getUserPlayStreak)
 
   // Contract interactions
   const { writeContractAsync, isPending: isPendingWriteContract } =
