@@ -337,6 +337,36 @@ export const QuestPageSignedInEligible: Story = {
   }
 }
 
+export const QuestPageSignedInEligibleNoActiveWalletRequired: Story = {
+  tags: ['!dev', '!autodocs'],
+  args: {
+    ...mockProps,
+    isQuestsPage: true,
+    isSignedIn: true,
+    flags: { ...mockProps.flags, gameplayWalletSectionVisible: false },
+    getActiveWallet: async () => {
+      return null
+    },
+    getUserPlayStreak: async () => {
+      return eligibleUserPlayStreak
+    },
+    checkG7ConnectionStatus: async () => {
+      return true
+    }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+
+    // await for the claim button to be enabled
+    await waitFor(() => {
+      canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+        expect(button).toBeEnabled()
+      })
+    })
+  }
+}
+
 export const OverlayNotSignedIn: Story = {
   args: {
     ...mockProps

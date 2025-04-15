@@ -94,11 +94,16 @@ export function RewardWrapper({
     enabled: isSignedIn
   })
 
+  const shouldEnforceActiveWallet = Boolean(flags.gameplayWalletSectionVisible)
+  const validActiveWallet = shouldEnforceActiveWallet
+    ? Boolean(activeWallet)
+    : true
+
   const { canClaim, isLoading: isCanClaimLoading } = useCanClaimReward({
     quest: questMeta,
     getExternalEligibility,
     getUserPlayStreak,
-    enabled: isSignedIn && Boolean(activeWallet)
+    enabled: isSignedIn && validActiveWallet
   })
 
   const { invalidateQuery: invalidateQuestPlayStreakQuery } =
