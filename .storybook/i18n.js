@@ -6,15 +6,7 @@ import { initReactI18next } from 'react-i18next'
 // or even better, manage them separated from your code: https://react.i18next.com/guides/multiple-translation-files)
 const resources = {
   en: {
-    translation: {
-      gameplayWallet: {
-        info: {
-          title: 'What is a Gameplay Wallet?',
-          description:
-            'Your progress for each Quest is based on the Gameplay wallet you use to start the game.<br/><br/> This allows game studios to properly sync and issue Rewards, regardless if they are in-game or off-chain.<br/><br/>Switching wallets? No problem. Your progress will be saved to each Gameplay wallet address separately.'
-        }
-      }
-    }
+    translation: {}
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@hyperplay/quests-ui",
-  "version": "0.1.27",
+  "version": "0.1.29",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "prettier-fix": "prettier --write .",
     "storybook": "storybook dev -p 6007",
     "build-storybook": "storybook build",
+    "test-storybook": "test-storybook --skipTags=\"skip-test\" --url http://localhost:6007",
     "test": "jest"
   },
   "keywords": [],
@@ -29,7 +30,7 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",
     "@hyperplay/chains": "^0.3.0",
-    "@hyperplay/ui": "^1.9.5",
+    "@hyperplay/ui": "^1.16.2",
     "@hyperplay/utils": "^0.3.7",
     "@mantine/core": "^7.12.0",
     "@mantine/hooks": "^7.12.0",
@@ -42,7 +43,9 @@
     "@storybook/blocks": "^8.3.4",
     "@storybook/react": "^8.3.4",
     "@storybook/react-vite": "^8.3.4",
-    "@storybook/test": "^8.3.4",
+    "@storybook/test": "^8.6.7",
+    "@storybook/test-runner": "^0.22.0",
+    "@tabler/icons-react": "^2.46.0",
     "@tanstack/query-core": "^5.59.20",
     "@tanstack/react-query": "^5.59.20",
     "@tanstack/react-query-devtools": "^5.59.20",
@@ -91,6 +94,7 @@
     "mobx": "^6.13.3",
     "react": "^18.3.1",
     "react-i18next": "^15.0.1",
+    "@tabler/icons-react": "^2.46.0",
     "viem": "^2.19.4",
     "wagmi": "^2.14.12"
   },

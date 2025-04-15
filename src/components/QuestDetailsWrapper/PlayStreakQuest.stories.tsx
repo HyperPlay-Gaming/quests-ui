@@ -6,15 +6,25 @@ import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
+import {
+  within,
+  expect,
+  waitForElementToBeRemoved,
+  waitFor
+} from '@storybook/test'
+import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
   title: 'Components/QuestDetailsWrapper/PlayStreak',
-  render: (args) => (
-    <div style={{ height: 'calc(100vh - 100px)' }}>
-      {<QuestDetailsWrapper {...args} />}
-    </div>
-  )
+  decorators: [createQueryClientDecorator],
+  render: (args) => {
+    return (
+      <div style={{ height: 'calc(100vh - 100px)' }}>
+        {<QuestDetailsWrapper {...args} />}
+      </div>
+    )
+  }
 }
 
 export default meta
@@ -214,10 +224,31 @@ const mockProps: QuestDetailsWrapperProps = {
   }
 }
 
+async function waitForLoadingSpinnerToDisappear(
+  canvas: ReturnType<typeof within>
+) {
+  await waitForElementToBeRemoved(() =>
+    canvas.getByLabelText('loading quest details')
+  )
+
+  await waitForElementToBeRemoved(() =>
+    canvas.getByLabelText('loading rewards')
+  )
+}
+
 export const QuestPageNotSignedIn: Story = {
   args: {
     ...mockProps,
+    isSignedIn: false,
     isQuestsPage: true
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(
+      canvas.getByText('Log into HyperPlay to track quest eligibility')
+    ).toBeVisible()
+    expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
   }
 }
 
@@ -226,6 +257,53 @@ export const QuestPageSignedIn: Story = {
     ...mockProps,
     isQuestsPage: true,
     isSignedIn: true
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(
+      canvas.queryByText('Log into HyperPlay to track quest eligibility')
+    ).not.toBeInTheDocument()
+  }
+}
+
+export const QuestPageSignedInNoActiveWallet: Story = {
+  args: {
+    ...mockProps,
+    isQuestsPage: true,
+    isSignedIn: true
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    expect(
+      canvas.getByText(
+        'Connect your wallet to start tracking eligibility for this Quest.'
+      )
+    ).toBeVisible()
+    expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
+  }
+}
+
+export const QuestPageSignedInWithActiveWallet: Story = {
+  args: {
+    ...mockProps,
+    isQuestsPage: true,
+    isSignedIn: true,
+    getActiveWallet: async () => {
+      return '0x123'
+    }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await waitForLoadingSpinnerToDisappear(canvas)
+
+    await waitFor(() => {
+      expect(canvas.queryByText('0x123')).toBeInTheDocument()
+    })
+
+    expect(canvas.getByRole('button', { name: /play/i })).toBeEnabled()
   }
 }
 
