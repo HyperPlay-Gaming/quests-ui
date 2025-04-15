@@ -22,7 +22,8 @@ describe('get playstreak quest status test', () => {
         }
       },
       start_date: null,
-      end_date: null
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 0,
@@ -52,7 +53,8 @@ describe('get playstreak quest status test', () => {
         }
       },
       start_date: null,
-      end_date: null
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 100,
@@ -84,7 +86,8 @@ describe('get playstreak quest status test', () => {
         }
       },
       start_date: null,
-      end_date: null
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 100,
@@ -114,7 +117,8 @@ describe('get playstreak quest status test', () => {
         }
       },
       start_date: null,
-      end_date: null
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 1,
@@ -144,7 +148,8 @@ describe('get playstreak quest status test', () => {
         }
       },
       start_date: null,
-      end_date: null
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 1,
@@ -174,7 +179,8 @@ describe('get playstreak quest status test', () => {
         }
       },
       start_date: null,
-      end_date: null
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 10,
