@@ -1,7 +1,7 @@
 import {
   canClaimLeaderboardReward,
   canClaimPlayStreakReward
-} from '@/helpers/rewards'
+} from '@/helpers/canClaimReward'
 import { Quest, ExternalEligibility, UserPlayStreak } from '@hyperplay/utils'
 import {
   useQueryClient,
