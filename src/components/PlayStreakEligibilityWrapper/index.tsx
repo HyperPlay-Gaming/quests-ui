@@ -8,7 +8,6 @@ import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './index.module.scss'
-import ActiveWalletSection from '../ActiveWalletSection'
 
 export function PlayStreakEligibilityWrapper({
   questId,
@@ -21,16 +20,10 @@ export function PlayStreakEligibilityWrapper({
     syncPlayStreakWithExternalSource,
     getPendingExternalSync,
     getUserPlayStreak,
-    getQuest,
-    isSignedIn,
-    flags
+    getQuest
   } = useQuestWrapper()
   const { t } = useTranslation()
   const { data: questMeta } = useGetQuest(questId, getQuest)
-
-  const gameplayWalletSectionVisible = Boolean(
-    flags.gameplayWalletSectionVisible
-  )
 
   const {
     data: questPlayStreakData,
@@ -103,12 +96,8 @@ export function PlayStreakEligibilityWrapper({
   const dateTimeCurrentSessionStartedInMsSinceEpoch =
     questPlayStreakData.dataUpdatedAt ?? Date.now()
 
-  const shouldShowActiveWalletSection =
-    isSignedIn && gameplayWalletSectionVisible
-
   return (
     <div className={styles.container}>
-      {shouldShowActiveWalletSection ? <ActiveWalletSection /> : null}
       <StreakProgress
         {...getPlaystreakArgsFromQuestData({
           questMeta: questMeta.data,
