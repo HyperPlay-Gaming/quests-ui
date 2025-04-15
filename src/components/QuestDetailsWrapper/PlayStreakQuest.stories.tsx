@@ -314,6 +314,9 @@ export const QuestPageSignedInEligible: Story = {
     ...mockProps,
     isQuestsPage: true,
     isSignedIn: true,
+    getActiveWallet: async () => {
+      return '0x123'
+    },
     getUserPlayStreak: async () => {
       return eligibleUserPlayStreak
     },
@@ -351,6 +354,9 @@ export const OverlaySignedInEligible: Story = {
   args: {
     ...mockProps,
     isSignedIn: true,
+    getActiveWallet: async () => {
+      return '0x123'
+    },
     getUserPlayStreak: async () => {
       return eligibleUserPlayStreak
     },
