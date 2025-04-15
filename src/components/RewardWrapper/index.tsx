@@ -6,7 +6,6 @@ import { ClaimError, UseGetRewardsData, WarningError } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
 import {
-  ConfirmClaimParams,
   Quest,
   Reward,
   RewardClaimSignature
@@ -20,18 +19,13 @@ import {
   createPublicClient,
   http
 } from 'viem'
-import {
-  useAccount,
-  useConfig,
-  useConnect,
-  useSwitchChain,
-  useWriteContract
-} from 'wagmi'
+import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
+import { switchChain } from '@wagmi/core'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -106,54 +100,6 @@ export function RewardWrapper({
 
   const { invalidateQuery: invalidateQuestPlayStreakQuery } =
     useGetUserPlayStreak(questId, getUserPlayStreak)
-
-  // Contract interactions
-  const { writeContractAsync, isPending: isPendingWriteContract } =
-    useWriteContract({
-      mutation: {
-        onError: (error) =>
-          logError(
-            `Error interacting with contract for reward claim:  ${reward.title}`,
-            {
-              sentryException: error,
-              sentryExtra: {
-                questId: questId,
-                reward: reward,
-                error: error,
-                connector: connectorName
-              },
-              sentryTags: {
-                action: 'claim_on_chain_reward',
-                feature: 'quests'
-              }
-            }
-          )
-      }
-    })
-
-  const {
-    switchChainAsync,
-    isPending: isPendingSwitchingChain,
-    error: switchChainError
-  } = useSwitchChain({
-    mutation: {
-      onError: (error) =>
-        logError(`Error switching chain: ${error}`, {
-          sentryException: error,
-          sentryExtra: {
-            questId: questId,
-            reward: reward,
-            error: error,
-            connector: connectorName
-          },
-          sentryTags: {
-            action: 'switch_chain',
-            feature: 'quests'
-          }
-        })
-    }
-  })
-
   // Translation override
   const t = tOverride || tOriginal
 
@@ -213,10 +159,21 @@ export function RewardWrapper({
 
       onRewardClaimed?.(reward)
       await invalidateQuestPlayStreakQuery()
+
       if (questId !== null) {
         await queryClient.invalidateQueries({
           queryKey: [getGetQuestLogInfoQueryKey(questId.toString())]
         })
+      }
+
+      if (reward.reward_type === 'POINTS') {
+        const queryKey = `getPointsBalancesForProject:${questMeta?.project_id}`
+        queryClient.invalidateQueries({ queryKey: [queryKey] })
+      }
+
+      if (reward.reward_type === 'EXTERNAL-TASKS') {
+        const queryKey = `useGetG7UserCredits`
+        queryClient.invalidateQueries({ queryKey: [queryKey] })
       }
     },
     onError: (error) => {
@@ -238,108 +195,22 @@ export function RewardWrapper({
     }
   })
 
-  const confirmClaimMutation = useMutation({
-    mutationFn: async (params: ConfirmClaimParams) =>
-      confirmRewardClaim(params),
-    retry: 5,
-    retryDelay: 1000,
-    onSuccess: async () => {
-      await invalidateQuestPlayStreakQuery()
-    },
-    onError: (error, variables) => {
-      logError(
-        `Error confirming reward claim ${error.message}, variables: ${JSON.stringify(
-          {
-            ...variables,
-            address: account?.address
-          }
-        )}`,
-        {
-          sentryException: error,
-          sentryExtra: {
-            questId: questId,
-            reward: reward,
-            error: error,
-            variables: variables,
-            connector: connectorName,
-            address: account?.address
-          },
-          sentryTags: {
-            action: 'confirm_claim_on_chain_reward',
-            feature: 'quests'
-          }
-        }
+  const completeTask = async (reward: Reward) => {
+    const isConnectedToG7 = await checkG7ConnectionStatus()
+
+    if (!isConnectedToG7) {
+      throw new WarningError(
+        'No G7 Account Linked',
+        t(
+          'quest.noG7ConnectionSync.message',
+          `You need to have a Game7 account linked to ${sessionEmail ?? 'your email'} to claim your rewards.`,
+          { email: sessionEmail ?? 'your email' }
+        )
       )
     }
-  })
 
-  const claimPointsMutation = useMutation({
-    mutationFn: async (reward: Reward) => {
-      const result = await claimPoints(reward)
-      const queryKey = `getPointsBalancesForProject:${questMeta?.project_id}`
-      queryClient.invalidateQueries({ queryKey: [queryKey] })
-      return result
-    },
-    onError: (error) => {
-      const errorMessage = trackRewardClaimMutationError(error)
-      logError(`Error claiming points: ${error}`, {
-        sentryException: error,
-        sentryExtra: {
-          questId: questId,
-          reward: reward,
-          error: errorMessage,
-          connector: connectorName
-        },
-        sentryTags: {
-          action: 'claim_points_reward',
-          feature: 'quests'
-        }
-      })
-    },
-    onSuccess: async (_data, reward) => {
-      await invalidateQuestPlayStreakQuery()
-    }
-  })
-
-  const completeTaskMutation = useMutation({
-    mutationFn: async (reward: Reward) => {
-      const isConnectedToG7 = await checkG7ConnectionStatus()
-
-      if (!isConnectedToG7) {
-        throw new WarningError(
-          'No G7 Account Linked',
-          t(
-            'quest.noG7ConnectionSync.message',
-            `You need to have a Game7 account linked to ${sessionEmail ?? 'your email'} to claim your rewards.`,
-            { email: sessionEmail ?? 'your email' }
-          )
-        )
-      }
-
-      const result = await completeExternalTask(reward)
-      const queryKey = `useGetG7UserCredits`
-      queryClient.invalidateQueries({ queryKey: [queryKey] })
-      return result
-    },
-    onError: (error) => {
-      const errorMessage = trackRewardClaimMutationError(error)
-      logError(`Error resyncing tasks: ${error}`, {
-        sentryException: error,
-        sentryExtra: {
-          questId: questId,
-          reward: reward,
-          error: errorMessage,
-          connector: connectorName
-        },
-        sentryTags: {
-          action: 'complete_external_task'
-        }
-      })
-    },
-    onSuccess: async (_data, reward) => {
-      await invalidateQuestPlayStreakQuery()
-    }
-  })
+    await completeExternalTask(reward)
+  }
 
   // Handlers
   const mintOnChainReward = async (reward: Reward) => {
@@ -378,7 +249,7 @@ export function RewardWrapper({
       throw Error('no address found when trying to mint')
     }
 
-    await switchChainAsync({ chainId: reward.chain_id })
+    await switchChain(config, { chainId: reward.chain_id })
 
     const gasNeeded = await getRewardClaimGasEstimation(reward, logInfo)
     const chainMetadata = chainMap[reward.chain_id]
@@ -424,13 +295,11 @@ export function RewardWrapper({
       questId: questMeta.id,
       signature: claimSignature,
       reward,
-      writeContractAsync,
       getDepositContracts,
-      onError: trackRewardClaimMutationError,
       config
     })
 
-    await confirmClaimMutation.mutateAsync({
+    await confirmRewardClaim({
       signature: claimSignature.signature,
       transactionHash: hash
     })
@@ -460,10 +329,10 @@ export function RewardWrapper({
         await mintOnChainReward(reward)
         break
       case 'POINTS':
-        await claimPointsMutation.mutateAsync(reward)
+        await claimPoints(reward)
         break
       case 'EXTERNAL-TASKS':
-        await completeTaskMutation.mutateAsync(reward)
+        await completeTask(reward)
         break
       default:
         throw new Error(`unknown reward type ${reward.reward_type}`)
@@ -503,26 +372,9 @@ export function RewardWrapper({
   }, [questId])
 
   useEffect(() => {
-    const error =
-      claimRewardMutation.error ||
-      claimPointsMutation.error ||
-      completeTaskMutation.error ||
-      switchChainError
-
+    const error = claimRewardMutation.error
     setClaimError(error)
-  }, [
-    claimRewardMutation.error,
-    claimPointsMutation.error,
-    completeTaskMutation.error
-  ])
-
-  // Loading states
-  const isClaiming =
-    completeTaskMutation.isPending ||
-    claimPointsMutation.isPending ||
-    claimRewardMutation.isPending ||
-    isPendingWriteContract ||
-    isPendingSwitchingChain
+  }, [claimRewardMutation.error])
 
   let networkName = ''
 
@@ -558,7 +410,7 @@ export function RewardWrapper({
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
-        reward={{ ...reward, claimPending: isClaiming || isCanClaimLoading }}
+        reward={{ ...reward, claimPending: claimRewardMutation.isPending || isCanClaimLoading }}
         key={reward.title}
         onClaim={async () => onClaim(reward)}
         hideClaim={hideClaim}
