@@ -1,3 +1,4 @@
+import { expect, test, describe } from 'vitest'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
 import { getPlaystreakQuestStatus } from './getPlaystreakQuestStatus'
 
@@ -19,7 +20,10 @@ describe('get playstreak quest status test', () => {
           required_playstreak_in_days: 10,
           minimum_session_time_in_seconds: 100
         }
-      }
+      },
+      start_date: null,
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 0,
@@ -47,7 +51,10 @@ describe('get playstreak quest status test', () => {
           required_playstreak_in_days: 10,
           minimum_session_time_in_seconds: 100
         }
-      }
+      },
+      start_date: null,
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 100,
@@ -77,7 +84,10 @@ describe('get playstreak quest status test', () => {
           required_playstreak_in_days: 10,
           minimum_session_time_in_seconds: 100
         }
-      }
+      },
+      start_date: null,
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 100,
@@ -105,7 +115,10 @@ describe('get playstreak quest status test', () => {
           required_playstreak_in_days: 10,
           minimum_session_time_in_seconds: 100
         }
-      }
+      },
+      start_date: null,
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 1,
@@ -133,7 +146,10 @@ describe('get playstreak quest status test', () => {
           required_playstreak_in_days: 10,
           minimum_session_time_in_seconds: 100
         }
-      }
+      },
+      start_date: null,
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 1,
@@ -161,7 +177,10 @@ describe('get playstreak quest status test', () => {
           required_playstreak_in_days: 10,
           minimum_session_time_in_seconds: 100
         }
-      }
+      },
+      start_date: null,
+      end_date: null,
+      leaderboard_url: 'https://example.com'
     }
     const playstreak: UserPlayStreak = {
       current_playstreak_in_days: 10,

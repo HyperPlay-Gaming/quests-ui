@@ -1,0 +1,19 @@
+.root {
+  background-color: var(--color-stroke-warning-weak);
+  border-top: 1px solid var(--color-stroke-01);
+  border-bottom: 1px solid var(--color-stroke-warning-weak);
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-2lg);
+}
+
+.icon {
+  stroke: var(--icon-warning);
+  width: 24px;
+  height: 24px;
+  > path {
+    stroke-width: 1px;
+  }
+}

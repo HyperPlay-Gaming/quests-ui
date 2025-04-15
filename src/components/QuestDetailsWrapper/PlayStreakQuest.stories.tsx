@@ -6,13 +6,9 @@ import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
-import {
-  within,
-  expect,
-  waitForElementToBeRemoved,
-  waitFor
-} from '@storybook/test'
+import { within, expect, waitFor } from '@storybook/test'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
+import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -33,6 +29,9 @@ type Story = StoryObj<typeof QuestDetailsWrapper>
 
 const mockQuest: Quest = {
   id: 1,
+  end_date: null,
+  start_date: null,
+  leaderboard_url: null,
   project_id:
     '0x36484d1723bba04a21430c5b50fc62737e4eca581cd806a36665a931e20d6f06',
   name: "🦖 Craft World's Ultimate Play Streak Quest 🔥 🚀",
@@ -110,6 +109,9 @@ const mockUserPlayStreak: UserPlayStreak = {
 const mockProps: QuestDetailsWrapperProps = {
   className: styles.root,
   selectedQuestId: 1,
+  getExternalEligibility: async () => {
+    return null
+  },
   getActiveWallet: async () => {
     return null
   },
@@ -224,18 +226,6 @@ const mockProps: QuestDetailsWrapperProps = {
   }
 }
 
-async function waitForLoadingSpinnerToDisappear(
-  canvas: ReturnType<typeof within>
-) {
-  await waitForElementToBeRemoved(() =>
-    canvas.getByLabelText('loading quest details')
-  )
-
-  await waitForElementToBeRemoved(() =>
-    canvas.getByLabelText('loading rewards')
-  )
-}
-
 export const QuestPageNotSignedIn: Story = {
   args: {
     ...mockProps,
@@ -249,6 +239,9 @@ export const QuestPageNotSignedIn: Story = {
       canvas.getByText('Log into HyperPlay to track quest eligibility')
     ).toBeVisible()
     expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeDisabled()
+    })
   }
 }
 
@@ -264,6 +257,9 @@ export const QuestPageSignedIn: Story = {
     expect(
       canvas.queryByText('Log into HyperPlay to track quest eligibility')
     ).not.toBeInTheDocument()
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeDisabled()
+    })
   }
 }
 
@@ -282,6 +278,9 @@ export const QuestPageSignedInNoActiveWallet: Story = {
       )
     ).toBeVisible()
     expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeDisabled()
+    })
   }
 }
 
@@ -304,6 +303,9 @@ export const QuestPageSignedInWithActiveWallet: Story = {
     })
 
     expect(canvas.getByRole('button', { name: /play/i })).toBeEnabled()
+    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      expect(button).toBeDisabled()
+    })
   }
 }
 
@@ -318,6 +320,17 @@ export const QuestPageSignedInEligible: Story = {
     checkG7ConnectionStatus: async () => {
       return true
     }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+
+    // await for the claim button to be enabled
+    await waitFor(() => {
+      canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+        expect(button).toBeEnabled()
+      })
+    })
   }
 }
 
@@ -344,6 +357,15 @@ export const OverlaySignedInEligible: Story = {
     checkG7ConnectionStatus: async () => {
       return true
     }
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    await waitFor(() => {
+      canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+        expect(button).toBeEnabled()
+      })
+    })
   }
 }
 

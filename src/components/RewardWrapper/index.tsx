@@ -1,4 +1,3 @@
-import { getPlaystreakQuestStatus } from '@/helpers/getPlaystreakQuestStatus'
 import { getGetQuestLogInfoQueryKey } from '@/helpers/getQueryKeys'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
 import { mintReward } from '@/helpers/mintReward'
@@ -6,12 +5,7 @@ import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { ClaimError, UseGetRewardsData, WarningError } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
-import {
-  Quest,
-  Reward,
-  RewardClaimSignature,
-  UserPlayStreak
-} from '@hyperplay/utils'
+import { Quest, Reward, RewardClaimSignature } from '@hyperplay/utils'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -25,6 +19,8 @@ import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
+import { useCanClaimReward } from '@/hooks/useCanClaimReward'
+import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { switchChain } from '@wagmi/core'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
@@ -46,8 +42,6 @@ interface RewardWrapperProps {
   reward: UseGetRewardsData
   questId: number | null
   questMeta: Quest
-  questPlayStreakData: UserPlayStreak | undefined | null
-  invalidateQuestPlayStreakQuery: () => Promise<void>
   hideClaim?: boolean
 }
 
@@ -55,8 +49,6 @@ export function RewardWrapper({
   reward,
   questId,
   questMeta,
-  questPlayStreakData,
-  invalidateQuestPlayStreakQuery,
   hideClaim
 }: RewardWrapperProps) {
   const queryClient = useQueryClient()
@@ -82,6 +74,8 @@ export function RewardWrapper({
     checkG7ConnectionStatus,
     completeExternalTask,
     openDiscordLink,
+    getExternalEligibility,
+    getUserPlayStreak,
     onShowMetaMaskPopup
   } = useQuestWrapper()
 
@@ -93,18 +87,17 @@ export function RewardWrapper({
 
   const connectorName = String(account?.connector?.name)
 
+  const { canClaim, isLoading: isCanClaimLoading } = useCanClaimReward({
+    quest: questMeta,
+    getExternalEligibility,
+    getUserPlayStreak,
+    enabled: isSignedIn
+  })
+
+  const { invalidateQuery: invalidateQuestPlayStreakQuery } =
+    useGetUserPlayStreak(questId, getUserPlayStreak)
   // Translation override
   const t = tOverride || tOriginal
-
-  let isEligible = false
-
-  if (questPlayStreakData) {
-    const playstreakQuestStatus = getPlaystreakQuestStatus(
-      questMeta,
-      questPlayStreakData
-    )
-    isEligible = playstreakQuestStatus === 'READY_FOR_CLAIM'
-  }
 
   function trackRewardClaimMutationError(error: Error) {
     console.error('Error claiming rewards:', error)
@@ -358,19 +351,6 @@ export function RewardWrapper({
       return
     }
 
-    if (!isEligible) {
-      setClaimError(
-        new WarningError(
-          t('quest.notEligible.title', 'Not eligible yet'),
-          t(
-            'quest.notEligible.message',
-            'You have not completed the required play streak days and can not claim your reward at this time.'
-          )
-        )
-      )
-      return
-    }
-
     const isRewardOnChain = ['ERC1155', 'ERC721', 'ERC20'].includes(
       reward.reward_type
     )
@@ -426,10 +406,14 @@ export function RewardWrapper({
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
-        reward={{ ...reward, claimPending: claimRewardMutation.isPending }}
+        reward={{
+          ...reward,
+          claimPending: claimRewardMutation.isPending || isCanClaimLoading
+        }}
         key={reward.title}
         onClaim={async () => onClaim(reward)}
         hideClaim={hideClaim}
+        claimNotAvailable={!canClaim}
       />
       {alertProps ? (
         <div className={styles.alertCard}>
