@@ -69,7 +69,7 @@ export function LeaderboardBanner({
 
   const notEligibleMessage = (
     <RewardBanner
-      className={cn(styles.notEligibleIcon, className)}
+      className={cn(styles.notEligible, className)}
       icon={
         <IconAlertTriangle
           width={24}
