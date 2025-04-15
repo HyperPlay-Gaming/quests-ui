@@ -5,11 +5,7 @@ import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { ClaimError, UseGetRewardsData, WarningError } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
-import {
-  Quest,
-  Reward,
-  RewardClaimSignature
-} from '@hyperplay/utils'
+import { Quest, Reward, RewardClaimSignature } from '@hyperplay/utils'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -410,7 +406,10 @@ export function RewardWrapper({
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
-        reward={{ ...reward, claimPending: claimRewardMutation.isPending || isCanClaimLoading }}
+        reward={{
+          ...reward,
+          claimPending: claimRewardMutation.isPending || isCanClaimLoading
+        }}
         key={reward.title}
         onClaim={async () => onClaim(reward)}
         hideClaim={hideClaim}
