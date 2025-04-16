@@ -3,12 +3,13 @@ import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak, wait } from '@hyperplay/utils'
 import { useState } from 'react'
-import { verifyMessage, BrowserProvider, ethers } from 'ethers'
+import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
 import { within, expect, waitFor, fn } from '@storybook/test'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
+import { InjectedProviderMock } from '@/mocks/injectedProvider'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -157,7 +158,9 @@ const mockProps: QuestDetailsWrapperProps = {
   trackEvent: () => {},
   signInWithSteamAccount: () => {},
   openSignInModal: () => alert('openSignInModal'),
-  logError: (...msg) => {console.error('handling error with logError prop: ', ...msg)},
+  logError: (...msg) => {
+    console.error('handling error with logError prop: ', ...msg)
+  },
   claimPoints: async () => {},
   completeExternalTask: async () => {
     alert('complete external task')
@@ -536,51 +539,7 @@ export const ActiveWalletSwitchWalletExistingWalletSkipSignature: Story = {
   }
 }
 
-
-
-class WindowEth extends EventTarget {
-  isMetaMask = true;
-  key = new ethers.SigningKey(ethers.randomBytes(32))
-  mockProvider: ethers.Wallet | undefined = undefined
-  address = ''
-  constructor(){
-    super()
-    this.mockProvider = new ethers.Wallet(this.key);
-    this.address = this.mockProvider?.address ?? ''
-  }
-
-  async request({ method, params }: { method: any; params: any }) {
-    // Handle methods like 'eth_requestAccounts' or 'eth_sendTransaction' here
-    console.log('window ethereum request method ', method, params);
-    if (method === 'eth_requestAccounts') {
-      return [this.mockProvider?.address]; // Return the mock provider's address
-    } else if (method === 'wallet_requestPermissions') {
-      return [{ eth_accounts: {} }]; // Handle wallet request permissions
-    } else if (method === 'eth_chainId'){
-      return 1
-    } else if (method === 'wallet_switchEthereumChain'){
-      throw 'Unknown method(s) requested'
-      // const err = new Error('Invalid chainId')
-      // // @ts-expect-error need this code
-      // err.code = 4902
-      // throw err
-    } else if (method === 'wallet_addEthereumChain'){
-      throw 'Unknown method(s) requested'
-    }
-  }
-
-  on(...args: any){
-    // @ts-expect-error it works
-    this.addEventListener(...args)
-  }
-
-  off(...args: any){
-    // @ts-expect-error it works
-    this.removeEventListener(...args)
-  }
-}
-
-const windowEth = new WindowEth();
+const windowEth = new InjectedProviderMock()
 
 const mockLogError = fn()
 
@@ -590,18 +549,12 @@ export const TestSwitchToChainNoEIP3085: Story = {
   },
   decorators: [
     (Story) => {
-      console.log('decorating ')
-      window.ethereum = windowEth;
-      console.log('decorating ', window.ethereum)
+      window.ethereum = windowEth
       return <Story />
     }
   ],
   render: (args) => {
     const activeWallet = window.ethereum.address
-    console.log('activeWallet', activeWallet)
-
-    console.log('window eth ', window.ethereum)
-
     const { address } = useAccount()
     return (
       <QuestDetailsWrapper
@@ -621,25 +574,30 @@ export const TestSwitchToChainNoEIP3085: Story = {
             last_play_session_completed_datetime: new Date().toISOString()
           }
         }}
-        logError={(...args)=>{
+        logError={(...args) => {
           console.error('quest log error: ', ...args)
           mockLogError(...args)
         }}
         getQuest={async () => {
-          const mockQuestOneApeChainReward: Quest = {...mockQuest, rewards: [{
-            id: 1,
-            name: 'Some ApeChain Reward',
-            contract_address: '0xb85Df74eB6db8C2D87c3bD7d4Ee1A27929643dA3',
-            decimals: 18,
-            image_url:
-              'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
-            token_ids: [],
-            numClaimsLeft: '2357',
-            amount_per_user: 200000000000000000000000,
-            chain_id: 33139,
-            reward_type: 'ERC20',
-            marketplace_url: 'https://hyperplay.xyz'
-          }]}
+          const mockQuestOneApeChainReward: Quest = {
+            ...mockQuest,
+            rewards: [
+              {
+                id: 1,
+                name: 'Some ApeChain Reward',
+                contract_address: '0xb85Df74eB6db8C2D87c3bD7d4Ee1A27929643dA3',
+                decimals: 18,
+                image_url:
+                  'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
+                token_ids: [],
+                numClaimsLeft: '2357',
+                amount_per_user: 200000000000000000000000,
+                chain_id: 33139,
+                reward_type: 'ERC20',
+                marketplace_url: 'https://hyperplay.xyz'
+              }
+            ]
+          }
           return mockQuestOneApeChainReward
         }}
       />
@@ -656,7 +614,9 @@ export const TestSwitchToChainNoEIP3085: Story = {
     await wait(100)
     await expect(mockLogError).toBeCalled()
     await wait(100)
-    const errorBanner = canvas.getByText('Please switch to ApeChain within your wallet, or try again with MetaMask.')
+    const errorBanner = canvas.getByText(
+      'Please switch to ApeChain within your wallet, or try again with MetaMask.'
+    )
     expect(errorBanner).toBeInTheDocument()
   }
 }
