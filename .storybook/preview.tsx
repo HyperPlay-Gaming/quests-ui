@@ -15,6 +15,7 @@ import { ConnectWallet } from '../src/components/ConnectWallet'
 
 import i18n from './i18n'
 import { I18nextProvider } from 'react-i18next'
+import { config } from './wagmiConfig'
 
 const queryClient = new QueryClient()
 
@@ -49,7 +50,7 @@ const preview: Preview = {
   decorators: [
     (Story) => (
       <I18nextProvider i18n={i18n}>
-        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+        <WagmiProvider config={config}>
           {/* QueryClient is injected via the createQueryClientDecorator */}
           <HyperPlayDesignProvider>
             <div style={{ position: 'absolute', top: 10, right: 10 }}>

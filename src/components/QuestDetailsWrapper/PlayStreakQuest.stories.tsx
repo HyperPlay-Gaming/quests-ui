@@ -3,7 +3,7 @@ import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
 import { useState } from 'react'
-import { verifyMessage, BrowserProvider } from 'ethers'
+import { verifyMessage, BrowserProvider, ethers } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
 import { within, expect, waitFor } from '@storybook/test'
@@ -56,7 +56,7 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       amount_per_user: 200000000000000000000000,
       chain_id: 84532,
       reward_type: 'ERC20',
-      marketplace_url: 'https://test.com'
+      marketplace_url: 'https://hyperplay.xyz'
     },
     {
       id: 2,
@@ -68,7 +68,7 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       amount_per_user: 100000000000000000000000,
       chain_id: 84532,
       reward_type: 'EXTERNAL-TASKS',
-      marketplace_url: 'https://test.com',
+      marketplace_url: 'https://hyperplay.xyz',
       numClaimsLeft: '2357'
     }
   ],
@@ -150,14 +150,14 @@ const mockProps: QuestDetailsWrapperProps = {
     return {
       id: '1',
       name: 'Test Game',
-      capsule_image: 'https://test.com/image.png'
+      capsule_image: 'https://hyperplay.xyz/image.png'
     }
   },
   isSignedIn: true,
   trackEvent: () => {},
   signInWithSteamAccount: () => {},
   openSignInModal: () => alert('openSignInModal'),
-  logError: () => {},
+  logError: (...msg) => {console.error(...msg)},
   claimPoints: async () => {},
   completeExternalTask: async () => {
     alert('complete external task')
@@ -530,6 +530,112 @@ export const ActiveWalletSwitchWalletExistingWalletSkipSignature: Story = {
         updateActiveWallet={async () => {
           console.log('updateActiveWallet', address)
           setActiveWallet(address ?? '')
+        }}
+      />
+    )
+  }
+}
+
+
+
+class WindowEth extends EventTarget {
+  isMetaMask = true;
+  key = new ethers.SigningKey(ethers.randomBytes(32))
+  mockProvider: ethers.Wallet | undefined = undefined
+  address = ''
+  constructor(){
+    super()
+    this.mockProvider = new ethers.Wallet(this.key);
+    this.address = this.mockProvider?.address ?? ''
+  }
+
+  async request({ method, params }: { method: any; params: any }) {
+    // Handle methods like 'eth_requestAccounts' or 'eth_sendTransaction' here
+    console.log('window ethereum request method ', method, params);
+    if (method === 'eth_requestAccounts') {
+      return [this.mockProvider?.address]; // Return the mock provider's address
+    } else if (method === 'wallet_requestPermissions') {
+      return [{ eth_accounts: {} }]; // Handle wallet request permissions
+    } else if (method === 'eth_chainId'){
+      return 1
+    } else if (method === 'wallet_switchEthereumChain'){
+      throw 'Unknown method(s) requested'
+      // const err = new Error('Invalid chainId')
+      // // @ts-expect-error need this code
+      // err.code = 4902
+      // throw err
+    } else if (method === 'wallet_addEthereumChain'){
+      throw 'Unknown method(s) requested'
+    }
+  }
+
+  on(...args: any){
+    // @ts-expect-error it works
+    this.addEventListener(...args)
+  }
+
+  off(...args: any){
+    // @ts-expect-error it works
+    this.removeEventListener(...args)
+  }
+}
+
+const windowEth = new WindowEth();
+
+export const TestSwitchToChainNoEIP3085: Story = {
+  args: {
+    ...mockProps
+  },
+  decorators: [
+    (Story) => {
+      console.log('decorating ')
+      window.ethereum = windowEth;
+      console.log('decorating ', window.ethereum)
+      return <Story />
+    }
+  ],
+  render: (args) => {
+    const activeWallet = window.ethereum.address
+    console.log('activeWallet', activeWallet)
+
+    console.log('window eth ', window.ethereum)
+
+    const { address } = useAccount()
+    return (
+      <QuestDetailsWrapper
+        key={address}
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        getGameplayWallets={async () => [
+          { id: 1, wallet_address: address ?? '' }
+        ]}
+        updateActiveWallet={async () => {
+          console.log('updateActiveWallet', address)
+        }}
+        getUserPlayStreak={async (): Promise<UserPlayStreak> => {
+          return {
+            current_playstreak_in_days: 5,
+            completed_counter: 3,
+            accumulated_playtime_today_in_seconds: 1800,
+            last_play_session_completed_datetime: new Date().toISOString()
+          }
+        }}
+        getQuest={async () => {
+          const mockQuestOneApeChainReward: Quest = {...mockQuest, rewards: [{
+            id: 1,
+            name: 'Some ApeChain Reward',
+            contract_address: '0xb85Df74eB6db8C2D87c3bD7d4Ee1A27929643dA3',
+            decimals: 18,
+            image_url:
+              'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
+            token_ids: [],
+            numClaimsLeft: '2357',
+            amount_per_user: 200000000000000000000000,
+            chain_id: 33139,
+            reward_type: 'ERC20',
+            marketplace_url: 'https://hyperplay.xyz'
+          }]}
+          return mockQuestOneApeChainReward
         }}
       />
     )
