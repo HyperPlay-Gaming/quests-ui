@@ -13,7 +13,9 @@ import {
   BaseError,
   ContractFunctionRevertedError,
   createPublicClient,
-  http
+  http,
+  SwitchChainError,
+  UserRejectedRequestError
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -372,7 +374,7 @@ export function RewardWrapper({
     setClaimError(error)
   }, [claimRewardMutation.error])
 
-  let networkName = ''
+  let networkName = 'Unknown Chain'
 
   if (reward.chainName && reward.chain_id) {
     networkName = chainMap[reward.chain_id.toString()].chain?.name ?? ''
@@ -387,6 +389,13 @@ export function RewardWrapper({
         title: claimError.title,
         message: claimError.message,
         variant: 'warning' as const
+      }
+    } else if (claimError instanceof SwitchChainError || claimError instanceof UserRejectedRequestError) {
+      alertProps = {
+        showClose: false,
+        title: t('quest.switchChainFailed.title', 'Failed to switch to {{chainName}}', { chainName: networkName }),
+        message: t('quest.switchChainFailed.message','Please switch to {{chainName}} within your wallet, or try again with MetaMask.', { chainName: networkName }),
+        variant: 'danger' as const
       }
     } else {
       alertProps = {
