@@ -23,6 +23,13 @@ import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { switchChain } from '@wagmi/core'
 
+function errorIsSwitchChainError(error: Error) {
+  return (
+    error?.name === 'SwitchChainError' ||
+    error?.name === 'UserRejectedRequestError'
+  )
+}
+
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const {
@@ -105,6 +112,7 @@ export function RewardWrapper({
     let errorMessage = 'Error during reward claim'
     let errorSeverity = 'Error'
 
+    let otherProps = {}
     /**
      * @dev this block gets a useful error message in the mutate onError handler for tracking and logging purposes
      */
@@ -126,6 +134,9 @@ export function RewardWrapper({
       // thrown for low balance and g7 account link errors
       logError(`Error claiming rewards: ${error}`)
       errorMessage = error.title
+    } else if (errorIsSwitchChainError(error)) {
+      logError(`Error switching chains: ${error}`)
+      otherProps = error
     } else if (error instanceof Error) {
       errorMessage = JSON.stringify(error.message, null, 2)
     } else {
@@ -137,7 +148,8 @@ export function RewardWrapper({
       properties: {
         ...getClaimEventProperties(reward, questId),
         error: errorMessage,
-        connector: connectorName
+        connector: connectorName,
+        ...otherProps
       }
     })
 
@@ -385,10 +397,7 @@ export function RewardWrapper({
         message: claimError.message,
         variant: 'warning' as const
       }
-    } else if (
-      claimError?.name === 'SwitchChainError' ||
-      claimError?.name === 'UserRejectedRequestError'
-    ) {
+    } else if (errorIsSwitchChainError(claimError)) {
       alertProps = {
         showClose: false,
         title: t(
