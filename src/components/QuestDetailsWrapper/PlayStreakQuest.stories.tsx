@@ -541,7 +541,8 @@ export const ActiveWalletSwitchWalletExistingWalletSkipSignature: Story = {
 
 const windowEth = new InjectedProviderMock()
 
-const mockLogError = fn()
+const logErrorMock = fn()
+const trackEventMock = fn()
 
 export const TestSwitchToChainNoEIP3085: Story = {
   args: {
@@ -576,7 +577,7 @@ export const TestSwitchToChainNoEIP3085: Story = {
         }}
         logError={(...args) => {
           console.error('quest log error: ', ...args)
-          mockLogError(...args)
+          logErrorMock(...args)
         }}
         getQuest={async () => {
           const mockQuestOneApeChainReward: Quest = {
@@ -600,6 +601,10 @@ export const TestSwitchToChainNoEIP3085: Story = {
           }
           return mockQuestOneApeChainReward
         }}
+        trackEvent={(...args)=>{
+          console.log('tracking this event ', ...args)
+          trackEventMock(...args)
+        }}
       />
     )
   },
@@ -612,11 +617,15 @@ export const TestSwitchToChainNoEIP3085: Story = {
     const confirmButton = canvas.getByRole('button', { name: /Confirm/i })
     confirmButton.click()
     await wait(100)
-    await expect(mockLogError).toBeCalled()
+    await expect(logErrorMock).toBeCalled()
     await wait(100)
     const errorBanner = canvas.getByText(
       'Please switch to ApeChain within your wallet, or try again with MetaMask.'
     )
     expect(errorBanner).toBeInTheDocument()
+
+    const rewardClaimErrorTrackObject = trackEventMock.mock.calls[trackEventMock.mock.calls.length - 1][0]
+    expect(rewardClaimErrorTrackObject.properties).toHaveProperty('errorName', 'SwitchChainError')
+    expect(rewardClaimErrorTrackObject.properties).toHaveProperty('errorCode', 4902)
   }
 }

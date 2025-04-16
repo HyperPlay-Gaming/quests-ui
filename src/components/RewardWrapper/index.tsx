@@ -13,7 +13,8 @@ import {
   BaseError,
   ContractFunctionRevertedError,
   createPublicClient,
-  http
+  http,
+  SwitchChainError
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -25,8 +26,7 @@ import { switchChain } from '@wagmi/core'
 
 function errorIsSwitchChainError(error: Error) {
   return (
-    error?.name === 'SwitchChainError' ||
-    error?.name === 'UserRejectedRequestError'
+    error?.name === 'SwitchChainError' 
   )
 }
 
@@ -112,11 +112,11 @@ export function RewardWrapper({
     let errorMessage = 'Error during reward claim'
     let errorSeverity = 'Error'
 
-    let otherProps = {}
+    let errorProps = {}
     /**
      * @dev this block gets a useful error message in the mutate onError handler for tracking and logging purposes
      */
-    if (error instanceof BaseError) {
+     if (error instanceof BaseError) {
       errorSeverity = 'Error'
       // @dev this is the suggested approach for simulateContract errors https://viem.sh/docs/contract/simulateContract#handling-custom-errors
       const revertError = error.walk(
@@ -126,17 +126,19 @@ export function RewardWrapper({
         errorMessage = revertError.reason ?? 'Unknown BaseError revert reason'
       } else if (revertError) {
         errorMessage = `BaseError: ${revertError.name} ${revertError.message}`
+      } else if (errorIsSwitchChainError(error)) {
+        logError(`Error switching chains: ${error}`)
+        const switchChainError = error as SwitchChainError
+        errorProps = {errorName: error.name, errorShortMessage: switchChainError.shortMessage, errorDetails: switchChainError.details, errorCode: switchChainError.code, viemVersion: switchChainError.version}
+        errorMessage = JSON.stringify(error, null, 2)
       } else {
         errorMessage = JSON.stringify(error, null, 2)
       }
     } else if (error instanceof WarningError) {
       errorSeverity = 'Warning'
       // thrown for low balance and g7 account link errors
-      logError(`Error claiming rewards: ${error}`)
+      logError(`Error claiming rewards. Warning Error: ${error}`)
       errorMessage = error.title
-    } else if (errorIsSwitchChainError(error)) {
-      logError(`Error switching chains: ${error}`)
-      otherProps = error
     } else if (error instanceof Error) {
       errorMessage = JSON.stringify(error.message, null, 2)
     } else {
@@ -149,7 +151,7 @@ export function RewardWrapper({
         ...getClaimEventProperties(reward, questId),
         error: errorMessage,
         connector: connectorName,
-        ...otherProps
+        ...errorProps
       }
     })
 
