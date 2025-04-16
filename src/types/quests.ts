@@ -34,14 +34,6 @@ export class WarningError extends Error {
   }
 }
 
-export class SwitchChainError extends Error {
-  constructor(
-  ) {
-    super()
-    this.name = 'SwitchChainError'
-  }
-}
-
 export interface QuestWrapperContextValue {
   flags: {
     rewardTypeClaimEnabled: Record<Reward['reward_type'], boolean>

@@ -605,7 +605,6 @@ export const TestSwitchToChainNoEIP3085: Story = {
     const { address } = useAccount()
     return (
       <QuestDetailsWrapper
-        key={address}
         {...args}
         getActiveWallet={async () => Promise.resolve(activeWallet)}
         getGameplayWallets={async () => [
@@ -647,15 +646,17 @@ export const TestSwitchToChainNoEIP3085: Story = {
     )
   },
   play: async ({ canvasElement }) => {
-    await wait(1000)
+    await wait(100)
     const canvas = within(canvasElement)
     const claimButton = canvas.getByRole('button', { name: /Claim/i })
     claimButton.click()
-    await wait(1000)
+    await wait(100)
     const confirmButton = canvas.getByRole('button', { name: /Confirm/i })
     confirmButton.click()
-    await wait(1000)
+    await wait(100)
     await expect(mockLogError).toBeCalled()
-    // @TODO expect error banner
+    await wait(100)
+    const errorBanner = canvas.getByText('Please switch to ApeChain within your wallet, or try again with MetaMask.')
+    expect(errorBanner).toBeInTheDocument()
   }
 }

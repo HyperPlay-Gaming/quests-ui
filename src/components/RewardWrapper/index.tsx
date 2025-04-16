@@ -14,8 +14,6 @@ import {
   ContractFunctionRevertedError,
   createPublicClient,
   http,
-  SwitchChainError,
-  UserRejectedRequestError
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -175,6 +173,8 @@ export function RewardWrapper({
       }
     },
     onError: (error) => {
+      setClaimError(error)
+
       const errorMessage = trackRewardClaimMutationError(error)
 
       logError(`Error claiming rewards: ${error}`, {
@@ -369,11 +369,6 @@ export function RewardWrapper({
     setClaimError(null)
   }, [questId])
 
-  useEffect(() => {
-    const error = claimRewardMutation.error
-    setClaimError(error)
-  }, [claimRewardMutation.error])
-
   let networkName = 'Unknown Chain'
 
   if (reward.chainName && reward.chain_id) {
@@ -390,7 +385,7 @@ export function RewardWrapper({
         message: claimError.message,
         variant: 'warning' as const
       }
-    } else if (claimError instanceof SwitchChainError || claimError instanceof UserRejectedRequestError) {
+    } else if (claimError?.name === 'SwitchChainError' || claimError?.name === 'UserRejectedRequestError') {
       alertProps = {
         showClose: false,
         title: t('quest.switchChainFailed.title', 'Failed to switch to {{chainName}}', { chainName: networkName }),
