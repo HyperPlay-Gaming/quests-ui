@@ -13,7 +13,7 @@ import {
   BaseError,
   ContractFunctionRevertedError,
   createPublicClient,
-  http,
+  http
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -385,11 +385,22 @@ export function RewardWrapper({
         message: claimError.message,
         variant: 'warning' as const
       }
-    } else if (claimError?.name === 'SwitchChainError' || claimError?.name === 'UserRejectedRequestError') {
+    } else if (
+      claimError?.name === 'SwitchChainError' ||
+      claimError?.name === 'UserRejectedRequestError'
+    ) {
       alertProps = {
         showClose: false,
-        title: t('quest.switchChainFailed.title', 'Failed to switch to {{chainName}}', { chainName: networkName }),
-        message: t('quest.switchChainFailed.message','Please switch to {{chainName}} within your wallet, or try again with MetaMask.', { chainName: networkName }),
+        title: t(
+          'quest.switchChainFailed.title',
+          'Failed to switch to {{chainName}}',
+          { chainName: networkName }
+        ),
+        message: t(
+          'quest.switchChainFailed.message',
+          'Please switch to {{chainName}} within your wallet, or try again with MetaMask.',
+          { chainName: networkName }
+        ),
         variant: 'danger' as const
       }
     } else {
