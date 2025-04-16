@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
-import { Quest, UserPlayStreak } from '@hyperplay/utils'
+import { Quest, UserPlayStreak, wait } from '@hyperplay/utils'
 import { useState } from 'react'
 import { verifyMessage, BrowserProvider, ethers } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
-import { within, expect, waitFor } from '@storybook/test'
+import { within, expect, waitFor, fn } from '@storybook/test'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
 
@@ -157,7 +157,7 @@ const mockProps: QuestDetailsWrapperProps = {
   trackEvent: () => {},
   signInWithSteamAccount: () => {},
   openSignInModal: () => alert('openSignInModal'),
-  logError: (...msg) => {console.error(...msg)},
+  logError: (...msg) => {console.error('handling error with logError prop: ', ...msg)},
   claimPoints: async () => {},
   completeExternalTask: async () => {
     alert('complete external task')
@@ -582,6 +582,8 @@ class WindowEth extends EventTarget {
 
 const windowEth = new WindowEth();
 
+const mockLogError = fn()
+
 export const TestSwitchToChainNoEIP3085: Story = {
   args: {
     ...mockProps
@@ -620,6 +622,10 @@ export const TestSwitchToChainNoEIP3085: Story = {
             last_play_session_completed_datetime: new Date().toISOString()
           }
         }}
+        logError={(...args)=>{
+          console.error('quest log error: ', ...args)
+          mockLogError(...args)
+        }}
         getQuest={async () => {
           const mockQuestOneApeChainReward: Quest = {...mockQuest, rewards: [{
             id: 1,
@@ -639,5 +645,17 @@ export const TestSwitchToChainNoEIP3085: Story = {
         }}
       />
     )
+  },
+  play: async ({ canvasElement }) => {
+    await wait(1000)
+    const canvas = within(canvasElement)
+    const claimButton = canvas.getByRole('button', { name: /Claim/i })
+    claimButton.click()
+    await wait(1000)
+    const confirmButton = canvas.getByRole('button', { name: /Confirm/i })
+    confirmButton.click()
+    await wait(1000)
+    await expect(mockLogError).toBeCalled()
+    // @TODO expect error banner
   }
 }
