@@ -601,7 +601,7 @@ export const TestSwitchToChainNoEIP3085: Story = {
           }
           return mockQuestOneApeChainReward
         }}
-        trackEvent={(...args)=>{
+        trackEvent={(...args) => {
           console.log('tracking this event ', ...args)
           trackEventMock(...args)
         }}
@@ -624,8 +624,15 @@ export const TestSwitchToChainNoEIP3085: Story = {
     )
     expect(errorBanner).toBeInTheDocument()
 
-    const rewardClaimErrorTrackObject = trackEventMock.mock.calls[trackEventMock.mock.calls.length - 1][0]
-    expect(rewardClaimErrorTrackObject.properties).toHaveProperty('errorName', 'SwitchChainError')
-    expect(rewardClaimErrorTrackObject.properties).toHaveProperty('errorCode', 4902)
+    const rewardClaimErrorTrackObject =
+      trackEventMock.mock.calls[trackEventMock.mock.calls.length - 1][0]
+    expect(rewardClaimErrorTrackObject.properties).toHaveProperty(
+      'errorName',
+      'SwitchChainError'
+    )
+    expect(rewardClaimErrorTrackObject.properties).toHaveProperty(
+      'errorCode',
+      4902
+    )
   }
 }

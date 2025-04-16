@@ -25,9 +25,7 @@ import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { switchChain } from '@wagmi/core'
 
 function errorIsSwitchChainError(error: Error) {
-  return (
-    error?.name === 'SwitchChainError' 
-  )
+  return error?.name === 'SwitchChainError'
 }
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
@@ -116,7 +114,7 @@ export function RewardWrapper({
     /**
      * @dev this block gets a useful error message in the mutate onError handler for tracking and logging purposes
      */
-     if (error instanceof BaseError) {
+    if (error instanceof BaseError) {
       errorSeverity = 'Error'
       // @dev this is the suggested approach for simulateContract errors https://viem.sh/docs/contract/simulateContract#handling-custom-errors
       const revertError = error.walk(
@@ -129,7 +127,13 @@ export function RewardWrapper({
       } else if (errorIsSwitchChainError(error)) {
         logError(`Error switching chains: ${error}`)
         const switchChainError = error as SwitchChainError
-        errorProps = {errorName: error.name, errorShortMessage: switchChainError.shortMessage, errorDetails: switchChainError.details, errorCode: switchChainError.code, viemVersion: switchChainError.version}
+        errorProps = {
+          errorName: error.name,
+          errorShortMessage: switchChainError.shortMessage,
+          errorDetails: switchChainError.details,
+          errorCode: switchChainError.code,
+          viemVersion: switchChainError.version
+        }
         errorMessage = JSON.stringify(error, null, 2)
       } else {
         errorMessage = JSON.stringify(error, null, 2)
