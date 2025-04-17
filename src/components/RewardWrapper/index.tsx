@@ -24,7 +24,7 @@ import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { switchChain } from '@wagmi/core'
 
-function errorIsSwitchChainError(error: Error) {
+function errorIsSwitchChainError(error: Error): error is SwitchChainError {
   return error?.name === 'SwitchChainError'
 }
 
@@ -126,7 +126,7 @@ export function RewardWrapper({
         errorMessage = `BaseError: ${revertError.name} ${revertError.message}`
       } else if (errorIsSwitchChainError(error)) {
         logError(`Error switching chains: ${error}`)
-        const switchChainError = error as SwitchChainError
+        const switchChainError = error;
         errorProps = {
           errorName: error.name,
           errorShortMessage: switchChainError.shortMessage,
