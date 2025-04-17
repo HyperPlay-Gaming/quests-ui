@@ -14,9 +14,6 @@ export default defineConfig({
       '@': join(__dirname, 'src')
     }
   },
-  optimizeDeps: {
-    exclude: ['@storybook/react-vite']
-  },
   plugins: [react(), dts()],
   build: {
     copyPublicDir: true,
