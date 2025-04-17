@@ -13,3 +13,7 @@ export function getSyncPlaysessionQueryKey(projectId: string) {
 export function getGetQuestLogInfoQueryKey(questId: string) {
   return ['getQuestLogInfo', questId]
 }
+
+export function getGetExternalEligibilityQueryKey(questId: number | null) {
+  return ['externalEligibility', questId]
+}
