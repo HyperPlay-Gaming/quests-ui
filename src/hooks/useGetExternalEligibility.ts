@@ -12,7 +12,13 @@ type UseGetExternalEligibilityProps = {
   getExternalEligibility: (
     questId: number
   ) => Promise<ExternalEligibility | null>
-} & Omit<UseQueryOptions<{ questId: number; externalEligibility: ExternalEligibility | null }>, 'queryKey' | 'queryFn'>
+} & Omit<
+  UseQueryOptions<{
+    questId: number
+    externalEligibility: ExternalEligibility | null
+  }>,
+  'queryKey' | 'queryFn'
+>
 
 export function getExternalEligibilityQueryOptions(
   props: UseGetExternalEligibilityProps

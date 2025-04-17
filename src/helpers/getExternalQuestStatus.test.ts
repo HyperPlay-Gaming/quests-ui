@@ -72,4 +72,4 @@ describe('getExternalQuestStatus', () => {
     const result = getExternalQuestStatus(quest, null)
     expect(result).toBeUndefined()
   })
-}) 
+})
