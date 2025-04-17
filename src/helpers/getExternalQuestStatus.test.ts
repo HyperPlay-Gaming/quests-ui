@@ -3,7 +3,7 @@ import { getExternalQuestStatus } from './getExternalQuestStatus'
 import { expect, it, describe } from 'vitest'
 
 describe('getExternalQuestStatus', () => {
-  const mockQuest = (status: Quest['status'], endDate?: string): Quest => ({
+  const mockQuest = (status: Quest['status']): Quest => ({
     id: 1,
     project_id: '0123',
     name: 'Test Quest',
@@ -22,7 +22,7 @@ describe('getExternalQuestStatus', () => {
       }
     },
     start_date: null,
-    end_date: endDate || null,
+    end_date: null,
     leaderboard_url: 'https://example.com'
   })
 
@@ -37,31 +37,21 @@ describe('getExternalQuestStatus', () => {
     expect(result).toBe('ACTIVE')
   })
 
-  it('returns ACTIVE when quest is CLAIMABLE but has not ended', () => {
-    const futureDate = new Date(Date.now() + 86400000).toISOString()
-    const quest = mockQuest('CLAIMABLE', futureDate)
-    const result = getExternalQuestStatus(quest, null)
-    expect(result).toBe('ACTIVE')
-  })
-
-  it('returns undefined when quest is CLAIMABLE, has ended, but has no external eligibility', () => {
-    const pastDate = new Date(Date.now() - 86400000).toISOString()
-    const quest = mockQuest('CLAIMABLE', pastDate)
+  it('returns undefined when quest is CLAIMABLE but has no external eligibility', () => {
+    const quest = mockQuest('CLAIMABLE')
     const result = getExternalQuestStatus(quest, null)
     expect(result).toBeUndefined()
   })
 
-  it('returns undefined when quest is CLAIMABLE, has ended, and cannot claim reward', () => {
-    const pastDate = new Date(Date.now() - 86400000).toISOString()
-    const quest = mockQuest('CLAIMABLE', pastDate)
+  it('returns undefined when quest is CLAIMABLE and cannot claim reward', () => {
+    const quest = mockQuest('CLAIMABLE')
     const externalEligibility = mockExternalEligibility(0)
     const result = getExternalQuestStatus(quest, externalEligibility)
     expect(result).toBeUndefined()
   })
 
-  it('returns READY_FOR_CLAIM when quest is CLAIMABLE, has ended, and can claim reward', () => {
-    const pastDate = new Date(Date.now() - 86400000).toISOString()
-    const quest = mockQuest('CLAIMABLE', pastDate)
+  it('returns READY_FOR_CLAIM when quest is CLAIMABLE and can claim reward', () => {
+    const quest = mockQuest('CLAIMABLE')
     const externalEligibility = mockExternalEligibility(100)
     const result = getExternalQuestStatus(quest, externalEligibility)
     expect(result).toBe('READY_FOR_CLAIM')
