@@ -8,11 +8,11 @@ import { ExternalEligibility } from '@hyperplay/utils'
 import { getGetExternalEligibilityQueryKey } from '@/helpers/getQueryKeys'
 
 type UseGetExternalEligibilityProps = {
-  questId: number | null
+  questId: number
   getExternalEligibility: (
     questId: number
   ) => Promise<ExternalEligibility | null>
-} & Omit<UseQueryOptions<ExternalEligibility | null>, 'queryKey' | 'queryFn'>
+} & Omit<UseQueryOptions<{ questId: number; externalEligibility: ExternalEligibility | null }>, 'queryKey' | 'queryFn'>
 
 export function getExternalEligibilityQueryOptions(
   props: UseGetExternalEligibilityProps
@@ -21,10 +21,8 @@ export function getExternalEligibilityQueryOptions(
   return queryOptions({
     queryKey,
     queryFn: async () => {
-      if (!props.questId) {
-        return null
-      }
-      return props.getExternalEligibility(props.questId)
+      const response = await props.getExternalEligibility(props.questId)
+      return { questId: props.questId, externalEligibility: response }
     },
     ...props
   })
