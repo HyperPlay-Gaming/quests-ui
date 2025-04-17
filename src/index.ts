@@ -10,7 +10,7 @@ export { claimedRewardToastState } from './state/ClaimedRewardToastState'
 export * from './helpers/getPlaystreakArgsFromQuestData'
 export * from './helpers/getQueryKeys'
 export * from './helpers/getPlaystreakQuestStatus'
-
+export * from './helpers/canClaimReward'
 // types
 export * from './types/quests'
 
