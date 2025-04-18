@@ -5,7 +5,6 @@ import styles from './index.module.scss'
 import cn from 'classnames'
 import { canClaimLeaderboardReward } from '@/helpers/canClaimReward'
 import { HTMLAttributes } from 'react'
-import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import {
   IconAlertTriangle,
@@ -37,16 +36,9 @@ export function LeaderboardBanner({
     enabled: isSignedIn
   })
 
-  const shouldHideBanner = !quest.end_date || isLoading || isError
+  const shouldHideBanner = isLoading || isError
 
   if (shouldHideBanner) {
-    return null
-  }
-
-  const questEndDate = dayjs(quest.end_date)
-  const questHasNotEndedYet = questEndDate.isAfter(dayjs())
-
-  if (questHasNotEndedYet) {
     return null
   }
 
@@ -113,16 +105,17 @@ export function LeaderboardBanner({
     />
   )
 
-  const isQuestClaimable = quest.status === 'CLAIMABLE'
-
-  if (!isQuestClaimable) {
+  if (quest.status === 'COMPLETED') {
     return finalizingMessage
   }
 
-  if (!eligibilityData) {
-    return notEligibleMessage
+  if (quest.status === 'CLAIMABLE') {
+    if (!eligibilityData) {
+      return notEligibleMessage
+    }
+    const userCanClaimReward = canClaimLeaderboardReward(quest, eligibilityData)
+    return userCanClaimReward ? claimableMessage : notEligibleMessage
   }
 
-  const userCanClaimReward = canClaimLeaderboardReward(quest, eligibilityData)
-  return userCanClaimReward ? claimableMessage : notEligibleMessage
+  return null
 }
