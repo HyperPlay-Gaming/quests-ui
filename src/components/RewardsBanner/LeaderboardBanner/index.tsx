@@ -27,13 +27,17 @@ export function LeaderboardBanner({
   const t = tOverride || tOriginal
 
   const { getExternalEligibility, isSignedIn } = useQuestWrapper()
-  const { data: eligibilityData, isLoading } = useGetExternalEligibility({
+  const {
+    data: eligibilityData,
+    isLoading,
+    isError
+  } = useGetExternalEligibility({
     questId: quest.id,
     getExternalEligibility,
     enabled: isSignedIn
   })
 
-  const shouldHideBanner = !quest.end_date || isLoading
+  const shouldHideBanner = !quest.end_date || isLoading || isError
 
   if (shouldHideBanner) {
     return null

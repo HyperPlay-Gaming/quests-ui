@@ -23,6 +23,7 @@ import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { switchChain } from '@wagmi/core'
+import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 
 function errorIsSwitchChainError(error: Error): error is SwitchChainError {
   return error?.name === 'SwitchChainError'
@@ -81,7 +82,8 @@ export function RewardWrapper({
     openDiscordLink,
     getExternalEligibility,
     getUserPlayStreak,
-    onShowMetaMaskPopup
+    onShowMetaMaskPopup,
+    getActiveWallet
   } = useQuestWrapper()
 
   // State
@@ -92,11 +94,21 @@ export function RewardWrapper({
 
   const connectorName = String(account?.connector?.name)
 
+  const { activeWallet } = useGetActiveWallet({
+    getActiveWallet,
+    enabled: isSignedIn
+  })
+
+  const shouldEnforceActiveWallet = Boolean(flags.gameplayWalletSectionVisible)
+  const validActiveWallet = shouldEnforceActiveWallet
+    ? Boolean(activeWallet)
+    : true
+
   const { canClaim, isLoading: isCanClaimLoading } = useCanClaimReward({
     quest: questMeta,
     getExternalEligibility,
     getUserPlayStreak,
-    enabled: isSignedIn
+    enabled: isSignedIn && validActiveWallet
   })
 
   const { invalidateQuery: invalidateQuestPlayStreakQuery } =

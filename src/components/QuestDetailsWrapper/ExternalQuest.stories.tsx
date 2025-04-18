@@ -252,6 +252,9 @@ export const InClaimPeriodAndNotEligible: Story = {
 export const InClaimPeriodAndEligible: Story = {
   args: {
     ...mockProps,
+    getActiveWallet: async () => {
+      return '0x123'
+    },
     getQuest: async () => {
       return {
         ...mockQuest,
