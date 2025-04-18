@@ -208,6 +208,7 @@ export const InWaitPeriod: Story = {
     getQuest: async () => {
       return {
         ...mockQuest,
+        status: 'COMPLETED',
         end_date: dayjs().subtract(7, 'days').toISOString()
       }
     }
