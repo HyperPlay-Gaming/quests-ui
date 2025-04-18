@@ -126,7 +126,7 @@ export function RewardWrapper({
         errorMessage = `BaseError: ${revertError.name} ${revertError.message}`
       } else if (errorIsSwitchChainError(error)) {
         logError(`Error switching chains: ${error}`)
-        const switchChainError = error;
+        const switchChainError = error
         errorProps = {
           errorName: error.name,
           errorShortMessage: switchChainError.shortMessage,
