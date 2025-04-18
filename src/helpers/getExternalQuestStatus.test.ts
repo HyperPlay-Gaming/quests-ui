@@ -37,13 +37,13 @@ describe('getExternalQuestStatus', () => {
     expect(result).toBe('ACTIVE')
   })
 
-  it('returns undefined when quest is CLAIMABLE but has no external eligibility', () => {
+  it('returns undefined to hide quest when quest is CLAIMABLE but has no external eligibility', () => {
     const quest = mockQuest('CLAIMABLE')
     const result = getExternalQuestStatus(quest, null)
     expect(result).toBeUndefined()
   })
 
-  it('returns undefined when quest is CLAIMABLE and cannot claim reward', () => {
+  it('returns undefined to hide quest when quest is CLAIMABLE and cannot claim reward', () => {
     const quest = mockQuest('CLAIMABLE')
     const externalEligibility = mockExternalEligibility(0)
     const result = getExternalQuestStatus(quest, externalEligibility)
@@ -57,7 +57,7 @@ describe('getExternalQuestStatus', () => {
     expect(result).toBe('READY_FOR_CLAIM')
   })
 
-  it('returns undefined when quest status is COMPLETED', () => {
+  it('returns undefined to hide quest when quest status is COMPLETED', () => {
     const quest = mockQuest('COMPLETED')
     const result = getExternalQuestStatus(quest, null)
     expect(result).toBeUndefined()
