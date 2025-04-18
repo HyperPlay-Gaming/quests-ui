@@ -13,13 +13,13 @@ export function getExternalQuestStatus(
 
   if (quest.status === 'CLAIMABLE') {
     if (
-      !externalEligibility ||
-      !canClaimLeaderboardReward(quest, externalEligibility)
+      externalEligibility &&
+      canClaimLeaderboardReward(quest, externalEligibility)
     ) {
-      return undefined
+      return 'READY_FOR_CLAIM'
     }
 
-    return 'READY_FOR_CLAIM'
+    return undefined
   }
 
   return undefined
