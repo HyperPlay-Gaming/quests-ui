@@ -23,7 +23,7 @@ export function Eligibility({ quest, streakIsProgressing }: EligibilityProps) {
     )
   }
 
-  if (quest.type === 'LEADERBOARD' && quest.leaderboard_url) {
+  if (quest.type === 'LEADERBOARD') {
     eligibilityComponent = (
       <ExternalEligibility externalLink={quest.leaderboard_url} />
     )
