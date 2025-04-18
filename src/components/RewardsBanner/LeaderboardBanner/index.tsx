@@ -119,6 +119,6 @@ export function LeaderboardBanner({
     )
     return userCanClaimReward ? claimableMessage : notEligibleMessage
   }
-  
+
   return null
 }
