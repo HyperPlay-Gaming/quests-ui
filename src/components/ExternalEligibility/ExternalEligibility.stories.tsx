@@ -33,6 +33,10 @@ export const Default: Story = {
 export const InGameLeaderboard: Story = {
   args: {
     externalLink: null
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    expect(canvas.getByText('Available in-game')).toBeInTheDocument()
   }
 }
 
