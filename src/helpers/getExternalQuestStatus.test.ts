@@ -64,7 +64,7 @@ describe('getExternalQuestStatus', () => {
   })
 
   it.each(['INACTIVE', 'DRAFT'] as Quest['status'][])(
-    'returns undefined for other quest statuses',
+    'returns undefined to hide quest when quest status is %s',
     (status) => {
       const quest = mockQuest(status)
       const result = getExternalQuestStatus(quest, null)
