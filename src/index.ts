@@ -10,6 +10,8 @@ export { claimedRewardToastState } from './state/ClaimedRewardToastState'
 export * from './helpers/getPlaystreakArgsFromQuestData'
 export * from './helpers/getQueryKeys'
 export * from './helpers/getPlaystreakQuestStatus'
+export * from './helpers/getExternalQuestStatus'
+export * from './helpers/canClaimReward'
 
 // types
 export * from './types/quests'
@@ -25,3 +27,4 @@ export * from './hooks/useInterval'
 export * from './hooks/useSyncPlayStreakWithExternalSource'
 export * from './hooks/useTrackQuestViewed'
 export * from './hooks/useKeepPlaystreaksInSync'
+export * from './hooks/useGetExternalEligibility'

@@ -1,36 +1,54 @@
 import {
   useQuery,
+  queryOptions,
   useQueryClient,
   UseQueryOptions
 } from '@tanstack/react-query'
 import { ExternalEligibility } from '@hyperplay/utils'
+import { getGetExternalEligibilityQueryKey } from '@/helpers/getQueryKeys'
 
 type UseGetExternalEligibilityProps = {
-  questId: number | null
+  questId: number
   getExternalEligibility: (
     questId: number
   ) => Promise<ExternalEligibility | null>
-} & Omit<UseQueryOptions<ExternalEligibility | null>, 'queryKey' | 'queryFn'>
+} & Omit<
+  UseQueryOptions<{
+    questId: number
+    externalEligibility: ExternalEligibility | null
+  }>,
+  'queryKey' | 'queryFn'
+>
+
+export function getExternalEligibilityQueryOptions(
+  props: UseGetExternalEligibilityProps
+) {
+  const queryKey = getGetExternalEligibilityQueryKey(props.questId)
+  return queryOptions({
+    queryKey,
+    queryFn: async () => {
+      const response = await props.getExternalEligibility(props.questId)
+      return { questId: props.questId, externalEligibility: response }
+    },
+    ...props
+  })
+}
 
 export function useGetExternalEligibility({
   questId,
   getExternalEligibility,
   ...options
 }: UseGetExternalEligibilityProps) {
-  const queryKey = ['externalEligibility', questId]
   const queryClient = useQueryClient()
-  const query = useQuery({
-    queryKey,
-    queryFn: async () => {
-      if (!questId) {
-        return null
-      }
-      return getExternalEligibility(questId)
-    },
+  const queryOption = getExternalEligibilityQueryOptions({
+    questId,
+    getExternalEligibility,
     ...options
   })
+  const query = useQuery(queryOption)
   return {
     ...query,
-    invalidateQuery: async () => queryClient.invalidateQueries({ queryKey })
+    invalidateQuery: async () =>
+      queryClient.invalidateQueries({ queryKey: queryOption.queryKey })
   }
 }
