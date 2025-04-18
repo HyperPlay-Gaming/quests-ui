@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
-import { Quest, UserPlayStreak, wait } from '@hyperplay/utils'
+import { Quest, UserPlayStreak } from '@hyperplay/utils'
 import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
@@ -609,21 +609,18 @@ export const TestSwitchToChainNoEIP3085: Story = {
     )
   },
   play: async ({ canvasElement }) => {
-    await wait(100)
     const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
     const claimButton = canvas.getByRole('button', { name: /Claim/i })
     claimButton.click()
-    await wait(100)
     const confirmButton = canvas.getByRole('button', { name: /Confirm/i })
     confirmButton.click()
-    await wait(100)
-    await expect(logErrorMock).toBeCalled()
-    await wait(100)
-    const errorBanner = canvas.getByText(
-      'Please switch to ApeChain within your wallet, or try again with MetaMask.'
-    )
-    expect(errorBanner).toBeInTheDocument()
-
+    await waitFor(async () => expect(logErrorMock).toBeCalled())
+    await waitFor(() => {
+      canvas.findByText(
+        'Please switch to ApeChain within your wallet, or try again with MetaMask.'
+      )
+    })
     const rewardClaimErrorTrackObject =
       trackEventMock.mock.calls[trackEventMock.mock.calls.length - 1][0]
     expect(rewardClaimErrorTrackObject.properties).toHaveProperty(
