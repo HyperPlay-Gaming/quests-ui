@@ -57,9 +57,18 @@ describe('getExternalQuestStatus', () => {
     expect(result).toBe('READY_FOR_CLAIM')
   })
 
-  it('returns undefined to hide quest when quest status is COMPLETED', () => {
+  it('returns ACTIVE when quest status is COMPLETED', () => {
     const quest = mockQuest('COMPLETED')
     const result = getExternalQuestStatus(quest, null)
-    expect(result).toBeUndefined()
+    expect(result).toBe('ACTIVE')
   })
+
+  it.each(['INACTIVE', 'DRAFT'] as Quest['status'][])(
+    'returns undefined for other quest statuses',
+    (status) => {
+      const quest = mockQuest(status)
+      const result = getExternalQuestStatus(quest, null)
+      expect(result).toBeUndefined()
+    }
+  )
 })
