@@ -20,10 +20,6 @@ export class InjectedProviderMock extends EventTarget {
       return 1
     } else if (method === 'wallet_switchEthereumChain') {
       throw 'Unknown method(s) requested'
-      // const err = new Error('Invalid chainId')
-      // // @ts-expect-error need this code
-      // err.code = 4902
-      // throw err
     } else if (method === 'wallet_addEthereumChain') {
       throw 'Unknown method(s) requested'
     }
