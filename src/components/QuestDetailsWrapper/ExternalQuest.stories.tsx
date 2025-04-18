@@ -193,6 +193,9 @@ export const NotSignedIn: Story = {
   }
 }
 
+/**
+ * The status of the quest is ACTIVE
+ */
 export const InProgressQuest: Story = {
   args: {},
   play: async ({ canvasElement }) => {
@@ -202,6 +205,9 @@ export const InProgressQuest: Story = {
   }
 }
 
+/**
+ * The status of the quest is COMPLETED
+ */
 export const InWaitPeriod: Story = {
   args: {
     ...mockProps,
@@ -227,6 +233,9 @@ export const InWaitPeriod: Story = {
   }
 }
 
+/**
+ * The status of the quest is CLAIMABLE
+ */
 export const InClaimPeriodAndNotEligible: Story = {
   args: {
     ...mockProps,
@@ -250,6 +259,9 @@ export const InClaimPeriodAndNotEligible: Story = {
   }
 }
 
+/**
+ * The status of the quest is CLAIMABLE
+ */
 export const InClaimPeriodAndEligible: Story = {
   args: {
     ...mockProps,
