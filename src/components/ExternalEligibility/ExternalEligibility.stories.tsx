@@ -12,6 +12,13 @@ const meta: Meta<typeof ExternalEligibility> = {
   },
   args: {
     externalLink: 'https://www.google.com'
+  },
+  render: (args) => {
+    return (
+      <div style={{ width: '600px' }}>
+        <ExternalEligibility {...args} />
+      </div>
+    )
   }
 }
 
@@ -21,6 +28,16 @@ type Story = StoryObj<typeof ExternalEligibility>
 
 export const Default: Story = {
   args: {}
+}
+
+export const InGameLeaderboard: Story = {
+  args: {
+    externalLink: null
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    expect(canvas.getByText('Available in-game')).toBeInTheDocument()
+  }
 }
 
 export const InvalidUrl: Story = {
