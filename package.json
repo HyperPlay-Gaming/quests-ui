@@ -1,6 +1,6 @@
 {
   "name": "@hyperplay/quests-ui",
-  "version": "0.1.37",
+  "version": "0.1.38",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,7 @@
   "types": "dist/index.d.ts",
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",
-    "@hyperplay/chains": "^0.3.0",
+    "@hyperplay/chains": "^0.5.0",
     "@hyperplay/ui": "^1.19.1",
     "@hyperplay/utils": "^0.3.13",
     "@mantine/core": "^7.12.0",
@@ -84,7 +84,7 @@
     "wagmi": "^2.14.12"
   },
   "peerDependencies": {
-    "@hyperplay/chains": "^0.3.0",
+    "@hyperplay/chains": "^0.5.0",
     "@hyperplay/ui": "^1.9.5",
     "@hyperplay/utils": "^0.3.4",
     "@mantine/core": "^7.12.0",

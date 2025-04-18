@@ -13,7 +13,8 @@ import {
   BaseError,
   ContractFunctionRevertedError,
   createPublicClient,
-  http
+  http,
+  SwitchChainError
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -23,6 +24,10 @@ import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { switchChain } from '@wagmi/core'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
+
+function errorIsSwitchChainError(error: Error): error is SwitchChainError {
+  return error?.name === 'SwitchChainError'
+}
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -117,6 +122,7 @@ export function RewardWrapper({
     let errorMessage = 'Error during reward claim'
     let errorSeverity = 'Error'
 
+    let errorProps = {}
     /**
      * @dev this block gets a useful error message in the mutate onError handler for tracking and logging purposes
      */
@@ -130,13 +136,24 @@ export function RewardWrapper({
         errorMessage = revertError.reason ?? 'Unknown BaseError revert reason'
       } else if (revertError) {
         errorMessage = `BaseError: ${revertError.name} ${revertError.message}`
+      } else if (errorIsSwitchChainError(error)) {
+        logError(`Error switching chains: ${error}`)
+        const switchChainError = error
+        errorProps = {
+          errorName: error.name,
+          errorShortMessage: switchChainError.shortMessage,
+          errorDetails: switchChainError.details,
+          errorCode: switchChainError.code,
+          viemVersion: switchChainError.version
+        }
+        errorMessage = JSON.stringify(error, null, 2)
       } else {
         errorMessage = JSON.stringify(error, null, 2)
       }
     } else if (error instanceof WarningError) {
       errorSeverity = 'Warning'
       // thrown for low balance and g7 account link errors
-      logError(`Error claiming rewards: ${error}`)
+      logError(`Error claiming rewards. Warning Error: ${error}`)
       errorMessage = error.title
     } else if (error instanceof Error) {
       errorMessage = JSON.stringify(error.message, null, 2)
@@ -149,7 +166,8 @@ export function RewardWrapper({
       properties: {
         ...getClaimEventProperties(reward, questId),
         error: errorMessage,
-        connector: connectorName
+        connector: connectorName,
+        ...errorProps
       }
     })
 
@@ -185,6 +203,8 @@ export function RewardWrapper({
       }
     },
     onError: (error) => {
+      setClaimError(error)
+
       const errorMessage = trackRewardClaimMutationError(error)
 
       logError(`Error claiming rewards: ${error}`, {
@@ -379,12 +399,7 @@ export function RewardWrapper({
     setClaimError(null)
   }, [questId])
 
-  useEffect(() => {
-    const error = claimRewardMutation.error
-    setClaimError(error)
-  }, [claimRewardMutation.error])
-
-  let networkName = ''
+  let networkName = 'Unknown Chain'
 
   if (reward.chainName && reward.chain_id) {
     networkName = chainMap[reward.chain_id.toString()].chain?.name ?? ''
@@ -399,6 +414,21 @@ export function RewardWrapper({
         title: claimError.title,
         message: claimError.message,
         variant: 'warning' as const
+      }
+    } else if (errorIsSwitchChainError(claimError)) {
+      alertProps = {
+        showClose: false,
+        title: t(
+          'quest.switchChainFailed.title',
+          'Failed to switch to {{chainName}}',
+          { chainName: networkName }
+        ),
+        message: t(
+          'quest.switchChainFailed.message',
+          'Please switch to {{chainName}} within your wallet, or try again with MetaMask.',
+          { chainName: networkName }
+        ),
+        variant: 'danger' as const
       }
     } else {
       alertProps = {

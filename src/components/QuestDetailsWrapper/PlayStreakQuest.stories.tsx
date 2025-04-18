@@ -6,9 +6,10 @@ import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { useAccount } from 'wagmi'
-import { within, expect, waitFor } from '@storybook/test'
+import { within, expect, waitFor, fn } from '@storybook/test'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
+import { InjectedProviderMock } from '@/mocks/injectedProvider'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
   component: QuestDetailsWrapper,
@@ -56,7 +57,7 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       amount_per_user: 200000000000000000000000,
       chain_id: 84532,
       reward_type: 'ERC20',
-      marketplace_url: 'https://test.com'
+      marketplace_url: 'https://hyperplay.xyz'
     },
     {
       id: 2,
@@ -68,7 +69,7 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       amount_per_user: 100000000000000000000000,
       chain_id: 84532,
       reward_type: 'EXTERNAL-TASKS',
-      marketplace_url: 'https://test.com',
+      marketplace_url: 'https://hyperplay.xyz',
       numClaimsLeft: '2357'
     }
   ],
@@ -150,14 +151,16 @@ const mockProps: QuestDetailsWrapperProps = {
     return {
       id: '1',
       name: 'Test Game',
-      capsule_image: 'https://test.com/image.png'
+      capsule_image: 'https://hyperplay.xyz/image.png'
     }
   },
   isSignedIn: true,
   trackEvent: () => {},
   signInWithSteamAccount: () => {},
   openSignInModal: () => alert('openSignInModal'),
-  logError: () => {},
+  logError: (...msg) => {
+    console.error('handling error with logError prop: ', ...msg)
+  },
   claimPoints: async () => {},
   completeExternalTask: async () => {
     alert('complete external task')
@@ -568,6 +571,101 @@ export const ActiveWalletSwitchWalletExistingWalletSkipSignature: Story = {
           setActiveWallet(address ?? '')
         }}
       />
+    )
+  }
+}
+
+const windowEth = new InjectedProviderMock()
+
+const logErrorMock = fn()
+const trackEventMock = fn()
+
+export const TestSwitchToChainNoEIP3085: Story = {
+  args: {
+    ...mockProps
+  },
+  decorators: [
+    (Story) => {
+      window.ethereum = windowEth
+      return <Story />
+    }
+  ],
+  render: (args) => {
+    const activeWallet = window.ethereum.address
+    const { address } = useAccount()
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        getGameplayWallets={async () => [
+          { id: 1, wallet_address: address ?? '' }
+        ]}
+        updateActiveWallet={async () => {
+          console.log('updateActiveWallet', address)
+        }}
+        getUserPlayStreak={async (): Promise<UserPlayStreak> => {
+          return {
+            current_playstreak_in_days: 5,
+            completed_counter: 3,
+            accumulated_playtime_today_in_seconds: 1800,
+            last_play_session_completed_datetime: new Date().toISOString()
+          }
+        }}
+        logError={(...args) => {
+          console.error('quest log error: ', ...args)
+          logErrorMock(...args)
+        }}
+        getQuest={async () => {
+          const mockQuestOneApeChainReward: Quest = {
+            ...mockQuest,
+            rewards: [
+              {
+                id: 1,
+                name: 'Some ApeChain Reward',
+                contract_address: '0xb85Df74eB6db8C2D87c3bD7d4Ee1A27929643dA3',
+                decimals: 18,
+                image_url:
+                  'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
+                token_ids: [],
+                numClaimsLeft: '2357',
+                amount_per_user: 200000000000000000000000,
+                chain_id: 33139,
+                reward_type: 'ERC20',
+                marketplace_url: 'https://hyperplay.xyz'
+              }
+            ]
+          }
+          return mockQuestOneApeChainReward
+        }}
+        trackEvent={(...args) => {
+          console.log('tracking this event ', ...args)
+          trackEventMock(...args)
+        }}
+      />
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForLoadingSpinnerToDisappear(canvas)
+    const claimButton = canvas.getByRole('button', { name: /Claim/i })
+    claimButton.click()
+    const confirmButton = canvas.getByRole('button', { name: /Confirm/i })
+    confirmButton.click()
+    await waitFor(async () => expect(logErrorMock).toBeCalled())
+    await waitFor(() => {
+      canvas.findByText(
+        'Please switch to ApeChain within your wallet, or try again with MetaMask.'
+      )
+    })
+    const rewardClaimErrorTrackObject =
+      trackEventMock.mock.calls[trackEventMock.mock.calls.length - 1][0]
+    expect(rewardClaimErrorTrackObject.properties).toHaveProperty(
+      'errorName',
+      'SwitchChainError'
+    )
+    expect(rewardClaimErrorTrackObject.properties).toHaveProperty(
+      'errorCode',
+      4902
     )
   }
 }
