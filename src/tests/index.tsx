@@ -10,6 +10,10 @@ import { foundry } from 'viem/chains'
 import dayjs from 'dayjs'
 import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { QuestWrapperContextValue } from '@/types/quests'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { HyperPlayDesignProvider } from '@hyperplay/ui'
+import { I18nextProvider } from 'react-i18next'
+import i18n from '../../i18n'
 
 export function setupConfig() {
   return createConfig({
@@ -29,16 +33,25 @@ type ProvidersProps = {
   children: React.ReactNode
   config?: WagmiProviderProps['config']
 }
+
+const queryClient = new QueryClient()
+
 export function Providers({
   children,
   config = setupConfig()
 }: ProvidersProps) {
   return (
-    <WagmiProvider config={config}>
-      <QuestWrapperProvider {...questProviderProps}>
-        {children}
-      </QuestWrapperProvider>
-    </WagmiProvider>
+    <I18nextProvider i18n={i18n}>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <HyperPlayDesignProvider>
+            <QuestWrapperProvider {...questProviderProps}>
+              {children}
+            </QuestWrapperProvider>
+          </HyperPlayDesignProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </I18nextProvider>
   )
 }
 

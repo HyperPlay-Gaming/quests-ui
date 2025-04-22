@@ -12,7 +12,8 @@
     "storybook": "storybook dev -p 6007",
     "build-storybook": "storybook build",
     "test-storybook": "test-storybook --skipTags=\"skip-test\" --url http://localhost:6007",
-    "test:unit": "vitest --config vite.unit.config.ts"
+    "test:unit": "vitest --config vite.unit.config.ts",
+    "test:integration": "vitest --config vite.integration.config.ts"
   },
   "keywords": [],
   "author": "",
@@ -71,6 +72,7 @@
     "eslint-plugin-storybook": "^0.9.0",
     "ethers": "^6.13.5",
     "i18next": "^23.12.3",
+    "jsdom": "^26.1.0",
     "mobx": "^6.13.3",
     "postcss": "^8.4.47",
     "postcss-preset-mantine": "^1.17.0",
