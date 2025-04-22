@@ -13,7 +13,7 @@ import '@mantine/core/styles.css'
 import '@hyperplay/ui/style.css'
 import { ConnectWallet } from '../src/components/ConnectWallet'
 
-import i18n from './i18n'
+import i18n from '../i18n'
 import { I18nextProvider } from 'react-i18next'
 import { config } from './wagmiConfig'
 
