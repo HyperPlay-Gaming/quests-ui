@@ -1,12 +1,11 @@
 import mainConfig from './vite.config'
-import { defineConfig } from 'vite'
+import { mergeConfig } from 'vite'
 
-export default defineConfig({
-  ...mainConfig,
+export default mergeConfig(mainConfig, {
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['src/tests/setup.ts'],
-    include: ['src/**/*.test.ts?(x)', '!src/**/*.unit.test.ts'],
+    include: ['src/**/*.test.ts?(x)', '!src/**/*.unit.test.ts']
   }
 })

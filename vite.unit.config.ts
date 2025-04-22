@@ -1,9 +1,8 @@
 import mainConfig from './vite.config'
-import { defineConfig } from 'vite'
+import { mergeConfig } from 'vite'
 
-export default defineConfig({
-  ...mainConfig,
+export default mergeConfig(mainConfig, {
   test: {
-    include: ['src/**/*.unit.test.ts'],
+    include: ['src/**/*.unit.test.ts']
   }
 })
