@@ -1,4 +1,4 @@
-import { Button, Images, Alert, LoadingSpinner, AlertCard } from '@hyperplay/ui'
+import { Button, Images, LoadingSpinner, AlertCard } from '@hyperplay/ui'
 import styles from './index.module.scss'
 import cn from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -11,6 +11,8 @@ import { Popover } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 import { getGetExternalEligibilityQueryKey } from '@/helpers/getQueryKeys'
+
+const { WarningIcon, AlertOctagon } = Images
 
 function ActiveWalletInfoTooltip() {
   const { tOverride } = useQuestWrapper()
@@ -290,12 +292,17 @@ export default function ActiveWalletSection() {
   if (hasNoWallets) {
     content = (
       <>
-        <Alert
+        <AlertCard
+          size="small"
+          noBorderLeft
+          showClose={false}
+          title={t('gameplayWallet.noWallet.title', 'No wallet connected')}
           message={t(
             'gameplayWallet.noWallet.message',
             'Connect your wallet to start tracking eligibility for this Quest.'
           )}
           variant="warning"
+          icon={<WarningIcon />}
         />
         <InputLikeContainer
           title={t('gameplayWallet.active.title', 'Connected Wallet')}
@@ -379,15 +386,19 @@ export default function ActiveWalletSection() {
   }
 
   const alertProps: InfoAlertProps = {
+    noBorderLeft: true,
     showClose: false,
+    icon: <AlertOctagon />,
     title: t('gameplayWallet.error.title', 'Something went wrong'),
     message: t(
       'gameplayWallet.error.message',
       "Please try once more. If it still doesn't work, create a Discord support ticket."
     ),
-    actionText: t('gameplayWallet.error.action', 'Create Discord Ticket'),
-    onActionClick: () => openDiscordLink(),
-    variant: 'danger' as const
+    link: {
+      text: t('gameplayWallet.error.action', 'Create Discord Ticket'),
+      onClick: () => openDiscordLink()
+    },
+    variant: 'error' as const
   }
 
   const error =
@@ -404,8 +415,6 @@ export default function ActiveWalletSection() {
       'gameplayWallet.error.alreadyLinked.message',
       'This wallet is linked to another HyperPlay account. Try a different one or sign in to to the associated account to continue.'
     )
-    alertProps.onActionClick = undefined
-    alertProps.actionText = undefined
     alertProps.showClose = true
     alertProps.onClose = () => {
       addGameplayWalletMutation.reset()
