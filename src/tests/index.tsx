@@ -1,6 +1,13 @@
-import { RenderOptions, render } from '@testing-library/react'
+import {
+  RenderOptions,
+  render,
+  screen,
+  waitFor,
+  fireEvent
+} from '@testing-library/react'
 import { default as userEvent } from '@testing-library/user-event'
 import * as React from 'react'
+import { expect } from 'vitest'
 
 import { createConfig, WagmiProvider, WagmiProviderProps } from 'wagmi'
 import { mock } from 'wagmi/connectors'
@@ -8,19 +15,22 @@ import { mock } from 'wagmi/connectors'
 import { http } from 'viem'
 import { foundry } from 'viem/chains'
 import dayjs from 'dayjs'
-import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { QuestWrapperContextValue } from '@/types/quests'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HyperPlayDesignProvider } from '@hyperplay/ui'
 import { I18nextProvider } from 'react-i18next'
 import i18n from '../../i18n'
+import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
+import { Connect } from '@/components/Connect'
+
+const address = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 
 export function setupConfig() {
   return createConfig({
     chains: [foundry],
     connectors: [
       mock({
-        accounts: ['0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266']
+        accounts: [address]
       })
     ],
     transports: {
@@ -31,24 +41,20 @@ export function setupConfig() {
 
 type ProvidersProps = {
   children: React.ReactNode
-  config?: WagmiProviderProps['config']
+  wagmiConfig?: WagmiProviderProps['config']
 }
 
 const queryClient = new QueryClient()
 
 export function Providers({
   children,
-  config = setupConfig()
+  wagmiConfig = setupConfig()
 }: ProvidersProps) {
   return (
     <I18nextProvider i18n={i18n}>
-      <WagmiProvider config={config}>
+      <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
-          <HyperPlayDesignProvider>
-            <QuestWrapperProvider {...questProviderProps}>
-              {children}
-            </QuestWrapperProvider>
-          </HyperPlayDesignProvider>
+          <HyperPlayDesignProvider>{children}</HyperPlayDesignProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </I18nextProvider>
@@ -118,7 +124,7 @@ export const mockQuest = {
   num_of_times_repeatable: 10
 }
 
-export const questProviderProps: QuestWrapperContextValue = {
+export const defaultQuestProviderProps: QuestWrapperContextValue = {
   getExternalEligibility: async () => {
     return null
   },
@@ -216,4 +222,34 @@ export const questProviderProps: QuestWrapperContextValue = {
       signature: '0'
     }
   }
+}
+
+type QuestWrapperTestProviderProps = Partial<QuestWrapperContextValue> & {
+  children: React.ReactNode
+}
+
+export const QuestWrapperTestProvider = ({
+  children,
+  ...props
+}: QuestWrapperTestProviderProps) => {
+  return (
+    <QuestWrapperProvider {...defaultQuestProviderProps} {...props}>
+      <Connect />
+      {children}
+    </QuestWrapperProvider>
+  )
+}
+
+export async function waitForWalletToConnect() {
+  const button = screen.getByRole('button', { name: 'Mock Connector' })
+
+  await waitFor(() => {
+    expect(button).toBeEnabled()
+  })
+
+  fireEvent.click(button)
+
+  await waitFor(() => {
+    expect(screen.getByText(address)).toBeInTheDocument()
+  })
 }

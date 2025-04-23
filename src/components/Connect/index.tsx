@@ -2,14 +2,12 @@ import * as React from 'react'
 import { Connector, useAccount, useConnect, useDisconnect } from 'wagmi'
 
 function WalletOptions() {
-  const { connectors, connect, isPending } = useConnect()
-  console.log('isPending', isPending)
+  const { connectors, connect } = useConnect()
   return connectors.map((connector) => (
     <WalletOption
       key={connector.uid}
       connector={connector}
       onClick={() => {
-        console.log('clicked', connector.name)
         connect({ connector })
       }}
     />
@@ -27,12 +25,9 @@ function WalletOption({
   React.useEffect(() => {
     ;(async () => {
       const provider = await connector.getProvider()
-      console.log('ready', !!provider)
       setReady(!!provider)
     })()
   }, [connector])
-
-  console.log('Connector', connector.name, ready)
   return (
     <button disabled={!ready} onClick={onClick}>
       {connector.name}
@@ -43,9 +38,6 @@ function WalletOption({
 export function Connect() {
   const { address, connector, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
-
-  console.log('isConnected', isConnected)
-
   return (
     <div>
       <div>
