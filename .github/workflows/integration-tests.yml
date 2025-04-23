@@ -23,7 +23,9 @@ jobs:
         run: pnpm install
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
-      - name: Start Anvil Server
-        run: pnpm anvil --fork-url https://eth.merkle.io
-      - name: Run tests
-        run: pnpm run test:integration
+      - name: Start Anvil and run tests
+        run: |
+          pnpm add -g concurrently wait-on
+          pnpm concurrently -k -s first -n "ANVIL,TEST" -c "magenta,blue" \
+            "pnpm anvil --fork-url https://eth.merkle.io" \
+            "pnpm wait-on tcp:8545 && pnpm run test:integration"
