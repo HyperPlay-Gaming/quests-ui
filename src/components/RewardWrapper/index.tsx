@@ -4,7 +4,7 @@ import { mintReward } from '@/helpers/mintReward'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import { ClaimError, UseGetRewardsData, WarningError } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
-import { AlertCard, Reward as RewardUi } from '@hyperplay/ui'
+import { AlertCard, Reward as RewardUi, Images } from '@hyperplay/ui'
 import { Quest, Reward, RewardClaimSignature } from '@hyperplay/utils'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -24,6 +24,8 @@ import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { switchChain } from '@wagmi/core'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
+
+const { AlertOctagon, WarningIcon } = Images
 
 function errorIsSwitchChainError(error: Error): error is SwitchChainError {
   return error?.name === 'SwitchChainError'
@@ -410,6 +412,7 @@ export function RewardWrapper({
   if (claimError) {
     if (claimError instanceof WarningError) {
       alertProps = {
+        icon: <WarningIcon />,
         showClose: false,
         title: claimError.title,
         message: claimError.message,
@@ -417,6 +420,7 @@ export function RewardWrapper({
       }
     } else if (errorIsSwitchChainError(claimError)) {
       alertProps = {
+        icon: <AlertOctagon />,
         showClose: false,
         title: t(
           'quest.switchChainFailed.title',
@@ -428,10 +432,11 @@ export function RewardWrapper({
           'Please switch to {{chainName}} within your wallet, or try again with MetaMask.',
           { chainName: networkName }
         ),
-        variant: 'danger' as const
+        variant: 'error' as const
       }
     } else {
       alertProps = {
+        icon: <AlertOctagon />,
         showClose: false,
         title: t('quest.claimFailed', 'Claim failed'),
         message: t(
@@ -440,7 +445,7 @@ export function RewardWrapper({
         ),
         actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
         onActionClick: () => openDiscordLink(),
-        variant: 'danger' as const
+        variant: 'error' as const
       }
     }
   }
@@ -459,7 +464,7 @@ export function RewardWrapper({
       />
       {alertProps ? (
         <div className={styles.alertCard}>
-          <AlertCard {...alertProps} />
+          <AlertCard {...alertProps} noBorderLeft={true} />
         </div>
       ) : null}
       <ConfirmClaimModal
