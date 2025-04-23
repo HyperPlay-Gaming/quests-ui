@@ -63,6 +63,8 @@ export function RewardWrapper({
   const { connectAsync } = useConnect()
   const config = useConfig()
 
+  console.log('Account', account.address)
+
   // Context
   const {
     flags,
