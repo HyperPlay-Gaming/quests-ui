@@ -10,7 +10,7 @@ import * as React from 'react'
 import { expect } from 'vitest'
 
 import { createConfig, WagmiProvider, WagmiProviderProps } from 'wagmi'
-import { mock } from 'wagmi/connectors'
+import { mock, MockParameters } from 'wagmi/connectors'
 
 import { http } from 'viem'
 import { foundry } from 'viem/chains'
@@ -25,12 +25,13 @@ import { Connect } from '@/components/Connect'
 
 export const walletAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 
-export function setupConfig() {
+export function setupMockWalletConfig(mockParams?: Partial<MockParameters>) {
   return createConfig({
     chains: [foundry],
     connectors: [
       mock({
-        accounts: [walletAddress]
+        accounts: [walletAddress],
+        ...mockParams
       })
     ],
     transports: {
@@ -48,7 +49,7 @@ const queryClient = new QueryClient()
 
 export function Providers({
   children,
-  wagmiConfig = setupConfig()
+  wagmiConfig = setupMockWalletConfig()
 }: ProvidersProps) {
   return (
     <I18nextProvider i18n={i18n}>
@@ -61,10 +62,20 @@ export function Providers({
   )
 }
 
+type CustomRenderOptions = RenderOptions & {
+  wagmiConfig?: WagmiProviderProps['config']
+}
+
 const customRender = (
   ui: React.ReactElement,
-  options?: RenderOptions
-): ReturnType<typeof render> => render(ui, { wrapper: Providers, ...options })
+  options?: CustomRenderOptions
+): ReturnType<typeof render> =>
+  render(ui, {
+    wrapper: ({ children }) => (
+      <Providers wagmiConfig={options?.wagmiConfig}>{children}</Providers>
+    ),
+    ...options
+  })
 
 export * from '@testing-library/react'
 export { customRender as render }
