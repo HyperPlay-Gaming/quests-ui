@@ -5,6 +5,7 @@ import {
   screen,
   fireEvent,
   waitForWalletToConnect,
+  walletAddress,
   QuestWrapperTestProvider
 } from '@/tests'
 import ActiveWalletSection from '../ActiveWalletSection'
@@ -12,9 +13,11 @@ import { useSignMessage } from 'wagmi'
 import { QuestWrapperContextValue } from '@/types/quests'
 
 function CanSetActiveWallet({
-  setActiveWallet
+  setActiveWallet,
+  trackEvent
 }: {
   setActiveWallet: QuestWrapperContextValue['setActiveWallet']
+  trackEvent: QuestWrapperContextValue['trackEvent']
 }) {
   const { signMessageAsync } = useSignMessage()
   const getActiveWalletSignature = async () => {
@@ -28,6 +31,7 @@ function CanSetActiveWallet({
     <QuestWrapperTestProvider
       getActiveWalletSignature={getActiveWalletSignature}
       setActiveWallet={setActiveWallet}
+      trackEvent={trackEvent}
     >
       <ActiveWalletSection />
     </QuestWrapperTestProvider>
@@ -43,7 +47,14 @@ describe('ActiveWalletSection', () => {
       })
     )
 
-    render(<CanSetActiveWallet setActiveWallet={setActiveWalletMock} />)
+    const trackEventMock = vi.fn()
+
+    render(
+      <CanSetActiveWallet
+        setActiveWallet={setActiveWalletMock}
+        trackEvent={trackEventMock}
+      />
+    )
 
     await waitForWalletToConnect()
 
@@ -51,6 +62,24 @@ describe('ActiveWalletSection', () => {
 
     await waitFor(() => {
       expect(setActiveWalletMock).toHaveBeenCalled()
+    })
+
+    expect(trackEventMock).toHaveBeenCalledTimes(2)
+
+    expect(trackEventMock).toHaveBeenNthCalledWith(1, {
+      event: 'Add Gameplay Wallet Start',
+      properties: {
+        walletAddress,
+        walletConnector: 'Mock Connector'
+      }
+    })
+
+    expect(trackEventMock).toHaveBeenNthCalledWith(2, {
+      event: 'Add Gameplay Wallet Success',
+      properties: {
+        walletAddress,
+        walletConnector: 'Mock Connector'
+      }
     })
   })
 })

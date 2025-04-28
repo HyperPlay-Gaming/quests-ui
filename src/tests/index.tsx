@@ -23,14 +23,14 @@ import i18n from '../../i18n'
 import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { Connect } from '@/components/Connect'
 
-const address = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+export const walletAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 
 export function setupConfig() {
   return createConfig({
     chains: [foundry],
     connectors: [
       mock({
-        accounts: [address]
+        accounts: [walletAddress]
       })
     ],
     transports: {
@@ -250,6 +250,6 @@ export async function waitForWalletToConnect() {
   fireEvent.click(button)
 
   await waitFor(() => {
-    expect(screen.getByText(address)).toBeInTheDocument()
+    expect(screen.getByText(walletAddress)).toBeInTheDocument()
   })
 }
