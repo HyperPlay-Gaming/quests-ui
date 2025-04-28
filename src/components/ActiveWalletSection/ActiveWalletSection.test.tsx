@@ -137,4 +137,54 @@ describe('ActiveWalletSection', () => {
       }
     })
   })
+
+  it('Handles wallet already linked', async () => {
+    const setActiveWalletMock = vi.fn().mockResolvedValue(
+      Promise.resolve({
+        success: false,
+        status: 409,
+        message: 'Wallet already linked'
+      })
+    )
+
+    const trackEventMock = vi.fn()
+
+    render(
+      <TestWrapper
+        setActiveWallet={setActiveWalletMock}
+        trackEvent={trackEventMock}
+      />
+    )
+
+    await waitForWalletToConnect()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Set as Active' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Wallet Already Linked')).toBeInTheDocument()
+    })
+
+    expect(setActiveWalletMock).toHaveBeenCalled()
+
+    expect(trackEventMock).toHaveBeenCalledTimes(2)
+
+    expect(trackEventMock).toHaveBeenNthCalledWith(1, {
+      event: 'Add Gameplay Wallet Start',
+      properties: {
+        walletAddress,
+        walletConnector: 'Mock Connector'
+      }
+    })
+
+    expect(trackEventMock).toHaveBeenNthCalledWith(2, {
+      event: 'Add Gameplay Wallet Error',
+      properties: {
+        error: expect.stringContaining(
+          'Wallet already linked to another account'
+        ),
+        walletAddress,
+        walletConnector: 'Mock Connector'
+      }
+    })
+  })
 })
