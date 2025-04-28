@@ -274,9 +274,9 @@ describe('ActiveWalletSection', () => {
   })
 
   it('Handles switching wallet error', async () => {
-    const updateActiveWalletMock = vi.fn().mockRejectedValue(
-      new Error('Server Error')
-    )
+    const updateActiveWalletMock = vi
+      .fn()
+      .mockRejectedValue(new Error('Server Error'))
 
     const trackEventMock = vi.fn()
 
@@ -312,7 +312,6 @@ describe('ActiveWalletSection', () => {
     await waitFor(() => {
       expect(updateActiveWalletMock).toHaveBeenCalled()
     })
-
 
     expect(trackEventMock).toHaveBeenCalledTimes(2)
 
