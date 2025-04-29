@@ -12,7 +12,7 @@ export function getRewardCategory(
   ) {
     return t('quest.points', 'Points')
   }
-  if (reward.chain_id === null) {
+  if (reward.chain_id === undefined || reward.chain_id === null) {
     return ''
   }
   return getChainMetadataSync(reward.chain_id.toString())?.chain.name ?? ''
