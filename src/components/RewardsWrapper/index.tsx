@@ -38,11 +38,11 @@ export function RewardsWrapper({
   const questMeta = questQuery?.data
   const rewardsData = rewardsQuery?.data
 
-  if (questQuery.isError){
+  if (questQuery.isError) {
     logError(`Error in quest query ${questQuery.error}`)
   }
 
-  if (rewardsQuery.isError){
+  if (rewardsQuery.isError) {
     logError(`Error in rewards query ${rewardsQuery.error}`)
   }
 

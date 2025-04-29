@@ -32,7 +32,7 @@ export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   hideEligibilitySection?: boolean
   hideClaim?: boolean
   streakIsProgressing?: boolean
-  classNames?:  QuestDetailsProps['classNames']
+  classNames?: QuestDetailsProps['classNames']
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
