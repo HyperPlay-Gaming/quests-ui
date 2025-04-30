@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { useGetQuest } from '@/hooks/useGetQuest'
 import { useGetRewards } from '@/hooks/useGetRewards'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
@@ -38,13 +38,14 @@ export function RewardsWrapper({
   const questMeta = questQuery?.data
   const rewardsData = rewardsQuery?.data
 
-  if (questQuery.isError) {
+  // see https://github.com/HyperPlay-Gaming/quests-ui/pull/87/files#r2066687053 for discussion
+  useEffect(() => {
     logError(`Error in quest query ${questQuery.error}`)
-  }
+  }, [questQuery.isError])
 
-  if (rewardsQuery.isError) {
+  useEffect(() => {
     logError(`Error in rewards query ${rewardsQuery.error}`)
-  }
+  }, [rewardsQuery.isError])
 
   if (!rewardsData || !questMeta) {
     return null
