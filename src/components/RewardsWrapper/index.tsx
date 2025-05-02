@@ -24,6 +24,15 @@ export function RewardsWrapper({
     logError
   })
 
+  // see https://github.com/HyperPlay-Gaming/quests-ui/pull/87/files#r2066687053 for discussion
+  useEffect(() => {
+    logError(`Error in quest query ${questQuery.error}`)
+  }, [questQuery.isError])
+
+  useEffect(() => {
+    logError(`Error in rewards query ${rewardsQuery.error}`)
+  }, [rewardsQuery.isError])
+
   if (rewardsQuery.isLoading) {
     return (
       <Rewards>
@@ -37,15 +46,6 @@ export function RewardsWrapper({
 
   const questMeta = questQuery?.data
   const rewardsData = rewardsQuery?.data
-
-  // see https://github.com/HyperPlay-Gaming/quests-ui/pull/87/files#r2066687053 for discussion
-  useEffect(() => {
-    logError(`Error in quest query ${questQuery.error}`)
-  }, [questQuery.isError])
-
-  useEffect(() => {
-    logError(`Error in rewards query ${rewardsQuery.error}`)
-  }, [rewardsQuery.isError])
 
   if (!rewardsData || !questMeta) {
     return null
