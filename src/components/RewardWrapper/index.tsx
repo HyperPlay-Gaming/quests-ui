@@ -106,7 +106,11 @@ export function RewardWrapper({
     ? Boolean(activeWallet)
     : true
 
-  const { canClaim, isLoading: isCanClaimLoading } = useCanClaimReward({
+  const {
+    canClaim,
+    isLoading: isCanClaimLoading,
+    invalidateQuery: invalidateCanClaimQuery
+  } = useCanClaimReward({
     quest: questMeta,
     getExternalEligibility,
     getUserPlayStreak,
@@ -187,6 +191,7 @@ export function RewardWrapper({
 
       onRewardClaimed?.(reward)
       await invalidateQuestPlayStreakQuery()
+      await invalidateCanClaimQuery()
 
       if (questId !== null) {
         await queryClient.invalidateQueries({
