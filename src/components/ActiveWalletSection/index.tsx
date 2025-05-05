@@ -127,11 +127,6 @@ export default function ActiveWalletSection() {
 
   const connectorName = String(connector?.name)
 
-  const sharedEventProperties = {
-    walletAddress: connectedWallet,
-    walletConnector: connectorName
-  }
-
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
 
@@ -157,6 +152,11 @@ export default function ActiveWalletSection() {
     enabled: isSignedIn
   })
 
+  const sharedEventProperties = {
+    walletAddress: connectedWallet,
+    walletConnector: connectorName
+  }
+
   const updateActiveWalletMutation = useMutation({
     mutationFn: async (walletId: number) => {
       trackEvent({
@@ -180,6 +180,15 @@ export default function ActiveWalletSection() {
       })
     },
     onError: (error, walletId) => {
+      logError(`Error updating active wallet: ${error.message}`, {
+        sentryException: error,
+        sentryExtra: {
+          error: error,
+          connector: connectorName,
+          walletId
+        },
+        sentryTags: { action: 'update_active_wallet', feature: 'quests' }
+      })
       trackEvent({
         event: 'Update Active Wallet Error',
         properties: {
