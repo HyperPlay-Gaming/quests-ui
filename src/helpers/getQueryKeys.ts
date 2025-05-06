@@ -17,3 +17,7 @@ export function getGetQuestLogInfoQueryKey(questId: string) {
 export function getGetExternalEligibilityQueryKey(questId: number | null) {
   return ['externalEligibility', questId]
 }
+
+export function getCanClaimRewardQueryKey(questId: number | null) {
+  return ['canClaimReward', questId]
+}
