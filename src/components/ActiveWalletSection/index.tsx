@@ -121,6 +121,7 @@ export default function ActiveWalletSection() {
     getActiveWalletSignature,
     getGameplayWallets,
     updateActiveWallet,
+    trackEvent,
     isSignedIn
   } = useQuestWrapper()
 
@@ -151,11 +152,52 @@ export default function ActiveWalletSection() {
     enabled: isSignedIn
   })
 
+  const sharedEventProperties = {
+    walletAddress: connectedWallet,
+    walletConnector: connectorName
+  }
+
   const updateActiveWalletMutation = useMutation({
     mutationFn: async (walletId: number) => {
+      trackEvent({
+        event: 'Update Active Wallet Start',
+        properties: {
+          walletId,
+          ...sharedEventProperties
+        }
+      })
       await updateActiveWallet(walletId)
+      return walletId
     },
-    onSuccess: invalidateQueries
+    onSuccess: (walletId) => {
+      invalidateQueries()
+      trackEvent({
+        event: 'Update Active Wallet Success',
+        properties: {
+          walletId,
+          ...sharedEventProperties
+        }
+      })
+    },
+    onError: (error, walletId) => {
+      logError(`Error updating active wallet: ${error.message}`, {
+        sentryException: error,
+        sentryExtra: {
+          error: error,
+          connector: connectorName,
+          walletId
+        },
+        sentryTags: { action: 'update_active_wallet', feature: 'quests' }
+      })
+      trackEvent({
+        event: 'Update Active Wallet Error',
+        properties: {
+          error: JSON.stringify(error.message, null, 2),
+          walletId,
+          ...sharedEventProperties
+        }
+      })
+    }
   })
 
   const addGameplayWalletMutation = useMutation({
@@ -163,6 +205,14 @@ export default function ActiveWalletSection() {
       if (!connectedWallet) {
         throw new Error('No address found')
       }
+
+      trackEvent({
+        event: 'Add Gameplay Wallet Start',
+        properties: {
+          ...sharedEventProperties
+        }
+      })
+
       const signatureData = await getActiveWalletSignature()
       const response = await setActiveWallet(signatureData)
 
@@ -176,7 +226,15 @@ export default function ActiveWalletSection() {
         throw new Error(response.message)
       }
     },
-    onSuccess: invalidateQueries,
+    onSuccess: () => {
+      invalidateQueries()
+      trackEvent({
+        event: 'Add Gameplay Wallet Success',
+        properties: {
+          ...sharedEventProperties
+        }
+      })
+    },
     onError: (error) => {
       let sentryProps = undefined
 
@@ -195,6 +253,14 @@ export default function ActiveWalletSection() {
       }
 
       logError(`Error setting active wallet: ${error.message}`, sentryProps)
+
+      trackEvent({
+        event: 'Add Gameplay Wallet Error',
+        properties: {
+          error: JSON.stringify(error.message, null, 2),
+          ...sharedEventProperties
+        }
+      })
     }
   })
 
