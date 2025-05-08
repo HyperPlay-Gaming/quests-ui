@@ -452,6 +452,7 @@ export default function ActiveWalletSection() {
       'gameplayWallet.error.alreadyLinked.title',
       'Wallet Already Linked'
     )
+    alertProps.link = undefined
     alertProps.message = t(
       'gameplayWallet.error.alreadyLinked.message',
       'This wallet is linked to another HyperPlay account. Try a different one or sign in to to the associated account to continue.'
