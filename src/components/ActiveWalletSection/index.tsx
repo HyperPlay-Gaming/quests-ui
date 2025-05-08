@@ -39,7 +39,7 @@ function ActiveWalletInfoTooltip() {
         </span>
       </Popover.Target>
       <Popover.Dropdown>
-        <div className="caption-sm color-neutral-400">
+        <div className="caption-sm color-neutral-100">
           {t(
             'gameplayWallet.info.description',
             'This wallet address is set to track your quest eligibility. You can switch to a different wallet address at anytime—quest eligibility is saved to each wallet address separately.'
