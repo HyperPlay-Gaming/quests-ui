@@ -50,26 +50,6 @@ function ActiveWalletInfoTooltip() {
   )
 }
 
-function InfoAlert({
-  title,
-  children
-}: {
-  title: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className={styles.newWalletDetectedContainer}>
-      <div className={styles.infoIconContainer}>
-        <Images.Info className={styles.infoIcon} />
-      </div>
-      <div className={styles.infoTextContainer}>
-        <span className="title-sm">{title}</span>
-        <div>{children}</div>
-      </div>
-    </div>
-  )
-}
-
 function InputLikeBox({
   children,
   className
@@ -264,28 +244,6 @@ export default function ActiveWalletSection() {
     }
   })
 
-  const onlyConnectedWallet = (
-    <InfoAlert title={t('gameplayWallet.detected.title', 'Wallet Connected')}>
-      <span className="body-sm">
-        {t(
-          'gameplayWallet.detected.message',
-          'To track your quest eligibility, set this as your active wallet.'
-        )}
-      </span>
-    </InfoAlert>
-  )
-
-  const newWalletDetected = (
-    <InfoAlert title={t('gameplayWallet.new.title', 'New Wallet Connected')}>
-      <span className="body-sm">
-        {t(
-          'gameplayWallet.new.message',
-          'To track your quest eligibility on this new wallet, set it as your active wallet.'
-        )}
-      </span>
-    </InfoAlert>
-  )
-
   const setActiveWalletMutation = useMutation({
     mutationFn: async () => {
       addGameplayWalletMutation.reset()
@@ -384,7 +342,6 @@ export default function ActiveWalletSection() {
   if (hasOnlyConnectedWallet) {
     content = (
       <>
-        {onlyConnectedWallet}
         <InputLikeContainer
           title={t('gameplayWallet.connected.title', 'Connected Wallet')}
         >
@@ -428,7 +385,6 @@ export default function ActiveWalletSection() {
   if (hasDifferentWallets) {
     content = (
       <>
-        {isNewWalletDetected ? newWalletDetected : null}
         <InputLikeContainer
           title={t('gameplayWallet.active.title', 'Active Wallet')}
           tooltip={<ActiveWalletInfoTooltip />}
@@ -465,6 +421,24 @@ export default function ActiveWalletSection() {
       onClick: () => openDiscordLink()
     },
     variant: 'error' as const
+  }
+
+  if (isNewWalletDetected) {
+    alertProps.title = t('gameplayWallet.new.title', 'New Wallet Connected')
+    alertProps.message = t(
+      'gameplayWallet.new.message',
+      'To track your quest eligibility on this new wallet, set it as your active wallet.'
+    )
+    alertProps.link = undefined
+    alertProps.variant = 'information'
+  } else if (hasOnlyConnectedWallet) {
+    alertProps.title = t('gameplayWallet.detected.title', 'Wallet Connected')
+    alertProps.message = t(
+      'gameplayWallet.detected.message',
+      'To track your quest eligibility, set this as your active wallet.'
+    )
+    alertProps.link = undefined
+    alertProps.variant = 'information'
   }
 
   const error =
