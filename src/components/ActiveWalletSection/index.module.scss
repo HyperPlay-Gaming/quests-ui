@@ -83,12 +83,12 @@
 .walletIcon {
   width: 18px;
   height: 18px;
-  fill: var(--color-neutral-400);
+  fill: var(--icon-neutral);
 }
 
 .label {
   font-weight: var(--semibold);
-  color: var(--color-neutral-400);
+  color: var(--text-weak);
 }
 
 .labelContainer {
@@ -103,11 +103,11 @@
 .tooltipInfoIcon {
   width: 16px;
   height: 16px;
-  fill: var(--color-neutral-400);
+  fill: var(--icon-neutral);
 }
 
 .popoverDropdown {
-  background-color: var(--color-neutral-600);
+  background-color: var(--background-overlay);
   border: none;
   display: flex;
   flex-direction: column;
