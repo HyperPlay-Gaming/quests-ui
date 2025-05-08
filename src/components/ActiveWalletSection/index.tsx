@@ -342,6 +342,14 @@ export default function ActiveWalletSection() {
   if (hasOnlyConnectedWallet) {
     content = (
       <>
+        <AlertCard
+          title={t('gameplayWallet.new.title', 'New Wallet Connected')}
+          message={t(
+            'gameplayWallet.new.message',
+            'To track your quest eligibility on this new wallet, set it as your active wallet.'
+          )}
+          variant="information"
+        />
         <InputLikeContainer
           title={t('gameplayWallet.connected.title', 'Connected Wallet')}
         >
@@ -383,8 +391,19 @@ export default function ActiveWalletSection() {
   }
 
   if (hasDifferentWallets) {
+    const newWalletDetected = (
+      <AlertCard
+        title={t('gameplayWallet.detected.title', 'Wallet Connected')}
+        message={t(
+          'gameplayWallet.detected.message',
+          'To track your quest eligibility, set this as your active wallet.'
+        )}
+        variant="information"
+      />
+    )
     content = (
       <>
+        {isNewWalletDetected ? newWalletDetected : null}
         <InputLikeContainer
           title={t('gameplayWallet.active.title', 'Active Wallet')}
           tooltip={<ActiveWalletInfoTooltip />}
@@ -421,24 +440,6 @@ export default function ActiveWalletSection() {
       onClick: () => openDiscordLink()
     },
     variant: 'error' as const
-  }
-
-  if (isNewWalletDetected) {
-    alertProps.title = t('gameplayWallet.new.title', 'New Wallet Connected')
-    alertProps.message = t(
-      'gameplayWallet.new.message',
-      'To track your quest eligibility on this new wallet, set it as your active wallet.'
-    )
-    alertProps.link = undefined
-    alertProps.variant = 'information'
-  } else if (hasOnlyConnectedWallet) {
-    alertProps.title = t('gameplayWallet.detected.title', 'Wallet Connected')
-    alertProps.message = t(
-      'gameplayWallet.detected.message',
-      'To track your quest eligibility, set this as your active wallet.'
-    )
-    alertProps.link = undefined
-    alertProps.variant = 'information'
   }
 
   const error =
