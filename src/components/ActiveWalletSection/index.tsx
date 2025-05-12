@@ -349,6 +349,7 @@ export default function ActiveWalletSection() {
             'To track your quest eligibility, set this as your active wallet.'
           )}
           variant="information"
+          showClose={false}
         />
         <InputLikeContainer
           title={t('gameplayWallet.connected.title', 'Connected Wallet')}
@@ -399,6 +400,7 @@ export default function ActiveWalletSection() {
           'To track your quest eligibility on this new wallet, set it as your active wallet.'
         )}
         variant="information"
+        showClose={false}
       />
     )
     content = (
