@@ -343,10 +343,10 @@ export default function ActiveWalletSection() {
     content = (
       <>
         <AlertCard
-          title={t('gameplayWallet.new.title', 'New Wallet Connected')}
+          title={t('gameplayWallet.detected.title', 'Wallet Connected')}
           message={t(
-            'gameplayWallet.new.message',
-            'To track your quest eligibility on this new wallet, set it as your active wallet.'
+            'gameplayWallet.detected.message',
+            'To track your quest eligibility, set this as your active wallet.'
           )}
           variant="information"
         />
@@ -393,10 +393,10 @@ export default function ActiveWalletSection() {
   if (hasDifferentWallets) {
     const newWalletDetected = (
       <AlertCard
-        title={t('gameplayWallet.detected.title', 'Wallet Connected')}
+        title={t('gameplayWallet.new.title', 'New Wallet Connected')}
         message={t(
-          'gameplayWallet.detected.message',
-          'To track your quest eligibility, set this as your active wallet.'
+          'gameplayWallet.new.message',
+          'To track your quest eligibility on this new wallet, set it as your active wallet.'
         )}
         variant="information"
       />
