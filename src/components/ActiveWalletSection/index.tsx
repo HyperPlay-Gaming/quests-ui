@@ -39,7 +39,7 @@ function ActiveWalletInfoTooltip() {
         </span>
       </Popover.Target>
       <Popover.Dropdown>
-        <div className="caption-sm color-neutral-400">
+        <div className="caption-sm color-neutral-100">
           {t(
             'gameplayWallet.info.description',
             'This wallet address is set to track your quest eligibility. You can switch to a different wallet address at anytime—quest eligibility is saved to each wallet address separately.'
@@ -47,26 +47,6 @@ function ActiveWalletInfoTooltip() {
         </div>
       </Popover.Dropdown>
     </Popover>
-  )
-}
-
-function InfoAlert({
-  title,
-  children
-}: {
-  title: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className={styles.newWalletDetectedContainer}>
-      <div className={styles.infoIconContainer}>
-        <Images.Info className={styles.infoIcon} />
-      </div>
-      <div className={styles.infoTextContainer}>
-        <span className="title-sm">{title}</span>
-        <div>{children}</div>
-      </div>
-    </div>
   )
 }
 
@@ -264,28 +244,6 @@ export default function ActiveWalletSection() {
     }
   })
 
-  const onlyConnectedWallet = (
-    <InfoAlert title={t('gameplayWallet.detected.title', 'Wallet Connected')}>
-      <span className="body-sm">
-        {t(
-          'gameplayWallet.detected.message',
-          'To track your quest eligibility, set this as your active wallet.'
-        )}
-      </span>
-    </InfoAlert>
-  )
-
-  const newWalletDetected = (
-    <InfoAlert title={t('gameplayWallet.new.title', 'New Wallet Connected')}>
-      <span className="body-sm">
-        {t(
-          'gameplayWallet.new.message',
-          'To track your quest eligibility on this new wallet, set it as your active wallet.'
-        )}
-      </span>
-    </InfoAlert>
-  )
-
   const setActiveWalletMutation = useMutation({
     mutationFn: async () => {
       addGameplayWalletMutation.reset()
@@ -384,7 +342,14 @@ export default function ActiveWalletSection() {
   if (hasOnlyConnectedWallet) {
     content = (
       <>
-        {onlyConnectedWallet}
+        <AlertCard
+          title={t('gameplayWallet.detected.title', 'Wallet Connected')}
+          message={t(
+            'gameplayWallet.detected.message',
+            'To track your quest eligibility, set this as your active wallet.'
+          )}
+          variant="information"
+        />
         <InputLikeContainer
           title={t('gameplayWallet.connected.title', 'Connected Wallet')}
         >
@@ -426,6 +391,16 @@ export default function ActiveWalletSection() {
   }
 
   if (hasDifferentWallets) {
+    const newWalletDetected = (
+      <AlertCard
+        title={t('gameplayWallet.new.title', 'New Wallet Connected')}
+        message={t(
+          'gameplayWallet.new.message',
+          'To track your quest eligibility on this new wallet, set it as your active wallet.'
+        )}
+        variant="information"
+      />
+    )
     content = (
       <>
         {isNewWalletDetected ? newWalletDetected : null}
