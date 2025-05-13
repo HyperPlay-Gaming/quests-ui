@@ -138,9 +138,8 @@ describe('ActiveWalletSection', () => {
     })
 
     expect(trackEventMock).toHaveBeenNthCalledWith(2, {
-      event: 'Add Gameplay Wallet Error',
+      event: 'Add Gameplay Wallet Rejected',
       properties: {
-        error: expect.stringContaining('User rejected the request'),
         walletAddress,
         walletConnector: 'Mock Connector'
       }
