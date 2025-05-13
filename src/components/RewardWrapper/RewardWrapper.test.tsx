@@ -83,7 +83,11 @@ describe('RewardWrapper', () => {
       expect(trackEventMock).toHaveBeenCalled()
     })
 
-    expect(screen.getByText('Please switch to ApeChain within your wallet, or try again with MetaMask.'))
+    expect(
+      screen.getByText(
+        'Please switch to ApeChain within your wallet, or try again with MetaMask.'
+      )
+    )
 
     expect(trackEventMock).toHaveBeenCalledTimes(2)
 
