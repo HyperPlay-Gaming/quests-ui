@@ -1,5 +1,5 @@
 // components
-export { QuestDetailsWrapper } from './components/QuestDetailsWrapper'
+export * from './components/QuestDetailsWrapper'
 export type { TrackEventFn } from './types/analytics'
 
 // state

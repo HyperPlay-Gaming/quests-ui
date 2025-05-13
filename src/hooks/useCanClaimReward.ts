@@ -2,6 +2,7 @@ import {
   canClaimLeaderboardReward,
   canClaimPlayStreakReward
 } from '@/helpers/canClaimReward'
+import { getCanClaimRewardQueryKey } from '@/helpers/getQueryKeys'
 import { Quest, ExternalEligibility, UserPlayStreak } from '@hyperplay/utils'
 import {
   useQueryClient,
@@ -24,7 +25,7 @@ export function useCanClaimReward({
   ...options
 }: Props) {
   const queryClient = useQueryClient()
-  const queryKey = ['canClaimReward', quest.id]
+  const queryKey = getCanClaimRewardQueryKey(quest.id)
   const query = useQuery({
     queryKey,
     queryFn: async () => {
@@ -51,8 +52,6 @@ export function useCanClaimReward({
   return {
     canClaim: query.data,
     ...query,
-    invalidateQuery: () => {
-      queryClient.invalidateQueries({ queryKey })
-    }
+    invalidateQuery: async () => queryClient.invalidateQueries({ queryKey })
   }
 }

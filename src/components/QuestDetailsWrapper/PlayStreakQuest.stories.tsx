@@ -651,21 +651,22 @@ export const TestSwitchToChainNoEIP3085: Story = {
     claimButton.click()
     const confirmButton = canvas.getByRole('button', { name: /Confirm/i })
     confirmButton.click()
-    await waitFor(async () => expect(logErrorMock).toBeCalled())
+    await waitFor(async () => {
+      const rewardClaimErrorTrackObject =
+        trackEventMock.mock.calls[trackEventMock.mock.calls.length - 1][0]
+      expect(rewardClaimErrorTrackObject.properties).toHaveProperty(
+        'errorName',
+        'SwitchChainError'
+      )
+      expect(rewardClaimErrorTrackObject.properties).toHaveProperty(
+        'errorCode',
+        4902
+      )
+    })
     await waitFor(() => {
       canvas.findByText(
         'Please switch to ApeChain within your wallet, or try again with MetaMask.'
       )
     })
-    const rewardClaimErrorTrackObject =
-      trackEventMock.mock.calls[trackEventMock.mock.calls.length - 1][0]
-    expect(rewardClaimErrorTrackObject.properties).toHaveProperty(
-      'errorName',
-      'SwitchChainError'
-    )
-    expect(rewardClaimErrorTrackObject.properties).toHaveProperty(
-      'errorCode',
-      4902
-    )
   }
 }

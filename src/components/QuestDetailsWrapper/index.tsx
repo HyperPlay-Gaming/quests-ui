@@ -32,6 +32,7 @@ export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   hideEligibilitySection?: boolean
   hideClaim?: boolean
   streakIsProgressing?: boolean
+  classNames?: QuestDetailsProps['classNames']
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
@@ -265,7 +266,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       rewardsComponent: (
         <RewardsWrapper questId={selectedQuestId} hideClaim={hideClaim} />
       ),
-      ctaComponent
+      ctaComponent,
+      classNames: props.classNames
     }
     questDetails = (
       <QuestDetails
