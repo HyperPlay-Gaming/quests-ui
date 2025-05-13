@@ -11,6 +11,7 @@ import { Popover } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 import { getGetExternalEligibilityQueryKey } from '@/helpers/getQueryKeys'
+import { UserRejectedRequestError } from 'viem'
 
 const { WarningIcon, AlertOctagon } = Images
 
@@ -106,7 +107,6 @@ export default function ActiveWalletSection() {
   } = useQuestWrapper()
 
   const connectorName = String(connector?.name)
-
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
 
@@ -217,6 +217,18 @@ export default function ActiveWalletSection() {
     },
     onError: (error) => {
       let sentryProps = undefined
+
+      const isRejectionError = error instanceof UserRejectedRequestError
+
+      if (isRejectionError) {
+        trackEvent({
+          event: 'Add Gameplay Wallet Rejected',
+          properties: {
+            ...sharedEventProperties
+          }
+        })
+        return
+      }
 
       if (error.cause !== 'wallet_already_linked') {
         sentryProps = {
