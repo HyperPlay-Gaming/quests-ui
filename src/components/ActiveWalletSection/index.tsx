@@ -107,12 +107,6 @@ export default function ActiveWalletSection() {
   } = useQuestWrapper()
 
   const connectorName = String(connector?.name)
-
-  const sharedEventProperties = {
-    walletAddress: connectedWallet,
-    walletConnector: connectorName
-  }
-
   const { t: tOriginal } = useTranslation()
   const t = tOverride || tOriginal
 
