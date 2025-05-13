@@ -50,7 +50,8 @@ const preview: Preview = {
   decorators: [
     (Story) => (
       <I18nextProvider i18n={i18n}>
-        <WagmiProvider config={config}>
+        {/* @ts-ignore: minor mismatch wagmi adapter config and wagmi config */}
+        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
           {/* QueryClient is injected via the createQueryClientDecorator */}
           <HyperPlayDesignProvider>
             <div style={{ position: 'absolute', top: 10, right: 10 }}>
