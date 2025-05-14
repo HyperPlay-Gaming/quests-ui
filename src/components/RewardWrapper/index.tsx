@@ -16,6 +16,7 @@ import {
   http,
   ProviderRpcError,
   SwitchChainError,
+  TransactionExecutionError,
   UserRejectedRequestError
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
@@ -482,10 +483,10 @@ export function RewardWrapper({
       const params = [
         BigInt(1),
         '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
-        BigInt('100000000000000000000'),
-        BigInt('0x51dbc174f0465665658a7d7e9aeaef5e'),
-        BigInt(1747340359),
-        '0x19e4dd106d8547ae8bd89fd0b1426d17aa30bc9598bbee0d5df5843a9f5281c92b1070884a801bdc97a12ce87ce664cdc016ad9dd0602d9b045841735dad83bc1b'
+        BigInt(100000000000000000000),
+        BigInt('0x339f1d62d185705d54cf53ae690eb17c'),
+        BigInt(1747347880),
+        '0xfd12e5ca12e1b2953ac11cd2fbe1ff994607df986eac500a4e3717d740c08f6e1aebfa0675c6ed37771043051191748733c3c1a4899860342a3cb6ba497a219d1c'
       ] as const
       const { request } = await simulateContract(config, {
         address: '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0',
@@ -496,13 +497,12 @@ export function RewardWrapper({
       const hash = await writeContract(config, request)
       console.log('hash', hash)
     } catch (error) {
+      console.log('error instanceof TransactionExecutionError', error instanceof TransactionExecutionError)
       if (error instanceof BaseError) {
-        console.log(JSON.stringify(String(error), null, 2))
+        console.log(error)
         const revertError = error.walk(err => err instanceof ContractFunctionRevertedError)
-        console.log('revertError', revertError)
         if (revertError instanceof ContractFunctionRevertedError) {
           const errorName = revertError.data?.errorName ?? ''
-          console.log('errorName', errorName)
         }
       }
     }
