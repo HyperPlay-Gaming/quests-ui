@@ -3,8 +3,7 @@ import React from 'react'
 import { Preview } from '@storybook/react'
 
 import { WagmiProvider } from 'wagmi'
-import { mainnet } from 'wagmi/chains'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { mainnet, anvil } from 'wagmi/chains'
 import { HyperPlayDesignProvider } from '@hyperplay/ui'
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
@@ -15,15 +14,11 @@ import { ConnectWallet } from '../src/components/ConnectWallet'
 
 import i18n from '../i18n'
 import { I18nextProvider } from 'react-i18next'
-import { config } from './wagmiConfig'
-
-const queryClient = new QueryClient()
-
 // 1. Get projectId from https://cloud.reown.com
 const projectId = '878099c5ebd1a07a3785ec7ebee59ba6'
 
 // 3. Set the networks
-const networks = [mainnet]
+const networks = [mainnet, anvil]
 
 // 4. Create Wagmi Adapter
 const wagmiAdapter = new WagmiAdapter({
@@ -35,7 +30,7 @@ const wagmiAdapter = new WagmiAdapter({
 // 5. Create modal
 createAppKit({
   adapters: [wagmiAdapter],
-  networks: [mainnet],
+  networks: [mainnet, anvil],
   projectId,
   themeMode: 'dark',
   features: {

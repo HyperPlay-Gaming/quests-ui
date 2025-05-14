@@ -25,6 +25,8 @@ export async function mintReward({
 
   const depositContracts: DepositContract[] = await getDepositContracts(questId)
 
+  console.log('depositContracts', depositContracts)
+
   const depositContractAddress = depositContracts.find(
     (val) => val.chain_id === reward.chain_id
   )?.contract_address
@@ -44,19 +46,21 @@ export async function mintReward({
     reward.amount_per_user &&
     reward.decimals
   ) {
+    const params = [
+      BigInt(1),
+      '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+      BigInt('100000000000000000000'),
+      BigInt('0x51dbc174f0465665658a7d7e9aeaef5e'),
+      BigInt(1747340359),
+      '0x19e4dd106d8547ae8bd89fd0b1426d17aa30bc9598bbee0d5df5843a9f5281c92b1070884a801bdc97a12ce87ce664cdc016ad9dd0602d9b045841735dad83bc1b'
+    ] as const
     const { request } = await simulateContract(config, {
       address: depositContractAddress,
       abi: questRewardAbi,
       functionName: 'withdrawERC20',
-      args: [
-        BigInt(questId),
-        reward.contract_address,
-        BigInt(reward.amount_per_user),
-        BigInt(signature.nonce),
-        BigInt(signature.expiration),
-        signature.signature
-      ]
+      args: params
     })
+    console.log('request', request)
     return writeContract(config, request)
   } else if (isERC1155Reward && reward.decimals !== null) {
     const { token_id, amount_per_user } = reward.token_ids[0]

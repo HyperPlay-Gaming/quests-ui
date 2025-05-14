@@ -14,7 +14,9 @@ import {
   ContractFunctionRevertedError,
   createPublicClient,
   http,
-  SwitchChainError
+  ProviderRpcError,
+  SwitchChainError,
+  UserRejectedRequestError
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -22,8 +24,9 @@ import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
-import { switchChain } from '@wagmi/core'
+import { simulateContract, switchChain, writeContract } from '@wagmi/core'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
+import { questRewardAbi } from '@/abis/RewardsAbi'
 
 const { AlertOctagon, WarningIcon } = Images
 
@@ -210,6 +213,23 @@ export function RewardWrapper({
       }
     },
     onError: (error) => {
+      console.log('error', error)
+
+      // console.log('error instanceof UserRejectedRequestError', error instanceof UserRejectedRequestError)
+      // console.log('error instanceof ProviderRpcError', error instanceof ProviderRpcError)
+      // console.log('error instanceof BaseError', error instanceof BaseError)
+      
+      if (error instanceof BaseError) {
+        const revertError = error.walk(err => err instanceof ContractFunctionRevertedError)
+        console.log('revertError', revertError)
+        if (revertError instanceof ContractFunctionRevertedError) {
+          const errorName = revertError.data?.errorName ?? ''
+          console.log('errorName', errorName)
+        }
+      }
+
+      
+      
       setClaimError(error)
 
       const errorMessage = trackRewardClaimMutationError(error)
@@ -334,6 +354,8 @@ export function RewardWrapper({
       config
     })
 
+    console.log('hash', hash)
+
     await confirmRewardClaim({
       signature: claimSignature.signature,
       transactionHash: hash
@@ -409,7 +431,7 @@ export function RewardWrapper({
   let networkName = 'Unknown Chain'
 
   if (reward.chainName && reward.chain_id) {
-    networkName = chainMap[reward.chain_id.toString()].chain?.name ?? ''
+    networkName = chainMap[reward.chain_id.toString()]?.chain?.name ?? ''
   }
 
   let alertProps = undefined
@@ -455,8 +477,41 @@ export function RewardWrapper({
     }
   }
 
+  const handleTestButtonClick = async () => {
+    try {
+      const params = [
+        BigInt(1),
+        '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+        BigInt('100000000000000000000'),
+        BigInt('0x51dbc174f0465665658a7d7e9aeaef5e'),
+        BigInt(1747340359),
+        '0x19e4dd106d8547ae8bd89fd0b1426d17aa30bc9598bbee0d5df5843a9f5281c92b1070884a801bdc97a12ce87ce664cdc016ad9dd0602d9b045841735dad83bc1b'
+      ] as const
+      const { request } = await simulateContract(config, {
+        address: '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0',
+        abi: questRewardAbi,
+        functionName: 'withdrawERC20',
+        args: params
+      })
+      const hash = await writeContract(config, request)
+      console.log('hash', hash)
+    } catch (error) {
+      if (error instanceof BaseError) {
+        console.log(JSON.stringify(String(error), null, 2))
+        const revertError = error.walk(err => err instanceof ContractFunctionRevertedError)
+        console.log('revertError', revertError)
+        if (revertError instanceof ContractFunctionRevertedError) {
+          const errorName = revertError.data?.errorName ?? ''
+          console.log('errorName', errorName)
+        }
+      }
+    }
+  }
+
+
   return (
     <div className={styles.rewardContainer}>
+      <button onClick={handleTestButtonClick}>Test button</button>
       <RewardUi
         reward={{
           ...reward,
