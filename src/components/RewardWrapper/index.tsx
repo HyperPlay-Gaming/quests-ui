@@ -215,6 +215,8 @@ export function RewardWrapper({
       }
     },
     onError: (error) => {
+      setClaimError(error)
+
       if (errorIsUserRejected(error)) {
         trackEvent({
           event: 'Reward Claim User Rejected',
@@ -223,7 +225,6 @@ export function RewardWrapper({
         return
       }
 
-      setClaimError(error)
       const errorMessage = trackRewardClaimMutationError(error)
 
       logError(`Error claiming rewards: ${error}`, {
