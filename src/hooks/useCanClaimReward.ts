@@ -3,6 +3,7 @@ import {
   canClaimPlayStreakReward
 } from '@/helpers/canClaimReward'
 import { getCanClaimRewardQueryKey } from '@/helpers/getQueryKeys'
+import { getExternalEligibilityQueryProps } from '@/helpers/queryProps'
 import { Quest, ExternalEligibility, UserPlayStreak } from '@hyperplay/utils'
 import {
   useQueryClient,
@@ -30,7 +31,12 @@ export function useCanClaimReward({
     queryKey,
     queryFn: async () => {
       if (quest.type === 'LEADERBOARD') {
-        const externalEligibility = await getExternalEligibility(quest.id)
+        const externalEligibility = await queryClient.ensureQueryData(
+          getExternalEligibilityQueryProps({
+            quest,
+            getExternalEligibility
+          })
+        )
         if (!externalEligibility) {
           console.warn(
             `No external eligibility found for quest ${quest.name} (${quest.id})`
