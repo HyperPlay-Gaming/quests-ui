@@ -11,9 +11,16 @@ import { Popover } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 import {
-  getGetExternalEligibilityQueryKey,
-  getGetUserPlayStreakQueryKey
+  externalEligibilityQueryKeyPrefix,
+  userPlayStreakQueryKeyPrefix
 } from '@/helpers/getQueryKeys'
+import { Quest } from '@hyperplay/utils'
+
+const eligibilityQueries: Record<Quest['type'], string> = {
+  PLAYSTREAK: userPlayStreakQueryKeyPrefix,
+  LEADERBOARD: externalEligibilityQueryKeyPrefix,
+  'REPUTATIONAL-AIRDROP': externalEligibilityQueryKeyPrefix
+}
 
 const { WarningIcon, AlertOctagon } = Images
 
@@ -123,9 +130,7 @@ export default function ActiveWalletSection() {
       predicate: (query) =>
         query.queryKey[0] === 'activeWallet' ||
         query.queryKey[0] === 'gameplayWallets' ||
-         // we don't really care for the questId here
-        query.queryKey[0] === getGetExternalEligibilityQueryKey(null)[0] ||
-        query.queryKey[0] === getGetUserPlayStreakQueryKey(null)[0]
+        Object.values(eligibilityQueries).includes(query.queryKey[0] as string)
     })
   }
 
