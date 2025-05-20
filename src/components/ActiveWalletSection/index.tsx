@@ -16,9 +16,11 @@ import {
 } from '@/helpers/getQueryKeys'
 import { Quest } from '@hyperplay/utils'
 
+// make ts force us to add a new query key when a new quest type is added
 const eligibilityQueries: Record<Quest['type'], string> = {
   PLAYSTREAK: userPlayStreakQueryKeyPrefix,
   LEADERBOARD: externalEligibilityQueryKeyPrefix,
+  // TODO: use the correct query key for the reputational airdrop if we implement it in the future
   'REPUTATIONAL-AIRDROP': externalEligibilityQueryKeyPrefix
 }
 
