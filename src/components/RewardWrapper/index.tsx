@@ -438,7 +438,23 @@ export function RewardWrapper({
           { chainName: networkName }
         ),
         variant: 'error' as const
-      }
+      } 
+    } else if (claimError.message === 'Hardware attestation is invalid'){
+      alertProps = {
+        icon: <AlertOctagon />,
+        showClose: false,
+        title: t(
+          'quest.multipleClaimsDetected.title',
+          'Multiple Claims Detected'
+        ),
+        message: t(
+          'quest.multipleClaimsDetected.message',
+          `You've already claimed this quest with {{maxClaims}} wallet(s). {{gameName}} allows a max of {{maxClaims}} claims per user to keep things fair. If this seems wrong, please open a support ticket. Please note that HyperPlay doesn't decide eligibility for this type of quest.`,
+          { maxClaims: 2, gameName: questMeta.project_id }
+        ),
+        actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
+        variant: 'error' as const
+      } 
     } else {
       alertProps = {
         icon: <AlertOctagon />,
