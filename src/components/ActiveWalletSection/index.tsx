@@ -10,7 +10,10 @@ import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
 import { Popover } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
-import { getGetExternalEligibilityQueryKey } from '@/helpers/getQueryKeys'
+import {
+  getGetExternalEligibilityQueryKey,
+  getGetUserPlayStreakQueryKey
+} from '@/helpers/getQueryKeys'
 
 const { WarningIcon, AlertOctagon } = Images
 
@@ -120,7 +123,9 @@ export default function ActiveWalletSection() {
       predicate: (query) =>
         query.queryKey[0] === 'activeWallet' ||
         query.queryKey[0] === 'gameplayWallets' ||
-        query.queryKey[0] === getGetExternalEligibilityQueryKey(null)[0] // we don't really care for the questId here
+         // we don't really care for the questId here
+        query.queryKey[0] === getGetExternalEligibilityQueryKey(null)[0] ||
+        query.queryKey[0] === getGetUserPlayStreakQueryKey(null)[0]
     })
   }
 
