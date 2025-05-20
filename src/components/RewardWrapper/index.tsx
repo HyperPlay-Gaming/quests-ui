@@ -438,8 +438,8 @@ export function RewardWrapper({
           { chainName: networkName }
         ),
         variant: 'error' as const
-      } 
-    } else if (claimError.cause === 'EXCEEDED_CLAIM'){
+      }
+    } else if (String(claimError).includes('EXCEEDED_CLAIM')) {
       alertProps = {
         icon: <AlertOctagon />,
         showClose: false,
@@ -454,7 +454,7 @@ export function RewardWrapper({
         ),
         actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
         variant: 'error' as const
-      } 
+      }
     } else {
       alertProps = {
         icon: <AlertOctagon />,
