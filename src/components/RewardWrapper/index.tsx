@@ -212,6 +212,11 @@ export function RewardWrapper({
     onError: (error) => {
       setClaimError(error)
 
+      if (String(claimError).includes('EXCEEDED_CLAIM')) {
+        logInfo(`Device claims exceeded: ${error}`)
+        return
+      }
+
       const errorMessage = trackRewardClaimMutationError(error)
 
       logError(`Error claiming rewards: ${error}`, {
