@@ -439,7 +439,7 @@ export function RewardWrapper({
         ),
         variant: 'error' as const
       } 
-    } else if (claimError.message === 'Hardware attestation is invalid'){
+    } else if (claimError.cause === 'EXCEEDED_CLAIM'){
       alertProps = {
         icon: <AlertOctagon />,
         showClose: false,
