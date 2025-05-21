@@ -454,8 +454,7 @@ export function RewardWrapper({
         ),
         message: t(
           'quest.multipleClaimsDetected.message',
-          `You've already claimed this quest with {{maxClaims}} wallet(s). {{gameName}} allows a max of {{maxClaims}} claims per user to keep things fair. If this seems wrong, please open a support ticket. Please note that HyperPlay doesn't decide eligibility for this type of quest.`,
-          { maxClaims: 2, gameName: questMeta.project_id }
+          `You've already claimed this quest the max number of times. If this seems wrong, please open a support ticket. Please note that HyperPlay doesn't decide eligibility for this type of quest.`
         ),
         actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
         variant: 'error' as const
