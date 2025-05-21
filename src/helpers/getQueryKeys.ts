@@ -1,8 +1,12 @@
 export const externalEligibilityQueryKeyPrefix = 'externalEligibility'
 export const userPlayStreakQueryKeyPrefix = 'getUserPlayStreak'
+export const canClaimRewardQueryKeyPrefix = 'canClaimReward'
+export const getQuestQueryKeyPrefix = 'getQuest'
+export const syncPlaysessionQueryKeyPrefix = 'syncPlaysession'
+export const getQuestLogInfoQueryKeyPrefix = 'getQuestLogInfo'
 
 export function getGetQuestQueryKey(questId: number | null) {
-  return ['getQuest', questId]
+  return [getQuestQueryKeyPrefix, questId]
 }
 
 export function getGetUserPlayStreakQueryKey(questId: number | null) {
@@ -10,11 +14,11 @@ export function getGetUserPlayStreakQueryKey(questId: number | null) {
 }
 
 export function getSyncPlaysessionQueryKey(projectId: string) {
-  return ['syncPlaysession', projectId]
+  return [syncPlaysessionQueryKeyPrefix, projectId]
 }
 
 export function getGetQuestLogInfoQueryKey(questId: string) {
-  return ['getQuestLogInfo', questId]
+  return [getQuestLogInfoQueryKeyPrefix, questId]
 }
 
 export function getGetExternalEligibilityQueryKey(questId: number | null) {
@@ -22,5 +26,5 @@ export function getGetExternalEligibilityQueryKey(questId: number | null) {
 }
 
 export function getCanClaimRewardQueryKey(questId: number | null) {
-  return ['canClaimReward', questId]
+  return [canClaimRewardQueryKeyPrefix, questId]
 }
