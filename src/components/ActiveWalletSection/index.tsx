@@ -133,7 +133,9 @@ export default function ActiveWalletSection() {
       predicate: (query) =>
         query.queryKey[0] === 'activeWallet' ||
         query.queryKey[0] === 'gameplayWallets' ||
-        Object.values(eligibilityQueries).includes(query.queryKey[0] as string) ||
+        Object.values(eligibilityQueries).includes(
+          query.queryKey[0] as string
+        ) ||
         query.queryKey[0] === canClaimRewardQueryKeyPrefix
     })
   }
