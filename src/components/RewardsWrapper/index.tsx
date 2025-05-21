@@ -14,13 +14,15 @@ export function RewardsWrapper({
   questId: number | null
   hideClaim?: boolean
 }) {
-  const { getQuest, logError, getExternalTaskCredits } = useQuestWrapper()
+  const { getQuest, logError, getExternalTaskCredits, getExternalEligibility } =
+    useQuestWrapper()
   const { data: questQuery } = useGetQuest(questId, getQuest)
 
   const { data: rewardsQuery } = useGetRewards({
     questId,
     getQuest,
     getExternalTaskCredits,
+    getExternalEligibility,
     logError
   })
 
