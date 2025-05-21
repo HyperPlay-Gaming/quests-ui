@@ -14,7 +14,8 @@ import {
   ContractFunctionRevertedError,
   createPublicClient,
   http,
-  SwitchChainError
+  SwitchChainError,
+  UserRejectedRequestError
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
@@ -29,6 +30,10 @@ const { AlertOctagon, WarningIcon } = Images
 
 function errorIsSwitchChainError(error: Error): error is SwitchChainError {
   return error?.name === 'SwitchChainError'
+}
+
+function errorIsUserRejected(error: Error): error is UserRejectedRequestError {
+  return error instanceof UserRejectedRequestError
 }
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
@@ -217,6 +222,14 @@ export function RewardWrapper({
         return
       }
 
+      if (errorIsUserRejected(error)) {
+        trackEvent({
+          event: 'Reward Claim User Rejected',
+          properties: getClaimEventProperties(reward, questId)
+        })
+        return
+      }
+
       const errorMessage = trackRewardClaimMutationError(error)
 
       logError(`Error claiming rewards: ${error}`, {
@@ -339,6 +352,17 @@ export function RewardWrapper({
       config
     })
 
+    // this is a workaround specifically for the client
+    // When the user rejects the transaction the error is not a viem error, is an ethers.js error that wagmi returns as a valid tx hash
+    if (
+      typeof hash === 'object' &&
+      String(hash).includes('ethers-user-denied')
+    ) {
+      throw new UserRejectedRequestError(
+        new Error(`${hash} - user rejected action`)
+      )
+    }
+
     await confirmRewardClaim({
       signature: claimSignature.signature,
       transactionHash: hash
@@ -459,7 +483,7 @@ export function RewardWrapper({
         actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
         variant: 'error' as const
       }
-    } else {
+    } else if (!errorIsUserRejected(claimError)) {
       alertProps = {
         icon: <AlertOctagon />,
         showClose: false,
