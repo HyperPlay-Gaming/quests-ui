@@ -219,10 +219,15 @@ export function RewardWrapper({
 
       if (String(claimError).includes('EXCEEDED_CLAIM')) {
         logInfo(`Device claims exceeded: ${error}`)
+        trackEvent({
+          event: 'Device claims exceeded',
+          properties: getClaimEventProperties(reward, questId)
+        })
         return
       }
 
       if (errorIsUserRejected(error)) {
+        logInfo(`User rejected claim: ${error}`)
         trackEvent({
           event: 'Reward Claim User Rejected',
           properties: getClaimEventProperties(reward, questId)
