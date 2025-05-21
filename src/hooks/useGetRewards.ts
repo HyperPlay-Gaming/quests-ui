@@ -4,16 +4,19 @@ import { getDecimalNumberFromAmount } from '@hyperplay/utils'
 import { getRewardCategory } from '../helpers/getRewardCategory'
 import { useTranslation } from 'react-i18next'
 import { QuestWrapperContextValue, UseGetRewardsData } from '@/types/quests'
+import { getExternalEligibilityQueryProps } from '@/helpers/queryProps'
 
 export function useGetRewards({
   questId,
   getQuest,
   getExternalTaskCredits,
+  getExternalEligibility,
   logError
 }: {
   questId: number | null
   getQuest: QuestWrapperContextValue['getQuest']
   getExternalTaskCredits: QuestWrapperContextValue['getExternalTaskCredits']
+  getExternalEligibility: QuestWrapperContextValue['getExternalEligibility']
   logError: QuestWrapperContextValue['logError']
 }) {
   const questResult = useGetQuest(questId, getQuest)
@@ -36,13 +39,29 @@ export function useGetRewards({
 
       for (const reward_i of questRewards) {
         let numToClaim: string | undefined = undefined
+        let amountToClaim = null
+
+        if (questMeta.type === 'LEADERBOARD') {
+          const externalEligibility = await queryClient.ensureQueryData(
+            getExternalEligibilityQueryProps({
+              quest: questMeta,
+              getExternalEligibility
+            })
+          )
+          if (externalEligibility?.amount) {
+            amountToClaim = externalEligibility.amount
+          }
+        } else {
+          amountToClaim = reward_i.amount_per_user
+        }
+
         if (
-          reward_i.amount_per_user &&
+          amountToClaim &&
           reward_i.decimals !== undefined &&
           reward_i.decimals !== null
         ) {
           numToClaim = getDecimalNumberFromAmount(
-            reward_i.amount_per_user.toString(),
+            amountToClaim.toString(),
             reward_i.decimals
           ).toString()
         }

@@ -10,7 +10,20 @@ import { InfoAlertProps } from '@hyperplay/ui/dist/components/AlertCard'
 import { Popover } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
-import { getGetExternalEligibilityQueryKey } from '@/helpers/getQueryKeys'
+import {
+  externalEligibilityQueryKeyPrefix,
+  userPlayStreakQueryKeyPrefix,
+  canClaimRewardQueryKeyPrefix
+} from '@/helpers/getQueryKeys'
+import { Quest } from '@hyperplay/utils'
+
+// make ts force us to add a new query key when a new quest type is added
+const eligibilityQueries: Record<Quest['type'], string> = {
+  PLAYSTREAK: userPlayStreakQueryKeyPrefix,
+  LEADERBOARD: externalEligibilityQueryKeyPrefix,
+  // TODO: use the correct query key for the reputational airdrop if we implement it in the future
+  'REPUTATIONAL-AIRDROP': externalEligibilityQueryKeyPrefix
+}
 
 const { WarningIcon, AlertOctagon } = Images
 
@@ -120,7 +133,10 @@ export default function ActiveWalletSection() {
       predicate: (query) =>
         query.queryKey[0] === 'activeWallet' ||
         query.queryKey[0] === 'gameplayWallets' ||
-        query.queryKey[0] === getGetExternalEligibilityQueryKey(null)[0] // we don't really care for the questId here
+        Object.values(eligibilityQueries).includes(
+          query.queryKey[0] as string
+        ) ||
+        query.queryKey[0] === canClaimRewardQueryKeyPrefix
     })
   }
 
