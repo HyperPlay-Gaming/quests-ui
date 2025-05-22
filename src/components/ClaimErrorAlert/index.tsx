@@ -43,27 +43,36 @@ export const ClaimErrorAlert = ({
   }
 
   if (error instanceof NotEnoughGasError) {
-    const currency = currentChain?.nativeCurrency.symbol ?? 'Unknown'
+    const currency = currentChain?.nativeCurrency.symbol
     const gasUrl = currentChain ? gasInformation[currentChain.id]?.url : null
+
+    let title = t('quest.notEnoughGas.title-no-currency', `Not enough gas`)
+    let message = t(
+      'quest.notEnoughGas.message-no-currency',
+      `You'll need a bit of this chain's gas token to claim your reward`
+    )
+
+    if (currency) {
+      title = t('quest.notEnoughGas.title', `Not enough {{symbol}}`, {
+        symbol: currency
+      })
+      message = t(
+        'quest.notEnoughGas.message',
+        `You'll need a bit of {{symbol}} to claim your reward.`,
+        {
+          symbol: currency
+        }
+      )
+    }
 
     return (
       <AlertCard
         icon={<AlertOctagon />}
         showClose={false}
-        title={t('quest.notEnoughGas.title', `Not enough {{symbol}}`, {
-          symbol: currency
-        })}
+        title={title}
         message={
           <>
-            <div>
-              {t(
-                'quest.notEnoughGas.message',
-                `You'll need a bit of {{symbol}} to claim your reward.`,
-                {
-                  symbol: currency
-                }
-              )}
-            </div>
+            <div>{message}</div>
             {gasUrl ? (
               <div>
                 <Button type="link" className={styles.link}>
