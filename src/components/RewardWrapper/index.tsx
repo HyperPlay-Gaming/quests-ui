@@ -217,7 +217,17 @@ export function RewardWrapper({
     onError: (error) => {
       setClaimError(error)
 
+      if (String(claimError).includes('EXCEEDED_CLAIM')) {
+        logInfo(`Device claims exceeded: ${error}`)
+        trackEvent({
+          event: 'Device claims exceeded',
+          properties: getClaimEventProperties(reward, questId)
+        })
+        return
+      }
+
       if (errorIsUserRejected(error)) {
+        logInfo(`User rejected claim: ${error}`)
         trackEvent({
           event: 'Reward Claim User Rejected',
           properties: getClaimEventProperties(reward, questId)
@@ -461,6 +471,21 @@ export function RewardWrapper({
           'Please switch to {{chainName}} within your wallet, or try again with MetaMask.',
           { chainName: networkName }
         ),
+        variant: 'error' as const
+      }
+    } else if (String(claimError).includes('EXCEEDED_CLAIM')) {
+      alertProps = {
+        icon: <AlertOctagon />,
+        showClose: false,
+        title: t(
+          'quest.multipleClaimsDetected.title',
+          'Multiple Claims Detected'
+        ),
+        message: t(
+          'quest.multipleClaimsDetected.message',
+          `You've already claimed this quest the max number of times. If this seems wrong, please open a support ticket. Please note that HyperPlay doesn't decide eligibility for this type of quest.`
+        ),
+        actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
         variant: 'error' as const
       }
     } else if (!errorIsUserRejected(claimError)) {
