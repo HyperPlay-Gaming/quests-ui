@@ -293,6 +293,8 @@ export const InClaimPeriodAndEligible: Story = {
         )
       ).toBeInTheDocument()
     })
-    expect(canvas.getByRole('button', { name: 'Claim' })).toBeEnabled()
+    await waitFor(async () =>
+      expect(canvas.getByRole('button', { name: 'Claim' })).toBeEnabled()
+    )
   }
 }
