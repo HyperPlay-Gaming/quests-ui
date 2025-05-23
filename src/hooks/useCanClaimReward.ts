@@ -2,7 +2,7 @@ import {
   canClaimLeaderboardReward,
   canClaimPlayStreakReward
 } from '@/helpers/canClaimReward'
-import { getCanClaimRewardQueryKey } from '@/helpers/getQueryKeys'
+import { getCanClaimRewardQueryKey, getGetExternalEligibilityQueryKey } from '@/helpers/getQueryKeys'
 import { getExternalEligibilityQueryProps } from '@/helpers/queryProps'
 import { ExternalEligibilityWithQuestId } from '@/types/quests'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
@@ -59,6 +59,6 @@ export function useCanClaimReward({
   return {
     canClaim: query.data,
     ...query,
-    invalidateQuery: async () => queryClient.invalidateQueries({ queryKey })
+    invalidateQuery: async () => queryClient.invalidateQueries({ predicate: (query)=> query.queryKey === queryKey || query.queryKey === getGetExternalEligibilityQueryKey(quest.id)})
   }
 }
