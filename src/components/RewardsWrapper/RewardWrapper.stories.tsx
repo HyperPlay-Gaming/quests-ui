@@ -93,7 +93,8 @@ export const LeaderboardQuestEligible: Story = {
       getExternalEligibility: async () => {
         return {
           walletOrEmail: '0x123',
-          amount: 100000000000000000000
+          amount: 100000000000000000000,
+          questId: 1
         }
       },
       getQuest: async () => {

@@ -4,32 +4,28 @@ import {
   useQueryClient,
   UseQueryOptions
 } from '@tanstack/react-query'
-import { ExternalEligibility } from '@hyperplay/utils'
-import { getGetExternalEligibilityQueryKey } from '@/helpers/getQueryKeys'
+import { getExternalEligibilityQueryProps } from '@/helpers/queryProps'
+import { ExternalEligibilityWithQuestId } from '@/types/quests'
 
 type UseGetExternalEligibilityProps = {
   questId: number
   getExternalEligibility: (
     questId: number
-  ) => Promise<ExternalEligibility | null>
+  ) => Promise<ExternalEligibilityWithQuestId | null>
 } & Omit<
-  UseQueryOptions<{
-    questId: number
-    externalEligibility: ExternalEligibility | null
-  }>,
+  UseQueryOptions<ExternalEligibilityWithQuestId | null>,
   'queryKey' | 'queryFn'
 >
 
 export function getExternalEligibilityQueryOptions(
   props: UseGetExternalEligibilityProps
 ) {
-  const queryKey = getGetExternalEligibilityQueryKey(props.questId)
+  const queryProps = getExternalEligibilityQueryProps({
+    questId: props.questId,
+    getExternalEligibility: props.getExternalEligibility
+  })
   return queryOptions({
-    queryKey,
-    queryFn: async () => {
-      const response = await props.getExternalEligibility(props.questId)
-      return { questId: props.questId, externalEligibility: response }
-    },
+    ...queryProps,
     ...props
   })
 }

@@ -278,7 +278,8 @@ export const InClaimPeriodAndEligible: Story = {
     getExternalEligibility: async () => {
       return {
         walletOrEmail: '0x123',
-        amount: 1000 * 1e18
+        amount: 1000 * 1e18,
+        questId: 2
       }
     }
   },
