@@ -1,7 +1,8 @@
-import { DepositContract, Reward, RewardClaimSignature } from '@hyperplay/utils'
+import { DepositContract, RewardClaimSignature } from '@hyperplay/utils'
 import { questRewardAbi } from '../abis/RewardsAbi'
 import { Config } from 'wagmi'
 import { simulateContract, writeContract } from '@wagmi/core'
+import { UseGetRewardsData } from '@/types/quests'
 
 export async function mintReward({
   reward,
@@ -10,7 +11,7 @@ export async function mintReward({
   getDepositContracts,
   config
 }: {
-  reward: Reward
+  reward: UseGetRewardsData
   questId: number
   signature: RewardClaimSignature
   getDepositContracts: (questId: number) => Promise<DepositContract[]>

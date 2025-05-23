@@ -15,6 +15,10 @@ import { TrackEventFn } from './analytics'
 
 export type UseGetRewardsData = QuestReward & Reward
 
+export type ExternalEligibilityWithQuestId = ExternalEligibility & {
+  questId: number
+}
+
 export class ClaimError extends Error {
   properties: any
 
@@ -49,7 +53,7 @@ export interface QuestWrapperContextValue {
   }
   getExternalEligibility: (
     questId: number
-  ) => Promise<ExternalEligibility | null>
+  ) => Promise<ExternalEligibilityWithQuestId | null>
   getQuest: (questId: number) => Promise<Quest>
   getActiveWallet: () => Promise<string | null | undefined>
   getGameplayWallets: () => Promise<{ id: number; wallet_address: string }[]>

@@ -185,7 +185,7 @@ export function RewardWrapper({
 
   // Mutations
   const claimRewardMutation = useMutation({
-    mutationFn: async (params: Reward) => claimReward(params),
+    mutationFn: async (params: UseGetRewardsData) => claimReward(params),
     onSuccess: async (_data, reward) => {
       trackEvent({
         event: 'Reward Claim Success',
@@ -269,7 +269,7 @@ export function RewardWrapper({
   }
 
   // Handlers
-  const mintOnChainReward = async (reward: Reward) => {
+  const mintOnChainReward = async (reward: UseGetRewardsData) => {
     if (questMeta?.id === undefined) {
       throw Error('tried to mint but quest meta id is undefined')
     }
@@ -366,7 +366,7 @@ export function RewardWrapper({
     })
   }
 
-  async function claimReward(reward: Reward) {
+  async function claimReward(reward: UseGetRewardsData) {
     if (questId === null) {
       throw Error('questId is not set when trying to claim rewards')
     }
@@ -400,7 +400,7 @@ export function RewardWrapper({
     }
   }
 
-  const onClaim = async (reward: Reward) => {
+  const onClaim = async (reward: UseGetRewardsData) => {
     setClaimError(null)
 
     if (!isSignedIn) {

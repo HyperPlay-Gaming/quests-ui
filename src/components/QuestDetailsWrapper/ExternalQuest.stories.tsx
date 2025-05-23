@@ -278,7 +278,8 @@ export const InClaimPeriodAndEligible: Story = {
     getExternalEligibility: async () => {
       return {
         walletOrEmail: '0x123',
-        amount: 1000 * 1e18
+        amount: 1000 * 1e18,
+        questId: mockQuest.id
       }
     }
   },
@@ -292,6 +293,8 @@ export const InClaimPeriodAndEligible: Story = {
         )
       ).toBeInTheDocument()
     })
-    expect(canvas.getByRole('button', { name: 'Claim' })).toBeEnabled()
+    await waitFor(async () =>
+      expect(canvas.getByRole('button', { name: 'Claim' })).toBeEnabled()
+    )
   }
 }

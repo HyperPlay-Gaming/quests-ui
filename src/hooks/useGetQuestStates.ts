@@ -1,11 +1,12 @@
 import { QuestLogInfo } from '@hyperplay/ui'
-import { Quest, UserPlayStreak, ExternalEligibility } from '@hyperplay/utils'
+import { Quest, UserPlayStreak } from '@hyperplay/utils'
 import { useQueries } from '@tanstack/react-query'
 import { getQuestQueryOptions } from './useGetQuest'
 import { getUserPlaystreakQueryOptions } from './useGetUserPlayStreak'
 import { getExternalEligibilityQueryOptions } from './useGetExternalEligibility'
 import { getPlaystreakQuestStatus } from '@/helpers/getPlaystreakQuestStatus'
 import { getExternalQuestStatus } from '@/helpers/getExternalQuestStatus'
+import { ExternalEligibilityWithQuestId } from '@/types/quests'
 
 type getQuestQueryOptionsType = ReturnType<typeof getQuestQueryOptions>
 type getUserPlaystreakQueryOptionsType = ReturnType<
@@ -21,7 +22,7 @@ type Props = {
   getUserPlayStreak: (questId: number) => Promise<UserPlayStreak>
   getExternalEligibility: (
     questId: number
-  ) => Promise<ExternalEligibility | null>
+  ) => Promise<ExternalEligibilityWithQuestId | null>
   enabled?: boolean
   isSignedIn?: boolean
 }
@@ -113,7 +114,7 @@ export function useGetQuestStates({
     const questData = questMap[questId]
     questIdToQuestStateMap[questId] = getExternalQuestStatus(
       questData,
-      val.data.externalEligibility
+      val.data
     )
   })
 

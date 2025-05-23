@@ -44,7 +44,7 @@ export function useGetRewards({
         if (questMeta.type === 'LEADERBOARD') {
           const externalEligibility = await queryClient.ensureQueryData(
             getExternalEligibilityQueryProps({
-              quest: questMeta,
+              questId: questMeta.id,
               getExternalEligibility
             })
           )
@@ -117,7 +117,9 @@ export function useGetRewards({
             imageUrl: reward_i.image_url,
             chainName: getRewardCategory(reward_i, t),
             numToClaim,
-            numOfClaimsLeft: reward_i.numClaimsLeft
+            numOfClaimsLeft: reward_i.numClaimsLeft,
+            // need to override this for leaderboard quests
+            amount_per_user: amountToClaim
           }
           rewards.push(questReward_i)
         }
