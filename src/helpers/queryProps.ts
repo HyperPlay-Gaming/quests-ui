@@ -1,17 +1,17 @@
-import { ExternalEligibility, Quest } from '@hyperplay/utils'
+import { ExternalEligibilityWithQuestId } from '@/types/quests'
 import { getGetExternalEligibilityQueryKey } from './getQueryKeys'
 
 export function getExternalEligibilityQueryProps({
-  quest,
+  questId,
   getExternalEligibility
 }: {
-  quest: Quest
+  questId: number
   getExternalEligibility: (
     questId: number
-  ) => Promise<ExternalEligibility | null>
+  ) => Promise<ExternalEligibilityWithQuestId | null>
 }) {
   return {
-    queryKey: getGetExternalEligibilityQueryKey(quest.id),
-    queryFn: async () => getExternalEligibility(quest.id)
+    queryKey: getGetExternalEligibilityQueryKey(questId),
+    queryFn: async () => getExternalEligibility(questId)
   }
 }

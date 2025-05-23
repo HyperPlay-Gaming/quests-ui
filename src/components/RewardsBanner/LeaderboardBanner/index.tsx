@@ -110,13 +110,10 @@ export function LeaderboardBanner({
   }
 
   if (quest.status === 'CLAIMABLE') {
-    if (!eligibilityData?.externalEligibility) {
+    if (!eligibilityData) {
       return notEligibleMessage
     }
-    const userCanClaimReward = canClaimLeaderboardReward(
-      quest,
-      eligibilityData.externalEligibility
-    )
+    const userCanClaimReward = canClaimLeaderboardReward(quest, eligibilityData)
     return userCanClaimReward ? claimableMessage : notEligibleMessage
   }
 

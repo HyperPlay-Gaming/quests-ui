@@ -44,7 +44,7 @@ export function useGetRewards({
         if (questMeta.type === 'LEADERBOARD') {
           const externalEligibility = await queryClient.ensureQueryData(
             getExternalEligibilityQueryProps({
-              quest: questMeta,
+              questId: questMeta.id,
               getExternalEligibility
             })
           )
