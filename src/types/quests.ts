@@ -38,6 +38,13 @@ export class WarningError extends Error {
   }
 }
 
+export class NotEnoughGasError extends Error {
+  constructor() {
+    super('Not enough balance')
+    this.name = 'NotEnoughGasError'
+  }
+}
+
 export interface QuestWrapperContextValue {
   flags: {
     rewardTypeClaimEnabled: Record<Reward['reward_type'], boolean>

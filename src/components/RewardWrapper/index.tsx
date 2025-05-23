@@ -2,9 +2,13 @@ import { getGetQuestLogInfoQueryKey } from '@/helpers/getQueryKeys'
 import { getRewardClaimGasEstimation } from '@/helpers/getRewardClaimGasEstimation'
 import { mintReward } from '@/helpers/mintReward'
 import { useQuestWrapper } from '@/state/QuestWrapperProvider'
-import { ClaimError, UseGetRewardsData, WarningError } from '@/types/quests'
+import {
+  NotEnoughGasError,
+  UseGetRewardsData,
+  WarningError
+} from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
-import { AlertCard, Reward as RewardUi, Images } from '@hyperplay/ui'
+import { Reward as RewardUi } from '@hyperplay/ui'
 import { Quest, Reward, RewardClaimSignature } from '@hyperplay/utils'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -14,7 +18,6 @@ import {
   ContractFunctionRevertedError,
   createPublicClient,
   http,
-  SwitchChainError,
   UserRejectedRequestError
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
@@ -25,16 +28,11 @@ import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { switchChain } from '@wagmi/core'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
-
-const { AlertOctagon, WarningIcon } = Images
-
-function errorIsSwitchChainError(error: Error): error is SwitchChainError {
-  return error?.name === 'SwitchChainError'
-}
-
-function errorIsUserRejected(error: Error): error is UserRejectedRequestError {
-  return error instanceof UserRejectedRequestError
-}
+import { ClaimErrorAlert } from '../ClaimErrorAlert'
+import {
+  errorIsSwitchChainError,
+  errorIsUserRejected
+} from '@/helpers/claimErrors'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -95,9 +93,9 @@ export function RewardWrapper({
 
   // State
   const [showWarning, setShowWarning] = useState(false)
-  const [claimError, setClaimError] = useState<
-    Error | WarningError | ClaimError | null
-  >(null)
+  const [claimError, setClaimError] = useState<Error | WarningError | null>(
+    null
+  )
 
   const connectorName = String(account?.connector?.name)
 
@@ -326,13 +324,7 @@ export function RewardWrapper({
       logError(
         `Not enough balance in the connected wallet to cover the gas fee associated with this Quest Reward claim. Current balance: ${walletBalance}, gas needed: ${gasNeeded}`
       )
-      throw new WarningError(
-        'Low Balance',
-        t(
-          'quest.notEnoughGas.message',
-          'Insufficient wallet balance to claim your reward due to gas fees. Try a different wallet or replenish this one before retrying.'
-        )
-      )
+      throw new NotEnoughGasError()
     }
 
     let tokenId: number | undefined = undefined
@@ -446,64 +438,6 @@ export function RewardWrapper({
     networkName = chainMap[reward.chain_id.toString()].chain?.name ?? ''
   }
 
-  let alertProps = undefined
-
-  if (claimError) {
-    if (claimError instanceof WarningError) {
-      alertProps = {
-        icon: <WarningIcon />,
-        showClose: false,
-        title: claimError.title,
-        message: claimError.message,
-        variant: 'warning' as const
-      }
-    } else if (errorIsSwitchChainError(claimError)) {
-      alertProps = {
-        icon: <AlertOctagon />,
-        showClose: false,
-        title: t(
-          'quest.switchChainFailed.title',
-          'Failed to switch to {{chainName}}',
-          { chainName: networkName }
-        ),
-        message: t(
-          'quest.switchChainFailed.message',
-          'Please switch to {{chainName}} within your wallet, or try again with MetaMask.',
-          { chainName: networkName }
-        ),
-        variant: 'error' as const
-      }
-    } else if (String(claimError).includes('EXCEEDED_CLAIM')) {
-      alertProps = {
-        icon: <AlertOctagon />,
-        showClose: false,
-        title: t(
-          'quest.multipleClaimsDetected.title',
-          'Multiple Claims Detected'
-        ),
-        message: t(
-          'quest.multipleClaimsDetected.message',
-          `You've already claimed this quest the max number of times. If this seems wrong, please open a support ticket. Please note that HyperPlay doesn't decide eligibility for this type of quest.`
-        ),
-        actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
-        variant: 'error' as const
-      }
-    } else if (!errorIsUserRejected(claimError)) {
-      alertProps = {
-        icon: <AlertOctagon />,
-        showClose: false,
-        title: t('quest.claimFailed', 'Claim failed'),
-        message: t(
-          'quest.claimFailedMessage',
-          "Please try once more. If it still doesn't work, create a Discord support ticket."
-        ),
-        actionText: t('quest.createDiscordTicket', 'Create Discord Ticket'),
-        onActionClick: () => openDiscordLink(),
-        variant: 'error' as const
-      }
-    }
-  }
-
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
@@ -516,10 +450,13 @@ export function RewardWrapper({
         hideClaim={hideClaim}
         claimNotAvailable={!canClaim}
       />
-      {alertProps ? (
-        <div className={styles.alertCard}>
-          <AlertCard {...alertProps} noBorderLeft={true} />
-        </div>
+      {claimError && !errorIsUserRejected(claimError) ? (
+        <ClaimErrorAlert
+          currentChain={account.chain}
+          error={claimError}
+          networkName={networkName}
+          onOpenDiscordLink={openDiscordLink}
+        />
       ) : null}
       <ConfirmClaimModal
         isOpen={showWarning}
