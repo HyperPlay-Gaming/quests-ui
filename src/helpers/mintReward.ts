@@ -52,7 +52,7 @@ export async function mintReward({
       args: [
         BigInt(questId),
         reward.contract_address,
-        BigInt(reward.numToClaim ?? reward.amount_per_user),
+        BigInt(reward.amount_per_user),
         BigInt(signature.nonce),
         BigInt(signature.expiration),
         signature.signature
