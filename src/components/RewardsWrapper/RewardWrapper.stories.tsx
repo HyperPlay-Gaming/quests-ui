@@ -94,7 +94,7 @@ export const LeaderboardQuestEligible: Story = {
         return {
           walletOrEmail: '0x123',
           amount: 100000000000000000000,
-          questId: 1
+          questId: mockQuest.id
         }
       },
       getQuest: async () => {

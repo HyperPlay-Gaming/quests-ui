@@ -279,7 +279,7 @@ export const InClaimPeriodAndEligible: Story = {
       return {
         walletOrEmail: '0x123',
         amount: 1000 * 1e18,
-        questId: 2
+        questId: mockQuest.id
       }
     }
   },
