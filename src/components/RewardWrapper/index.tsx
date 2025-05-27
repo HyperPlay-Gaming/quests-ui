@@ -456,6 +456,8 @@ export function RewardWrapper({
           error={claimError}
           networkName={networkName}
           onOpenDiscordLink={openDiscordLink}
+          projectId={questMeta.project_id}
+          maxNumOfClaims={reward.num_claims_per_device}
         />
       ) : null}
       <ConfirmClaimModal

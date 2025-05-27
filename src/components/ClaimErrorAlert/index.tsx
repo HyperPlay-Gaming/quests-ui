@@ -5,6 +5,8 @@ import { ClaimError, NotEnoughGasError, WarningError } from '@/types/quests'
 import { errorIsSwitchChainError } from '@/helpers/claimErrors'
 
 import styles from './index.module.scss'
+import { useGetListingByProjectId } from '@/hooks/useGetListingById'
+import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 
 const { AlertOctagon, WarningIcon } = Images
 
@@ -19,15 +21,27 @@ type ClaimErrorAlertProps = {
   networkName: string
   currentChain: Chain | undefined
   onOpenDiscordLink: () => void
+  projectId?: string | null
+  maxNumOfClaims?: string | null
 }
 
 export const ClaimErrorAlert = ({
   error,
   networkName,
   onOpenDiscordLink,
-  currentChain
+  currentChain,
+  projectId,
+  maxNumOfClaims
 }: ClaimErrorAlertProps) => {
   const { t } = useTranslation()
+  const claimsExceeded = String(error).includes('EXCEEDED_CLAIM')
+  const { getListingById } = useQuestWrapper()
+  const { data: listingData } = useGetListingByProjectId(
+    projectId ?? null,
+    !!projectId && claimsExceeded && !!getListingById,
+    getListingById
+  )
+  const gameName = listingData.data?.project_meta.name
 
   if (error instanceof WarningError) {
     return (
@@ -115,7 +129,18 @@ export const ClaimErrorAlert = ({
     )
   }
 
-  if (String(error).includes('EXCEEDED_CLAIM')) {
+  if (claimsExceeded) {
+    let exceededClaimMessage = t(
+      'quest.multipleClaimsDetected.message',
+      `You've already claimed this quest the max number of times. Please note that HyperPlay doesn't decide eligibility for this type of quest. If this seems wrong, please open a support ticket using the link below.`
+    )
+    if (gameName && maxNumOfClaims !== undefined && maxNumOfClaims !== null) {
+      exceededClaimMessage = t(
+        'quest.multipleClaimsDetected.messageWithVariables',
+        `You've already claimed this quest with {{maxNumOfClaims}} wallet(s).\n{{gameName}} allows a max of {{maxNumOfClaims}} claims per user to keep things fair.\nPlease note that HyperPlay doesn't decide eligibility for leaderboard quests — that's handled by {{gameName}}. If this seems wrong, please open a support ticket using the link below.`,
+        { gameName, maxNumOfClaims }
+      )
+    }
     return (
       <AlertCard
         icon={<AlertOctagon />}
@@ -124,10 +149,7 @@ export const ClaimErrorAlert = ({
           'quest.multipleClaimsDetected.title',
           'Multiple Claims Detected'
         )}
-        message={t(
-          'quest.multipleClaimsDetected.message',
-          `You've already claimed this quest the max number of times. If this seems wrong, please open a support ticket. Please note that HyperPlay doesn't decide eligibility for this type of quest.`
-        )}
+        message={exceededClaimMessage}
         variant="error"
         noBorderLeft={true}
       />
