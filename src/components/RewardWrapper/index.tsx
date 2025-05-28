@@ -20,7 +20,7 @@ import {
   http,
   UserRejectedRequestError
 } from 'viem'
-import { useAccount, useConfig, useConnect } from 'wagmi'
+import { useAccount, useConfig, useConnect, useWatchAsset } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
@@ -33,6 +33,7 @@ import {
   errorIsUserRejected
 } from '@/helpers/claimErrors'
 import { useGetListingByProjectId } from '@/hooks/useGetListingById'
+import { checkIsFirstTimeHolder } from '@/helpers/checkIsFirstTimeHolder'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -67,6 +68,7 @@ export function RewardWrapper({
   const account = useAccount()
   const { connectAsync } = useConnect()
   const config = useConfig()
+  const { watchAsset } = useWatchAsset()
 
   // Context
   const {
@@ -102,9 +104,8 @@ export function RewardWrapper({
     projectId ?? null,
     getListingById
   )
-  const gameName = listingData.data?.project_meta.name
+  const gameName = listingData.data?.project_meta?.name
 
-  // State
   const [claimError, setClaimError] = useState<Error | WarningError | null>(
     null
   )
@@ -197,8 +198,21 @@ export function RewardWrapper({
 
   // Mutations
   const claimRewardMutation = useMutation({
-    mutationFn: async (params: UseGetRewardsData) => claimReward(params),
-    onSuccess: async (_data, reward) => {
+    mutationFn: async (params: UseGetRewardsData) => {
+      const firstTimeHolderResult = checkIsFirstTimeHolder({
+        rewardType: reward.reward_type,
+        accountAddress:
+          account.address ?? '0x0000000000000000000000000000000000000000',
+        contractAddress: reward.contract_address,
+        logError,
+        config
+      })
+
+      await claimReward(params)
+
+      return firstTimeHolderResult
+    },
+    onSuccess: async ({ isFirstTimeHolder }, reward) => {
       trackEvent({
         event: 'Reward Claim Success',
         properties: getClaimEventProperties(reward, questId)
@@ -222,6 +236,17 @@ export function RewardWrapper({
       if (reward.reward_type === 'EXTERNAL-TASKS') {
         const queryKey = `useGetG7UserCredits`
         queryClient.invalidateQueries({ queryKey: [queryKey] })
+      }
+
+      if (reward.reward_type === 'ERC20' && isFirstTimeHolder) {
+        watchAsset({
+          type: 'ERC20',
+          options: {
+            address: reward.contract_address,
+            symbol: reward.name,
+            decimals: reward.decimals ?? 18
+          }
+        })
       }
     },
     onError: (error) => {
