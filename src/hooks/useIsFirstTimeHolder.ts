@@ -29,7 +29,7 @@ export function useIsFirstTimeHolder({
         abi: erc20Abi,
         address: contractAddress,
         functionName: 'balanceOf',
-        args: [account.address ?? '0x']
+        args: [account.address ?? '0x0000000000000000000000000000000000000000']
       })
 
       if (erc20Balance === BigInt(0)) {
