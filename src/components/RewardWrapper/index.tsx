@@ -20,7 +20,7 @@ import {
   http,
   UserRejectedRequestError
 } from 'viem'
-import { useAccount, useConfig, useConnect } from 'wagmi'
+import { useAccount, useConfig, useConnect, useWatchAsset } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
@@ -66,6 +66,7 @@ export function RewardWrapper({
   const account = useAccount()
   const { connectAsync } = useConnect()
   const config = useConfig()
+  const { watchAsset } = useWatchAsset()
 
   // Context
   const {
@@ -208,6 +209,17 @@ export function RewardWrapper({
       if (reward.reward_type === 'EXTERNAL-TASKS') {
         const queryKey = `useGetG7UserCredits`
         queryClient.invalidateQueries({ queryKey: [queryKey] })
+      }
+
+      if (reward.reward_type === 'ERC20') {
+        watchAsset({
+          type: 'ERC20',
+          options: {
+            address: reward.contract_address,
+            symbol: reward.name,
+            decimals: reward.decimals ?? 18
+          }
+        })
       }
     },
     onError: (error) => {
