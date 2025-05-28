@@ -649,8 +649,6 @@ export const TestSwitchToChainNoEIP3085: Story = {
     await waitForLoadingSpinnerToDisappear(canvas)
     const claimButton = canvas.getByRole('button', { name: /Claim/i })
     claimButton.click()
-    const confirmButton = canvas.getByRole('button', { name: /Confirm/i })
-    confirmButton.click()
     await waitFor(async () => {
       const rewardClaimErrorTrackObject =
         trackEventMock.mock.calls[trackEventMock.mock.calls.length - 1][0]
