@@ -33,6 +33,7 @@ import {
   errorIsUserRejected
 } from '@/helpers/claimErrors'
 import { useIsFirstTimeHolder } from '@/hooks/useIsFirstTimeHolder'
+import { useGetListingByProjectId } from '@/hooks/useGetListingById'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -89,8 +90,21 @@ export function RewardWrapper({
     getExternalEligibility,
     getUserPlayStreak,
     onShowMetaMaskPopup,
-    getActiveWallet
+    getActiveWallet,
+    getListingById
   } = useQuestWrapper()
+
+  /**
+   * @dev We don’t handle loading here, so if the hook is still fetching, the claim‑exceeded message may briefly omit game details.
+   * To prevent this, we pass external claims into useGetRewards to keep the rewards section in its loading state until all data (eligibility, etc.) arrives.
+   * This is low risk since the message only appears after the user clicks “claim.”
+   */
+  const projectId = questMeta.project_id
+  const { data: listingData } = useGetListingByProjectId(
+    projectId ?? null,
+    getListingById
+  )
+  const gameName = listingData.data?.project_meta.name
 
   // State
   const { isFirstTimeHolder } = useIsFirstTimeHolder({
@@ -469,6 +483,8 @@ export function RewardWrapper({
           error={claimError}
           networkName={networkName}
           onOpenDiscordLink={openDiscordLink}
+          gameName={gameName}
+          maxNumOfClaims={reward.num_claims_per_device}
         />
       ) : null}
     </div>

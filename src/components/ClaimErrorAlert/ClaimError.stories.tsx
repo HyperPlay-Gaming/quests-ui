@@ -50,9 +50,17 @@ export const SwitchChainError: Story = {
   }
 }
 
-export const ExceededClaim: Story = {
+export const ExceededClaimFallback: Story = {
   args: {
     error: new Error('EXCEEDED_CLAIM')
+  }
+}
+
+export const ExceededClaim: Story = {
+  args: {
+    error: new Error('EXCEEDED_CLAIM'),
+    maxNumOfClaims: '2',
+    gameName: 'Lorem ipsum'
   }
 }
 

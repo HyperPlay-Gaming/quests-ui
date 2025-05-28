@@ -4,6 +4,7 @@ export const canClaimRewardQueryKeyPrefix = 'canClaimReward'
 export const getQuestQueryKeyPrefix = 'getQuest'
 export const syncPlaysessionQueryKeyPrefix = 'syncPlaysession'
 export const getQuestLogInfoQueryKeyPrefix = 'getQuestLogInfo'
+export const getListingByIdQueryKeyPrefix = 'getListing'
 
 export function getGetQuestQueryKey(questId: number | null) {
   return [getQuestQueryKeyPrefix, questId]
@@ -27,4 +28,8 @@ export function getGetExternalEligibilityQueryKey(questId: number | null) {
 
 export function getCanClaimRewardQueryKey(questId: number | null) {
   return [canClaimRewardQueryKeyPrefix, questId]
+}
+
+export function getGetListingByIdQueryKey(projectId: string | null) {
+  return [getListingByIdQueryKeyPrefix, projectId]
 }

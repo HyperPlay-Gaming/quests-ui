@@ -12,6 +12,7 @@ import {
 } from '@hyperplay/utils'
 import { TFunction } from 'i18next'
 import { TrackEventFn } from './analytics'
+import { Listing } from '@valist/sdk/dist/typesApi'
 
 export type UseGetRewardsData = QuestReward & Reward
 
@@ -102,4 +103,5 @@ export interface QuestWrapperContextValue {
   onPlayClick: (quest: Quest) => void
   onRewardClaimed?: (reward: Reward) => void
   onShowMetaMaskPopup?: () => void
+  getListingById?: (projectId: string) => Promise<Listing>
 }
