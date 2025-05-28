@@ -51,6 +51,7 @@ export interface QuestWrapperContextValue {
     rewardTypeClaimEnabled: Record<Reward['reward_type'], boolean>
     gameplayWalletSectionVisible: boolean
     questsOverlayClaimCtaEnabled?: boolean
+    questTypeClaimable: Record<Quest['type'], boolean>
   }
   getExternalEligibility: (
     questId: number
