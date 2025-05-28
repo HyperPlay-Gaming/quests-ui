@@ -17,6 +17,7 @@ import {
   BaseError,
   ContractFunctionRevertedError,
   createPublicClient,
+  erc20Abi,
   http,
   UserRejectedRequestError
 } from 'viem'
@@ -25,14 +26,13 @@ import { injected } from 'wagmi/connectors'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
-import { switchChain } from '@wagmi/core'
+import { readContract, switchChain } from '@wagmi/core'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 import { ClaimErrorAlert } from '../ClaimErrorAlert'
 import {
   errorIsSwitchChainError,
   errorIsUserRejected
 } from '@/helpers/claimErrors'
-import { useIsFirstTimeHolder } from '@/hooks/useIsFirstTimeHolder'
 import { useGetListingByProjectId } from '@/hooks/useGetListingById'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
@@ -105,13 +105,6 @@ export function RewardWrapper({
     getListingById
   )
   const gameName = listingData.data?.project_meta.name
-
-  // State
-  const { isFirstTimeHolder } = useIsFirstTimeHolder({
-    rewardType: reward.reward_type,
-    contractAddress: reward.contract_address,
-    logError
-  })
 
   const [claimError, setClaimError] = useState<Error | WarningError | null>(
     null
@@ -205,8 +198,29 @@ export function RewardWrapper({
 
   // Mutations
   const claimRewardMutation = useMutation({
-    mutationFn: async (params: UseGetRewardsData) => claimReward(params),
-    onSuccess: async (_data, reward) => {
+    mutationFn: async (params: UseGetRewardsData) => {
+      let isFirstTimeHolder = false
+
+      // check balance before claim
+      try {
+        if (params.reward_type === 'ERC20' && account.address) {
+          const erc20Balance = await readContract(config, {
+            abi: erc20Abi,
+            address: reward.contract_address,
+            functionName: 'balanceOf',
+            args: [account.address]
+          })
+          isFirstTimeHolder = erc20Balance === BigInt(0)
+        }
+      } catch (error) {
+        logError(`Error checking if the user is holding erc20 ${error}`)
+      }
+
+      await claimReward(params)
+
+      return { isFirstTimeHolder }
+    },
+    onSuccess: async ({ isFirstTimeHolder }, reward) => {
       trackEvent({
         event: 'Reward Claim Success',
         properties: getClaimEventProperties(reward, questId)
