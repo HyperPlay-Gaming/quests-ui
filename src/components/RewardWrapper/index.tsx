@@ -32,6 +32,7 @@ import {
   errorIsSwitchChainError,
   errorIsUserRejected
 } from '@/helpers/claimErrors'
+import { useIsFirstTimeHolder } from '@/hooks/useIsFirstTimeHolder'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -92,6 +93,12 @@ export function RewardWrapper({
   } = useQuestWrapper()
 
   // State
+  const { isFirstTimeHolder } = useIsFirstTimeHolder({
+    rewardType: reward.reward_type,
+    contractAddress: reward.contract_address,
+    logError
+  })
+
   const [claimError, setClaimError] = useState<Error | WarningError | null>(
     null
   )
@@ -211,7 +218,7 @@ export function RewardWrapper({
         queryClient.invalidateQueries({ queryKey: [queryKey] })
       }
 
-      if (reward.reward_type === 'ERC20') {
+      if (reward.reward_type === 'ERC20' && isFirstTimeHolder) {
         watchAsset({
           type: 'ERC20',
           options: {
