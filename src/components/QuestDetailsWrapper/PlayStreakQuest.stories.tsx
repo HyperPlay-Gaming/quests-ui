@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
-import { Quest, UserPlayStreak } from '@hyperplay/utils'
+import { Quest, UserPlayStreak, wait } from '@hyperplay/utils'
 import { useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
@@ -647,6 +647,7 @@ export const TestSwitchToChainNoEIP3085: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
+    await wait(1000)
     const claimButton = canvas.getByRole('button', { name: /Claim/i })
     claimButton.click()
     await waitFor(async () => {
