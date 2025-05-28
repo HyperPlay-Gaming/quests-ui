@@ -22,7 +22,6 @@ import {
 } from 'viem'
 import { useAccount, useConfig, useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
-import { ConfirmClaimModal } from '../ConfirmClaimModal'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
 import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
@@ -92,7 +91,6 @@ export function RewardWrapper({
   } = useQuestWrapper()
 
   // State
-  const [showWarning, setShowWarning] = useState(false)
   const [claimError, setClaimError] = useState<Error | WarningError | null>(
     null
   )
@@ -420,11 +418,7 @@ export function RewardWrapper({
       reward.reward_type
     )
 
-    if (isRewardOnChain) {
-      setShowWarning(true)
-    } else {
-      claimRewardMutation.mutate(reward)
-    }
+    claimRewardMutation.mutate(reward)
   }
 
   // Effects
@@ -458,16 +452,6 @@ export function RewardWrapper({
           onOpenDiscordLink={openDiscordLink}
         />
       ) : null}
-      <ConfirmClaimModal
-        isOpen={showWarning}
-        onConfirm={() => {
-          setShowWarning(false)
-          claimRewardMutation.mutate(reward)
-        }}
-        onCancel={() => setShowWarning(false)}
-        onClose={() => setShowWarning(false)}
-        networkName={networkName}
-      />
     </div>
   )
 }
