@@ -35,7 +35,8 @@ export const mockQuest: Quest = {
       amount_per_user: 200000000000000000000000,
       chain_id: 84532,
       reward_type: 'ERC20',
-      marketplace_url: 'https://hyperplay.xyz'
+      marketplace_url: 'https://hyperplay.xyz',
+      num_claims_per_device: ''
     },
     {
       id: 2,
@@ -48,7 +49,8 @@ export const mockQuest: Quest = {
       chain_id: 84532,
       reward_type: 'EXTERNAL-TASKS',
       marketplace_url: 'https://hyperplay.xyz',
-      numClaimsLeft: '2357'
+      numClaimsLeft: '2357',
+      num_claims_per_device: ''
     }
   ],
   deposit_contracts: [],
@@ -102,7 +104,12 @@ export const defaultQuestWrapperProps: QuestDetailsWrapperProps = {
       'EXTERNAL-TASKS': true
     },
     questsOverlayClaimCtaEnabled: false,
-    gameplayWalletSectionVisible: true
+    gameplayWalletSectionVisible: true,
+    questTypeClaimable: {
+      LEADERBOARD: true,
+      PLAYSTREAK: true,
+      'REPUTATIONAL-AIRDROP': true
+    }
   },
   onPlayClick: () => alert('onPlayClick'),
   getQuest: async () => {

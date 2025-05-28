@@ -121,8 +121,11 @@ export function RewardWrapper({
     ? Boolean(activeWallet)
     : true
 
+  const claimEnabledForQuestType =
+    flags.questTypeClaimable[questMeta.type] ?? false
+
   const {
-    canClaim,
+    canClaim: canClaimReward,
     isLoading: isCanClaimLoading,
     invalidateQuery: invalidateCanClaimQuery
   } = useCanClaimReward({
@@ -386,6 +389,10 @@ export function RewardWrapper({
     const isRewardTypeClaimable =
       flags.rewardTypeClaimEnabled[reward.reward_type]
 
+    if (!claimEnabledForQuestType) {
+      throw new Error(`quest type ${questMeta.type} is not claimable`)
+    }
+
     if (!isRewardTypeClaimable) {
       throw new Error(`reward type ${reward.reward_type} is not claimable`)
     }
@@ -428,10 +435,6 @@ export function RewardWrapper({
       return
     }
 
-    const isRewardOnChain = ['ERC1155', 'ERC721', 'ERC20'].includes(
-      reward.reward_type
-    )
-
     claimRewardMutation.mutate(reward)
   }
 
@@ -445,6 +448,8 @@ export function RewardWrapper({
   if (reward.chainName && reward.chain_id) {
     networkName = chainMap[reward.chain_id.toString()].chain?.name ?? ''
   }
+
+  const canClaim = claimEnabledForQuestType && canClaimReward
 
   return (
     <div className={styles.rewardContainer}>

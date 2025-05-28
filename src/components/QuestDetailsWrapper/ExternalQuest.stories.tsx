@@ -83,7 +83,12 @@ const mockProps: QuestDetailsWrapperProps = {
       'EXTERNAL-TASKS': true
     },
     questsOverlayClaimCtaEnabled: false,
-    gameplayWalletSectionVisible: true
+    gameplayWalletSectionVisible: true,
+    questTypeClaimable: {
+      LEADERBOARD: true,
+      PLAYSTREAK: true,
+      'REPUTATIONAL-AIRDROP': true
+    }
   },
   onPlayClick: () => alert('onPlayClick'),
   getQuest: async () => {
