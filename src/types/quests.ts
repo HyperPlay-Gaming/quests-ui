@@ -14,9 +14,7 @@ import { TFunction } from 'i18next'
 import { TrackEventFn } from './analytics'
 import { Listing } from '@valist/sdk/dist/typesApi'
 
-// @TODO pull into hp utils type
-export type UseGetRewardsData = QuestReward &
-  Reward & { num_claims_per_device: string }
+export type UseGetRewardsData = QuestReward & Reward
 
 export type ExternalEligibilityWithQuestId = ExternalEligibility & {
   questId: number
