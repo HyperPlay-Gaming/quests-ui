@@ -647,10 +647,16 @@ export const TestSwitchToChainNoEIP3085: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    const claimButton = canvas.getByRole('button', { name: /Claim/i })
+    const claimButton = await waitFor(async () => {
+      const button = (await canvas.findByRole('button', {
+        name: /Claim/i
+      })) as HTMLButtonElement
+      if (button && !button.disabled) {
+        return button
+      }
+      throw new Error('Claim button is not enabled')
+    })
     claimButton.click()
-    const confirmButton = canvas.getByRole('button', { name: /Confirm/i })
-    confirmButton.click()
     await waitFor(async () => {
       const rewardClaimErrorTrackObject =
         trackEventMock.mock.calls[trackEventMock.mock.calls.length - 1][0]
