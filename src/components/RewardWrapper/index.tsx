@@ -32,6 +32,7 @@ import {
   errorIsSwitchChainError,
   errorIsUserRejected
 } from '@/helpers/claimErrors'
+import { useGetListingByProjectId } from '@/hooks/useGetListingById'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -87,8 +88,17 @@ export function RewardWrapper({
     getExternalEligibility,
     getUserPlayStreak,
     onShowMetaMaskPopup,
-    getActiveWallet
+    getActiveWallet,
+    getListingById
   } = useQuestWrapper()
+
+  const projectId = questMeta.project_id
+  const { data: listingData } = useGetListingByProjectId(
+    projectId ?? null,
+    !!projectId && !!getListingById,
+    getListingById
+  )
+  const gameName = listingData.data?.project_meta.name
 
   // State
   const [claimError, setClaimError] = useState<Error | WarningError | null>(
@@ -450,7 +460,7 @@ export function RewardWrapper({
           error={claimError}
           networkName={networkName}
           onOpenDiscordLink={openDiscordLink}
-          projectId={questMeta.project_id}
+          gameName={gameName}
           maxNumOfClaims={reward.num_claims_per_device}
         />
       ) : null}

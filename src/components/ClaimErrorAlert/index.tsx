@@ -5,8 +5,6 @@ import { ClaimError, NotEnoughGasError, WarningError } from '@/types/quests'
 import { errorIsSwitchChainError } from '@/helpers/claimErrors'
 
 import styles from './index.module.scss'
-import { useGetListingByProjectId } from '@/hooks/useGetListingById'
-import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 
 const { AlertOctagon, WarningIcon } = Images
 
@@ -21,7 +19,7 @@ type ClaimErrorAlertProps = {
   networkName: string
   currentChain: Chain | undefined
   onOpenDiscordLink: () => void
-  projectId?: string | null
+  gameName?: string | null
   maxNumOfClaims?: string | null
 }
 
@@ -30,18 +28,11 @@ export const ClaimErrorAlert = ({
   networkName,
   onOpenDiscordLink,
   currentChain,
-  projectId,
+  gameName,
   maxNumOfClaims
 }: ClaimErrorAlertProps) => {
   const { t } = useTranslation()
   const claimsExceeded = String(error).includes('EXCEEDED_CLAIM')
-  const { getListingById } = useQuestWrapper()
-  const { data: listingData } = useGetListingByProjectId(
-    projectId ?? null,
-    !!projectId && claimsExceeded && !!getListingById,
-    getListingById
-  )
-  const gameName = listingData.data?.project_meta.name
 
   if (error instanceof WarningError) {
     return (
