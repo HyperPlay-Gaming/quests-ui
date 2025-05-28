@@ -35,7 +35,8 @@ const mockQuest: Quest = {
       amount_per_user: 2000000000000000000000,
       chain_id: 5000,
       reward_type: 'ERC20',
-      marketplace_url: 'https://test.com'
+      marketplace_url: 'https://test.com',
+      num_claims_per_device: '2'
     }
   ],
   deposit_contracts: [],

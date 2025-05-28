@@ -92,10 +92,14 @@ export function RewardWrapper({
     getListingById
   } = useQuestWrapper()
 
+  /**
+   * @dev We don’t handle loading here, so if the hook is still fetching, the claim‑exceeded message may briefly omit game details.
+   * To prevent this, we pass external claims into useGetRewards to keep the rewards section in its loading state until all data (eligibility, etc.) arrives.
+   * This is low risk since the message only appears after the user clicks “claim.”
+   */
   const projectId = questMeta.project_id
   const { data: listingData } = useGetListingByProjectId(
     projectId ?? null,
-    !!projectId && !!getListingById,
     getListingById
   )
   const gameName = listingData.data?.project_meta.name

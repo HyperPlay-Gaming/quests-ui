@@ -4,7 +4,6 @@ import { useQuery, useQueryClient, queryOptions } from '@tanstack/react-query'
 
 export function getListingByProjectIdQueryOptions(
   projectId: string | null,
-  enabled: boolean,
   getListingByProjectId: QuestWrapperContextValue['getListingById']
 ) {
   const queryKey = getGetListingByIdQueryKey(projectId)
@@ -19,8 +18,7 @@ export function getListingByProjectIdQueryOptions(
       return response
     },
     refetchOnWindowFocus: false,
-    enabled:
-      projectId !== null && getListingByProjectId !== undefined && enabled,
+    enabled: projectId !== null && getListingByProjectId !== undefined,
     // choosing 60s over Infinity here to keep the num of claims left value fresh
     staleTime: 60 * 1000
   })
@@ -28,13 +26,11 @@ export function getListingByProjectIdQueryOptions(
 
 export function useGetListingByProjectId(
   projectId: string | null,
-  enabled: boolean,
   getListingByProjectId: QuestWrapperContextValue['getListingById']
 ) {
   const queryClient = useQueryClient()
   const queryOption = getListingByProjectIdQueryOptions(
     projectId,
-    enabled,
     getListingByProjectId
   )
   const query = useQuery(queryOption)
