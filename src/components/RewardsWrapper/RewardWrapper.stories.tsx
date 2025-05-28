@@ -21,7 +21,7 @@ const mockReward: Quest['rewards'] = [
     chain_id: 5000,
     reward_type: 'ERC20',
     marketplace_url: 'https://hyperplay.xyz',
-    num_claims_per_device: '',
+    num_claims_per_device: ''
   }
 ]
 

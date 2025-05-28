@@ -58,7 +58,7 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       chain_id: 84532,
       reward_type: 'ERC20',
       marketplace_url: 'https://hyperplay.xyz',
-      num_claims_per_device: '',
+      num_claims_per_device: ''
     },
     {
       id: 2,
@@ -72,7 +72,7 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       reward_type: 'EXTERNAL-TASKS',
       marketplace_url: 'https://hyperplay.xyz',
       numClaimsLeft: '2357',
-      num_claims_per_device: '',
+      num_claims_per_device: ''
     }
   ],
   deposit_contracts: [],
@@ -639,7 +639,7 @@ export const TestSwitchToChainNoEIP3085: Story = {
                 chain_id: 33139,
                 reward_type: 'ERC20',
                 marketplace_url: 'https://hyperplay.xyz',
-                num_claims_per_device: '',
+                num_claims_per_device: ''
               }
             ]
           }
