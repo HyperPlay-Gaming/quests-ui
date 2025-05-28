@@ -133,6 +133,14 @@ export const EligibleButQuestTypeClaimDisabled: Story = {
   tags: ['!dev'],
   decorators: [
     createQuestWrapperDecorator({
+      flags: {
+        ...defaultQuestWrapperProps.flags,
+        questTypeClaimable: {
+          LEADERBOARD: false,
+          PLAYSTREAK: true,
+          'REPUTATIONAL-AIRDROP': true
+        }
+      },
       getExternalEligibility: async () => {
         return {
           walletOrEmail: '0x123',
