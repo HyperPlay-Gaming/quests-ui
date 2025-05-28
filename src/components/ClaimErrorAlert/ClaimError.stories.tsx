@@ -2,25 +2,10 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ClaimErrorAlert } from './index'
 import { NotEnoughGasError, WarningError } from '@/types/quests'
 import { mantle, mainnet } from 'viem/chains'
-import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
-import { createQuestWrapperDecorator } from '@/helpers/createQuestWrapperDecorator'
 
 const meta: Meta<typeof ClaimErrorAlert> = {
   title: 'Components/ClaimErrorAlert',
   component: ClaimErrorAlert,
-  decorators: [
-    createQueryClientDecorator,
-    createQuestWrapperDecorator({
-      // @ts-expect-error not passing full listing here for maintainability
-      getListingById: async () => {
-        return {
-          project_meta: {
-            name: 'Some game name'
-          }
-        }
-      }
-    })
-  ],
   args: {
     networkName: 'Mantle',
     onOpenDiscordLink: () => alert('Discord link clicked'),
@@ -75,7 +60,7 @@ export const ExceededClaim: Story = {
   args: {
     error: new Error('EXCEEDED_CLAIM'),
     maxNumOfClaims: '2',
-    projectId: '0x123'
+    gameName: 'Lorem ipsum'
   }
 }
 
