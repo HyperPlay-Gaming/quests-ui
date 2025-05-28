@@ -3,10 +3,16 @@ import { RewardsWrapper } from './'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import {
   createQuestWrapperDecorator,
+  defaultQuestWrapperProps,
   mockQuest
 } from '@/helpers/createQuestWrapperDecorator'
 import { Quest } from '@hyperplay/utils'
-import { within, expect, waitForElementToBeRemoved } from '@storybook/test'
+import {
+  within,
+  expect,
+  waitForElementToBeRemoved,
+  waitFor
+} from '@storybook/test'
 
 const mockReward: Quest['rewards'] = [
   {
@@ -98,9 +104,13 @@ export const LeaderboardQuestEligible: Story = {
           questId: mockQuest.id
         }
       },
+      getActiveWallet: async () => {
+        return '0x123'
+      },
       getQuest: async () => {
         return {
           ...mockQuest,
+          status: 'CLAIMABLE',
           type: 'LEADERBOARD',
           rewards: mockReward
         }
@@ -113,5 +123,42 @@ export const LeaderboardQuestEligible: Story = {
       canvas.getByLabelText('loading rewards')
     )
     expect(canvas.getByText('+100 MNT')).toBeInTheDocument()
+    waitFor(() => {
+      expect(canvas.getByRole('button', { name: 'Claim' })).toBeEnabled()
+    })
+  }
+}
+
+export const EligibleButQuestTypeClaimDisabled: Story = {
+  tags: ['!dev'],
+  decorators: [
+    createQuestWrapperDecorator({
+      getExternalEligibility: async () => {
+        return {
+          walletOrEmail: '0x123',
+          amount: 100000000000000000000,
+          questId: mockQuest.id
+        }
+      },
+      getActiveWallet: async () => {
+        return '0x123'
+      },
+      getQuest: async () => {
+        return {
+          ...mockQuest,
+          status: 'CLAIMABLE',
+          type: 'LEADERBOARD',
+          rewards: mockReward
+        }
+      }
+    })
+  ],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForElementToBeRemoved(() =>
+      canvas.getByLabelText('loading rewards')
+    )
+    expect(canvas.getByText('+100 MNT')).toBeInTheDocument()
+    expect(canvas.getByRole('button', { name: 'Claim' })).toBeDisabled()
   }
 }
