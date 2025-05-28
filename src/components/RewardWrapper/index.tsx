@@ -104,7 +104,7 @@ export function RewardWrapper({
     projectId ?? null,
     getListingById
   )
-  const gameName = listingData.data?.project_meta.name
+  const gameName = listingData.data?.project_meta?.name
 
   const [claimError, setClaimError] = useState<Error | WarningError | null>(
     null
@@ -199,9 +199,7 @@ export function RewardWrapper({
   // Mutations
   const claimRewardMutation = useMutation({
     mutationFn: async (params: UseGetRewardsData) => {
-      await claimReward(params)
-
-      return checkIsFirstTimeHolder({
+      const firstTimeHolderResult = checkIsFirstTimeHolder({
         rewardType: reward.reward_type,
         accountAddress:
           account.address ?? '0x0000000000000000000000000000000000000000',
@@ -209,6 +207,10 @@ export function RewardWrapper({
         logError,
         config
       })
+
+      await claimReward(params)
+
+      return firstTimeHolderResult
     },
     onSuccess: async ({ isFirstTimeHolder }, reward) => {
       trackEvent({
