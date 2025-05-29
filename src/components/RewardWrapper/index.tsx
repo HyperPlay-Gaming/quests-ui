@@ -201,6 +201,26 @@ export function RewardWrapper({
     return errorMessage
   }
 
+  const postClaimRewardInvalidation = async (reward: UseGetRewardsData) => {
+    await invalidateCanClaimQuery(questMeta.id)
+
+    if (questId !== null) {
+      await queryClient.invalidateQueries({
+        queryKey: [getGetQuestLogInfoQueryKey(questId.toString())]
+      })
+    }
+
+    if (reward.reward_type === 'POINTS') {
+      const queryKey = `getPointsBalancesForProject:${questMeta?.project_id}`
+      queryClient.invalidateQueries({ queryKey: [queryKey] })
+    }
+
+    if (reward.reward_type === 'EXTERNAL-TASKS') {
+      const queryKey = `useGetG7UserCredits`
+      queryClient.invalidateQueries({ queryKey: [queryKey] })
+    }
+  }
+
   // Mutations
   const claimRewardMutation = useMutation({
     mutationFn: async (params: UseGetRewardsData) => {
@@ -224,24 +244,8 @@ export function RewardWrapper({
       })
 
       onRewardClaimed?.(reward)
-      await invalidateQuestPlayStreakQuery()
-      await invalidateCanClaimQuery()
 
-      if (questId !== null) {
-        await queryClient.invalidateQueries({
-          queryKey: [getGetQuestLogInfoQueryKey(questId.toString())]
-        })
-      }
-
-      if (reward.reward_type === 'POINTS') {
-        const queryKey = `getPointsBalancesForProject:${questMeta?.project_id}`
-        queryClient.invalidateQueries({ queryKey: [queryKey] })
-      }
-
-      if (reward.reward_type === 'EXTERNAL-TASKS') {
-        const queryKey = `useGetG7UserCredits`
-        queryClient.invalidateQueries({ queryKey: [queryKey] })
-      }
+      await postClaimRewardInvalidation(reward)
 
       if (reward.reward_type === 'ERC20' && isFirstTimeHolder) {
         watchAsset({
