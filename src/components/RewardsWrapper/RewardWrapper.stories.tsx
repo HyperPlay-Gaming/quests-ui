@@ -100,7 +100,7 @@ export const LeaderboardQuestEligible: Story = {
       getExternalEligibility: async () => {
         return {
           walletOrEmail: '0x123',
-          amount: 100000000000000000000,
+          amount: '100000000000000000000',
           questId: mockQuest.id
         }
       },
@@ -144,7 +144,7 @@ export const EligibleButQuestTypeClaimDisabled: Story = {
       getExternalEligibility: async () => {
         return {
           walletOrEmail: '0x123',
-          amount: 100000000000000000000,
+          amount: '100000000000000000000',
           questId: mockQuest.id
         }
       },

@@ -8,7 +8,7 @@ export function canClaimLeaderboardReward(
   if (quest.status !== 'CLAIMABLE') {
     return false
   }
-  return externalEligibility.amount > 0
+  return BigInt(externalEligibility.amount) > BigInt(0)
 }
 
 export function canClaimPlayStreakReward(
