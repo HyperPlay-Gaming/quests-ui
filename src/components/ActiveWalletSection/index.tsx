@@ -11,19 +11,9 @@ import { Popover } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 import {
-  externalEligibilityQueryKeyPrefix,
-  userPlayStreakQueryKeyPrefix,
-  canClaimRewardQueryKeyPrefix
+  canClaimRewardQueryKeyPrefix,
+  eligibilityQueryKeyPrefixes
 } from '@/helpers/getQueryKeys'
-import { Quest } from '@hyperplay/utils'
-
-// make ts force us to add a new query key when a new quest type is added
-const eligibilityQueries: Record<Quest['type'], string> = {
-  PLAYSTREAK: userPlayStreakQueryKeyPrefix,
-  LEADERBOARD: externalEligibilityQueryKeyPrefix,
-  // TODO: use the correct query key for the reputational airdrop if we implement it in the future
-  'REPUTATIONAL-AIRDROP': externalEligibilityQueryKeyPrefix
-}
 
 const { WarningIcon, AlertOctagon } = Images
 
@@ -133,7 +123,7 @@ export default function ActiveWalletSection() {
       predicate: (query) =>
         query.queryKey[0] === 'activeWallet' ||
         query.queryKey[0] === 'gameplayWallets' ||
-        Object.values(eligibilityQueries).includes(
+        Object.values(eligibilityQueryKeyPrefixes).includes(
           query.queryKey[0] as string
         ) ||
         query.queryKey[0] === canClaimRewardQueryKeyPrefix

@@ -1,3 +1,5 @@
+import { Quest } from '@hyperplay/utils'
+
 export const externalEligibilityQueryKeyPrefix = 'externalEligibility'
 export const userPlayStreakQueryKeyPrefix = 'getUserPlayStreak'
 export const canClaimRewardQueryKeyPrefix = 'canClaimReward'
@@ -32,4 +34,22 @@ export function getCanClaimRewardQueryKey(questId: number | null) {
 
 export function getGetListingByIdQueryKey(projectId: string | null) {
   return [getListingByIdQueryKeyPrefix, projectId]
+}
+
+// make ts force us to add a new query key when a new quest type is added
+export const eligibilityQueryKeyPrefixes: Record<Quest['type'], string> = {
+  PLAYSTREAK: userPlayStreakQueryKeyPrefix,
+  LEADERBOARD: externalEligibilityQueryKeyPrefix,
+  // TODO: use the correct query key for the reputational airdrop if we implement it in the future
+  'REPUTATIONAL-AIRDROP': externalEligibilityQueryKeyPrefix
+}
+
+export function getEligibilityQueryKeys(
+  questId: number | null
+): Record<Quest['type'], (string | number | null)[]> {
+  return {
+    PLAYSTREAK: getGetUserPlayStreakQueryKey(questId),
+    LEADERBOARD: getGetExternalEligibilityQueryKey(questId),
+    'REPUTATIONAL-AIRDROP': getGetExternalEligibilityQueryKey(questId)
+  }
 }

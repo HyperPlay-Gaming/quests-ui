@@ -2,14 +2,19 @@ import {
   canClaimLeaderboardReward,
   canClaimPlayStreakReward
 } from '@/helpers/canClaimReward'
-import { getCanClaimRewardQueryKey } from '@/helpers/getQueryKeys'
+import {
+  eligibilityQueryKeyPrefixes,
+  getCanClaimRewardQueryKey,
+  getEligibilityQueryKeys
+} from '@/helpers/getQueryKeys'
 import { getExternalEligibilityQueryProps } from '@/helpers/queryProps'
 import { ExternalEligibilityWithQuestId } from '@/types/quests'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
 import {
   useQueryClient,
   useQuery,
-  UseQueryOptions
+  UseQueryOptions,
+  Query
 } from '@tanstack/react-query'
 
 type Props = {
@@ -59,6 +64,30 @@ export function useCanClaimReward({
   return {
     canClaim: query.data,
     ...query,
-    invalidateQuery: async () => queryClient.invalidateQueries({ queryKey })
+    invalidateQuery: async (questId?: number | null) => {
+      let predicateFn: (query: Query) => boolean
+
+      // the reason we only target quest id is to avoid resetting all the eligibilities at the same time
+      // and get rate limited by the API
+      if (questId) {
+        const eligibilityQueryKeys = getEligibilityQueryKeys(questId)
+        predicateFn = (query: Query) =>
+          Object.values(eligibilityQueryKeys).some(
+            (key) => JSON.stringify(key) === JSON.stringify(query.queryKey)
+          )
+      } else {
+        predicateFn = (query: Query) =>
+          Object.values(eligibilityQueryKeyPrefixes).includes(
+            query.queryKey[0] as string
+          )
+      }
+
+      // we want to invalidate the eligibility queries before re-running this hook's queryFn
+      await queryClient.invalidateQueries({
+        predicate: predicateFn
+      })
+
+      await queryClient.invalidateQueries({ queryKey })
+    }
   }
 }
