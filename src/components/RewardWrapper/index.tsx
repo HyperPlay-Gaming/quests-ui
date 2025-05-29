@@ -68,7 +68,7 @@ export function RewardWrapper({
   const account = useAccount()
   const { connectAsync } = useConnect()
   const config = useConfig()
-  const { watchAsset } = useWatchAsset()
+  const { watchAssetAsync } = useWatchAsset()
 
   // Context
   const {
@@ -245,10 +245,12 @@ export function RewardWrapper({
 
       onRewardClaimed?.(reward)
 
-      await postClaimRewardInvalidation(reward)
-
+      /**
+       * @dev need to call watch asset before elig query invalidation,
+       * so quest doesn't hide before the call can be made
+       */
       if (reward.reward_type === 'ERC20' && isFirstTimeHolder) {
-        watchAsset({
+        await watchAssetAsync({
           type: 'ERC20',
           options: {
             address: reward.contract_address,
@@ -257,6 +259,8 @@ export function RewardWrapper({
           }
         })
       }
+
+      await postClaimRewardInvalidation(reward)
     },
     onError: (error) => {
       setClaimError(error)
