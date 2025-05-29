@@ -64,7 +64,7 @@ export function useCanClaimReward({
   return {
     canClaim: query.data,
     ...query,
-    invalidateQuery: async (questId: number | null) => {
+    invalidateQuery: async (questId?: number | null) => {
       let predicateFn: (query: Query) => boolean
 
       // the reason we only target quest id is to avoid resetting all the eligibilities at the same time
