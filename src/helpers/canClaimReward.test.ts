@@ -31,7 +31,7 @@ describe('canClaimReward', () => {
     })
 
     const createExternalEligibility = (
-      amount: number
+      amount: string
     ): ExternalEligibility => ({
       amount,
       walletOrEmail: 'test@example.com'
@@ -39,21 +39,21 @@ describe('canClaimReward', () => {
 
     it('should return true for claimable quest with positive eligibility', () => {
       const quest = createLeaderboardQuest('CLAIMABLE')
-      const externalEligibility = createExternalEligibility(100)
+      const externalEligibility = createExternalEligibility('100')
 
       expect(canClaimLeaderboardReward(quest, externalEligibility)).toBe(true)
     })
 
     it('should return false for claimable quest with zero eligibility', () => {
       const quest = createLeaderboardQuest('CLAIMABLE')
-      const externalEligibility = createExternalEligibility(0)
+      const externalEligibility = createExternalEligibility('0')
 
       expect(canClaimLeaderboardReward(quest, externalEligibility)).toBe(false)
     })
 
     it('should return false for incomplete quest', () => {
       const quest = createLeaderboardQuest('ACTIVE')
-      const externalEligibility = createExternalEligibility(100)
+      const externalEligibility = createExternalEligibility('100')
 
       expect(canClaimLeaderboardReward(quest, externalEligibility)).toBe(false)
     })

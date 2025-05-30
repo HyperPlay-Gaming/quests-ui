@@ -26,7 +26,7 @@ describe('getExternalQuestStatus', () => {
     leaderboard_url: 'https://example.com'
   })
 
-  const mockExternalEligibility = (amount: number): ExternalEligibility => ({
+  const mockExternalEligibility = (amount: string): ExternalEligibility => ({
     amount,
     walletOrEmail: 'test@example.com'
   })
@@ -45,14 +45,14 @@ describe('getExternalQuestStatus', () => {
 
   it('returns undefined to hide quest when quest is CLAIMABLE and cannot claim reward', () => {
     const quest = mockQuest('CLAIMABLE')
-    const externalEligibility = mockExternalEligibility(0)
+    const externalEligibility = mockExternalEligibility('0')
     const result = getExternalQuestStatus(quest, externalEligibility)
     expect(result).toBeUndefined()
   })
 
   it('returns READY_FOR_CLAIM when quest is CLAIMABLE and can claim reward', () => {
     const quest = mockQuest('CLAIMABLE')
-    const externalEligibility = mockExternalEligibility(100)
+    const externalEligibility = mockExternalEligibility('100')
     const result = getExternalQuestStatus(quest, externalEligibility)
     expect(result).toBe('READY_FOR_CLAIM')
   })
