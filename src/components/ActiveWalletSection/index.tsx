@@ -14,6 +14,7 @@ import {
   canClaimRewardQueryKeyPrefix,
   eligibilityQueryKeyPrefixes
 } from '@/helpers/getQueryKeys'
+import { getAddress } from 'viem'
 
 const { WarningIcon, AlertOctagon } = Images
 
@@ -94,7 +95,10 @@ function InputLikeContainer({
 
 export default function ActiveWalletSection() {
   const queryClient = useQueryClient()
-  const { address: connectedWallet, connector } = useAccount()
+  const { address: connectedWalletRaw, connector } = useAccount()
+  const connectedWallet = connectedWalletRaw
+    ? getAddress(connectedWalletRaw)
+    : connectedWalletRaw
   const {
     getActiveWallet,
     setActiveWallet,
