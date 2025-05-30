@@ -17,6 +17,7 @@ import {
   BaseError,
   ContractFunctionRevertedError,
   createPublicClient,
+  getAddress,
   http,
   UserRejectedRequestError
 } from 'viem'
@@ -226,8 +227,9 @@ export function RewardWrapper({
     mutationFn: async (params: UseGetRewardsData) => {
       const firstTimeHolderResult = checkIsFirstTimeHolder({
         rewardType: reward.reward_type,
-        accountAddress:
-          account.address ?? '0x0000000000000000000000000000000000000000',
+        accountAddress: getAddress(
+          account.address ?? '0x0000000000000000000000000000000000000000'
+        ),
         contractAddress: reward.contract_address,
         logError,
         config
@@ -340,7 +342,7 @@ export function RewardWrapper({
     }
 
     if (account.address && connectionHasSwitchChain) {
-      address = account.address
+      address = getAddress(account.address)
     } else {
       onShowMetaMaskPopup?.()
       logInfo('connecting to wallet...')
