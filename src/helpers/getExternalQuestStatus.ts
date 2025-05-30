@@ -19,7 +19,7 @@ export function getExternalQuestStatus(
       return 'READY_FOR_CLAIM'
     }
 
-    return undefined
+    return 'ACTIVE'
   }
 
   return undefined
