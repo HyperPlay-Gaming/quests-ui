@@ -1,3 +1,4 @@
+import { NoAccountConnectedError } from '@/types/quests'
 import { SwitchChainError, UserRejectedRequestError } from 'viem'
 
 export function errorIsSwitchChainError(
@@ -10,4 +11,10 @@ export function errorIsUserRejected(
   error: Error
 ): error is UserRejectedRequestError {
   return error instanceof UserRejectedRequestError
+}
+
+export function errorIsNoAccountConnectedError(
+  error: Error
+): error is NoAccountConnectedError {
+  return error instanceof NoAccountConnectedError
 }

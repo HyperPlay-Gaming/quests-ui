@@ -5,6 +5,7 @@ import { useQuestWrapper } from '@/state/QuestWrapperProvider'
 import {
   NotEnoughGasError,
   UseGetRewardsData,
+  NoAccountConnectedError,
   WarningError
 } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
@@ -29,7 +30,8 @@ import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 import { ClaimErrorAlert } from '../ClaimErrorAlert'
 import {
   errorIsSwitchChainError,
-  errorIsUserRejected
+  errorIsUserRejected,
+  errorIsNoAccountConnectedError
 } from '@/helpers/claimErrors'
 import { useGetListingByProjectId } from '@/hooks/useGetListingById'
 import { checkIsFirstTimeHolder } from '@/helpers/checkIsFirstTimeHolder'
@@ -229,16 +231,10 @@ export function RewardWrapper({
         config
       })
 
-      const result = await claimReward(params)
-
-      return { result, ...firstTimeHolderResult }
+      await claimReward(params)
+      return firstTimeHolderResult
     },
-    onSuccess: async ({ result, isFirstTimeHolder }, reward) => {
-      if (result === 'CONNECT_WALLET_CALLED') {
-        // we called the appkit or other wallet onboarding modal so no rewards were claimed
-        return
-      }
-
+    onSuccess: async ({ isFirstTimeHolder }, reward) => {
       trackEvent({
         event: 'Reward Claim Success',
         properties: getClaimEventProperties(reward, questId)
@@ -261,6 +257,16 @@ export function RewardWrapper({
     },
     onError: (error) => {
       setClaimError(error)
+
+      if (error instanceof NoAccountConnectedError) {
+        // we called the appkit or other wallet onboarding modal so no rewards were claimed
+        logInfo('No account connected, requesting user to connect wallet')
+        trackEvent({
+          event: 'Reward Claim No Account Connected',
+          properties: getClaimEventProperties(reward, questId)
+        })
+        return
+      }
 
       if (String(claimError).includes('EXCEEDED_CLAIM')) {
         logInfo(`Device claims exceeded: ${error}`)
@@ -346,8 +352,9 @@ export function RewardWrapper({
       logInfo('connecting to wallet...')
       onShowMetaMaskPopup?.()
       openWalletConnectionModal?.()
-      return 'CONNECT_WALLET_CALLED'
+      throw new NoAccountConnectedError()
     }
+
     if (!address) {
       throw Error('no address found when trying to mint')
     }
@@ -480,6 +487,11 @@ export function RewardWrapper({
   const canClaim =
     isQuestTypeClaimable && isQuestTypeClaimable && canClaimReward
 
+  const shouldShowClaimError =
+    claimError &&
+    !errorIsUserRejected(claimError) &&
+    !errorIsNoAccountConnectedError(claimError)
+
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
@@ -499,7 +511,7 @@ export function RewardWrapper({
           claimNotAvailable: "This reward isn't available to claim right now."
         }}
       />
-      {claimError && !errorIsUserRejected(claimError) ? (
+      {shouldShowClaimError ? (
         <ClaimErrorAlert
           currentChain={account.chain}
           error={claimError}
