@@ -674,3 +674,62 @@ export const TestSwitchToChainNoEIP3085: Story = {
     })
   }
 }
+
+const windowEth2 = new InjectedProviderMock()
+
+export const TestConnectButton: Story = {
+  args: {
+    ...mockProps
+  },
+  decorators: [
+    (Story) => {
+      window.ethereum = windowEth2
+      return <Story />
+    }
+  ],
+  render: (args) => {
+    const { connect } = useConnect()
+    const activeWallet = window.ethereum.address
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        getGameplayWallets={async () => [
+          { id: 1, wallet_address: activeWallet ?? '' }
+        ]}
+        getUserPlayStreak={async (): Promise<UserPlayStreak> => {
+          return {
+            current_playstreak_in_days: 5,
+            completed_counter: 3,
+            accumulated_playtime_today_in_seconds: 1800,
+            last_play_session_completed_datetime: new Date().toISOString()
+          }
+        }}
+        getQuest={async () => {
+          const mockQuestOneApeChainReward: Quest = {
+            ...mockQuest,
+            rewards: mockQuest.rewards?.slice(0, 1)
+          }
+          return mockQuestOneApeChainReward
+        }}
+        openWalletConnectionModal={() => {
+          connect({ connector: injected() })
+        }}
+      />
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const claimButton = await waitFor(async () => {
+      const button = (await canvas.findByRole('button', {
+        name: /Connect/i
+      })) as HTMLButtonElement
+      if (button && !button.disabled) {
+        return button
+      }
+      throw new Error('Claim button is not enabled')
+    })
+    claimButton.click()
+    await waitForAllCTAsToBeEnabled(canvasElement)
+  }
+}
