@@ -20,7 +20,7 @@ export async function checkIsFirstTimeHolder({
   let isFirstTimeHolder = false
   // this prevents the balance call with the 0x0 address
   if (accountAddress === undefined) {
-    return false
+    return { isFirstTimeHolder: false }
   }
 
   // check balance before claim
@@ -30,11 +30,7 @@ export async function checkIsFirstTimeHolder({
         abi: erc20Abi,
         address: contractAddress,
         functionName: 'balanceOf',
-        args: [
-          getAddress(
-            accountAddress ?? '0x0000000000000000000000000000000000000000'
-          )
-        ]
+        args: [getAddress(accountAddress)]
       })
       isFirstTimeHolder = erc20Balance === BigInt(0)
     }
