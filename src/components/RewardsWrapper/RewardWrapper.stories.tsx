@@ -124,7 +124,7 @@ export const LeaderboardQuestEligible: Story = {
     )
     expect(canvas.getByText('+100 MNT')).toBeInTheDocument()
     waitFor(() => {
-      expect(canvas.getByRole('button', { name: 'Claim' })).toBeEnabled()
+      expect(canvas.getByRole('button', { name: 'Connect' })).toBeEnabled()
     })
   }
 }
@@ -167,6 +167,6 @@ export const EligibleButQuestTypeClaimDisabled: Story = {
       canvas.getByLabelText('loading rewards')
     )
     expect(canvas.getByText('+100 MNT')).toBeInTheDocument()
-    expect(canvas.getByRole('button', { name: 'Claim' })).toBeDisabled()
+    expect(canvas.getByRole('button', { name: 'Connect' })).toBeDisabled()
   }
 }
