@@ -21,11 +21,9 @@ import {
   http,
   UserRejectedRequestError
 } from 'viem'
-import { useAccount, useConfig, useConnect, useWatchAsset } from 'wagmi'
-import { injected } from 'wagmi/connectors'
+import { useAccount, useConfig, useWatchAsset } from 'wagmi'
 import styles from './index.module.scss'
 import { useCanClaimReward } from '@/hooks/useCanClaimReward'
-import { useGetUserPlayStreak } from '@/hooks/useGetUserPlayStreak'
 import { switchChain } from '@wagmi/core'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 import { ClaimErrorAlert } from '../ClaimErrorAlert'
@@ -67,7 +65,6 @@ export function RewardWrapper({
   const queryClient = useQueryClient()
   const { t: tOriginal } = useTranslation()
   const account = useAccount()
-  const { connectAsync } = useConnect()
   const config = useConfig()
   const { watchAsset } = useWatchAsset()
 
@@ -92,7 +89,8 @@ export function RewardWrapper({
     getUserPlayStreak,
     onShowMetaMaskPopup,
     getActiveWallet,
-    getListingById
+    getListingById,
+    openWalletConnectionModal
   } = useQuestWrapper()
 
   /**
@@ -139,8 +137,6 @@ export function RewardWrapper({
     enabled: isSignedIn && validActiveWallet
   })
 
-  const { invalidateQuery: invalidateQuestPlayStreakQuery } =
-    useGetUserPlayStreak(questId, getUserPlayStreak)
   // Translation override
   const t = tOverride || tOriginal
 
@@ -225,21 +221,24 @@ export function RewardWrapper({
   // Mutations
   const claimRewardMutation = useMutation({
     mutationFn: async (params: UseGetRewardsData) => {
-      const firstTimeHolderResult = checkIsFirstTimeHolder({
+      const firstTimeHolderResult = await checkIsFirstTimeHolder({
         rewardType: reward.reward_type,
-        accountAddress: getAddress(
-          account.address ?? '0x0000000000000000000000000000000000000000'
-        ),
+        accountAddress: account.address,
         contractAddress: reward.contract_address,
         logError,
         config
       })
 
-      await claimReward(params)
+      const result = await claimReward(params)
 
-      return firstTimeHolderResult
+      return { result, ...firstTimeHolderResult }
     },
-    onSuccess: async ({ isFirstTimeHolder }, reward) => {
+    onSuccess: async ({ result, isFirstTimeHolder }, reward) => {
+      if (result === 'CONNECT_WALLET_CALLED') {
+        // we called the appkit or other wallet onboarding modal so no rewards were claimed
+        return
+      }
+
       trackEvent({
         event: 'Reward Claim Success',
         properties: getClaimEventProperties(reward, questId)
@@ -344,10 +343,10 @@ export function RewardWrapper({
     if (account.address && connectionHasSwitchChain) {
       address = getAddress(account.address)
     } else {
-      onShowMetaMaskPopup?.()
       logInfo('connecting to wallet...')
-      const { accounts } = await connectAsync({ connector: injected() })
-      address = accounts[0]
+      onShowMetaMaskPopup?.()
+      openWalletConnectionModal?.()
+      return 'CONNECT_WALLET_CALLED'
     }
     if (!address) {
       throw Error('no address found when trying to mint')
@@ -436,8 +435,7 @@ export function RewardWrapper({
       case 'ERC1155':
       case 'ERC721':
       case 'ERC20':
-        await mintOnChainReward(reward)
-        break
+        return mintOnChainReward(reward)
       case 'POINTS':
         await claimPoints(reward)
         break
@@ -493,6 +491,13 @@ export function RewardWrapper({
         onClaim={async () => onClaim(reward)}
         hideClaim={hideClaim}
         claimNotAvailable={!canClaim}
+        i18n={{
+          claimsLeft: 'Claims left',
+          viewReward: 'View Reward',
+          claimed: 'Claimed',
+          claim: account.isConnected ? 'Claim' : 'Connect',
+          claimNotAvailable: "This reward isn't available to claim right now."
+        }}
       />
       {claimError && !errorIsUserRejected(claimError) ? (
         <ClaimErrorAlert

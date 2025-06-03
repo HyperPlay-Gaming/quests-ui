@@ -105,4 +105,5 @@ export interface QuestWrapperContextValue {
   onRewardClaimed?: (reward: Reward) => void
   onShowMetaMaskPopup?: () => void
   getListingById?: (projectId: string) => Promise<Listing>
+  openWalletConnectionModal?: () => void
 }

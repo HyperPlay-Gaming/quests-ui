@@ -1,7 +1,7 @@
 import { QuestWrapperContextValue } from '@/types/quests'
 import { Reward } from '@hyperplay/utils'
 import { readContract } from '@wagmi/core'
-import { erc20Abi } from 'viem'
+import { erc20Abi, getAddress } from 'viem'
 import { Config } from 'wagmi'
 
 export async function checkIsFirstTimeHolder({
@@ -12,12 +12,16 @@ export async function checkIsFirstTimeHolder({
   config
 }: {
   rewardType: Reward['reward_type']
-  accountAddress: `0x${string}`
+  accountAddress: `0x${string}` | undefined
   contractAddress: Reward['contract_address']
   logError: QuestWrapperContextValue['logError']
   config: Config
 }) {
   let isFirstTimeHolder = false
+  // this prevents the balance call with the 0x0 address
+  if (accountAddress === undefined) {
+    return false
+  }
 
   // check balance before claim
   try {
@@ -26,7 +30,11 @@ export async function checkIsFirstTimeHolder({
         abi: erc20Abi,
         address: contractAddress,
         functionName: 'balanceOf',
-        args: [accountAddress]
+        args: [
+          getAddress(
+            accountAddress ?? '0x0000000000000000000000000000000000000000'
+          )
+        ]
       })
       isFirstTimeHolder = erc20Balance === BigInt(0)
     }
