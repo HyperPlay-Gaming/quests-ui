@@ -487,6 +487,11 @@ export function RewardWrapper({
   const canClaim =
     isQuestTypeClaimable && isQuestTypeClaimable && canClaimReward
 
+  const shouldShowClaimError =
+    claimError &&
+    !errorIsUserRejected(claimError) &&
+    !errorIsNoAccountConnectedError(claimError)
+
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
@@ -506,9 +511,7 @@ export function RewardWrapper({
           claimNotAvailable: "This reward isn't available to claim right now."
         }}
       />
-      {claimError &&
-      !errorIsUserRejected(claimError) &&
-      !errorIsNoAccountConnectedError(claimError) ? (
+      {shouldShowClaimError ? (
         <ClaimErrorAlert
           currentChain={account.chain}
           error={claimError}
