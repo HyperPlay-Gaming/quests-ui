@@ -228,6 +228,5 @@ export const EligibleButHasExistingSignature: Story = {
     //   expect(canvas.findByRole('button', { name: 'Claim' })).toBeInTheDocument()
     // })
     // expect(canvas.getByRole('button', { name: 'Claim' })).toBeDisabled()
-
   }
 }
