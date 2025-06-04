@@ -20,6 +20,7 @@ import {
   createPublicClient,
   getAddress,
   http,
+  SwitchChainError,
   UserRejectedRequestError
 } from 'viem'
 import { useAccount, useConfig, useWatchAsset } from 'wagmi'
@@ -363,7 +364,9 @@ export function RewardWrapper({
       if (connectionHasSwitchChain) {
         await switchChain(config, { chainId: reward.chain_id })
       } else {
-        throw 'Not on correct chain and cannot switch chain'
+        throw new SwitchChainError(
+          new Error('Connection does not have switch chain')
+        )
       }
     }
 
