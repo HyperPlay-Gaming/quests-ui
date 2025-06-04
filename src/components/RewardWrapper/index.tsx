@@ -442,7 +442,8 @@ export function RewardWrapper({
       case 'ERC1155':
       case 'ERC721':
       case 'ERC20':
-        return mintOnChainReward(reward)
+        await mintOnChainReward(reward)
+        break
       case 'POINTS':
         await claimPoints(reward)
         break
