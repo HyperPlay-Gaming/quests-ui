@@ -342,10 +342,6 @@ export function RewardWrapper({
       throw new NoAccountConnectedError()
     }
 
-    if (!address) {
-      throw Error('no address found when trying to mint')
-    }
-
     /**
      * handles https://github.com/HyperPlay-Gaming/product-management/issues/801
      * Sometimes wagmi does not establish a connection but useAccount returns the address.
@@ -361,7 +357,8 @@ export function RewardWrapper({
       connectionHasSwitchChain = !!currentConnection?.connector.switchChain
     }
 
-    if (currentChain !== undefined && currentChain !== reward.chain_id){
+    const notOnTheRightChain = currentChain !== undefined && currentChain !== reward.chain_id
+    if (notOnTheRightChain){
       if (connectionHasSwitchChain){
         await switchChain(config, { chainId: reward.chain_id })
       } else {
