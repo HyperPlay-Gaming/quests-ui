@@ -2,13 +2,17 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
-import { useAccount } from 'wagmi'
+import { injected, useAccount, useConnect, useDisconnect } from 'wagmi'
 import { within, expect, waitFor, fn } from '@storybook/test'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
-import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
+import {
+  expectAllCTAsToBeDisabled,
+  waitForAllCTAsToBeEnabled,
+  waitForLoadingSpinnerToDisappear
+} from '@/utils/storybook/quest-wrapper'
 import { InjectedProviderMock } from '@/mocks/injectedProvider'
 
 const meta: Meta<typeof QuestDetailsWrapper> = {
@@ -249,9 +253,7 @@ export const QuestPageNotSignedIn: Story = {
       canvas.getByText('Log into HyperPlay to track quest eligibility')
     ).toBeVisible()
     expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
-    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
-      expect(button).toBeDisabled()
-    })
+    await expectAllCTAsToBeDisabled(canvasElement)
   }
 }
 
@@ -267,9 +269,7 @@ export const QuestPageSignedIn: Story = {
     expect(
       canvas.queryByText('Log into HyperPlay to track quest eligibility')
     ).not.toBeInTheDocument()
-    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
-      expect(button).toBeDisabled()
-    })
+    await expectAllCTAsToBeDisabled(canvasElement)
   }
 }
 
@@ -288,9 +288,7 @@ export const QuestPageSignedInNoActiveWallet: Story = {
       )
     ).toBeVisible()
     expect(canvas.getByRole('button', { name: /play/i })).toBeDisabled()
-    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
-      expect(button).toBeDisabled()
-    })
+    await expectAllCTAsToBeDisabled(canvasElement)
   }
 }
 
@@ -313,9 +311,7 @@ export const QuestPageSignedInWithActiveWallet: Story = {
     })
 
     expect(canvas.getByRole('button', { name: /play/i })).toBeEnabled()
-    canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
-      expect(button).toBeDisabled()
-    })
+    await expectAllCTAsToBeDisabled(canvasElement)
   }
 }
 
@@ -340,7 +336,7 @@ export const QuestPageSignedInEligible: Story = {
 
     // await for the claim button to be enabled
     await waitFor(() => {
-      canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
+      canvas.getAllByRole('button', { name: /Connect/i }).forEach((button) => {
         expect(button).toBeEnabled()
       })
     })
@@ -367,13 +363,7 @@ export const QuestPageSignedInEligibleNoActiveWalletRequired: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-
-    // await for the claim button to be enabled
-    await waitFor(() => {
-      canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
-        expect(button).toBeEnabled()
-      })
-    })
+    await waitForAllCTAsToBeEnabled(canvasElement)
   }
 }
 
@@ -407,11 +397,7 @@ export const OverlaySignedInEligible: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForLoadingSpinnerToDisappear(canvas)
-    await waitFor(() => {
-      canvas.getAllByRole('button', { name: /claim/i }).forEach((button) => {
-        expect(button).toBeEnabled()
-      })
-    })
+    await waitForAllCTAsToBeEnabled(canvasElement)
   }
 }
 
@@ -599,7 +585,11 @@ export const TestSwitchToChainNoEIP3085: Story = {
   ],
   render: (args) => {
     const activeWallet = window.ethereum.address
+    const { connect } = useConnect()
     const { address } = useAccount()
+    useEffect(() => {
+      connect({ connector: injected() })
+    }, [])
     return (
       <QuestDetailsWrapper
         {...args}
@@ -682,5 +672,68 @@ export const TestSwitchToChainNoEIP3085: Story = {
         'Please switch to ApeChain within your wallet, or try again with MetaMask.'
       )
     })
+  }
+}
+
+const windowEth2 = new InjectedProviderMock()
+
+export const TestConnectButton: Story = {
+  args: {
+    ...mockProps
+  },
+  decorators: [
+    (Story) => {
+      window.ethereum = windowEth2
+      return <Story />
+    }
+  ],
+  render: (args) => {
+    const { connect } = useConnect()
+    const { disconnect } = useDisconnect()
+    useEffect(() => {
+      disconnect()
+    }, [])
+    const activeWallet = window.ethereum.address
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        getGameplayWallets={async () => [
+          { id: 1, wallet_address: activeWallet ?? '' }
+        ]}
+        getUserPlayStreak={async (): Promise<UserPlayStreak> => {
+          return {
+            current_playstreak_in_days: 5,
+            completed_counter: 3,
+            accumulated_playtime_today_in_seconds: 1800,
+            last_play_session_completed_datetime: new Date().toISOString()
+          }
+        }}
+        getQuest={async () => {
+          const mockQuestOneApeChainReward: Quest = {
+            ...mockQuest,
+            rewards: mockQuest.rewards?.slice(0, 1)
+          }
+          return mockQuestOneApeChainReward
+        }}
+        openWalletConnectionModal={() => {
+          connect({ connector: injected() })
+        }}
+      />
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const claimButton = await waitFor(async () => {
+      const button = (await canvas.findByRole('button', {
+        name: /Connect/i
+      })) as HTMLButtonElement
+      if (button && !button.disabled) {
+        return button
+      }
+      throw new Error('Claim button is not enabled')
+    })
+    claimButton.click()
+    await waitForAllCTAsToBeEnabled(canvasElement)
   }
 }

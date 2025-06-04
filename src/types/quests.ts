@@ -53,6 +53,13 @@ export class NotEnoughGasError extends Error {
   }
 }
 
+export class NoAccountConnectedError extends Error {
+  constructor() {
+    super('No account connected')
+    this.name = 'NoAccountConnectedError'
+  }
+}
+
 export interface QuestWrapperContextValue {
   flags: {
     rewardTypeClaimEnabled: Record<Reward['reward_type'], boolean>
@@ -116,4 +123,5 @@ export interface QuestWrapperContextValue {
     questId: number,
     rewardId: number
   ) => Promise<ExistingSignature | null>
+  openWalletConnectionModal?: () => void
 }
