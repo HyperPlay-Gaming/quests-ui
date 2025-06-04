@@ -5,7 +5,7 @@ import { Quest, UserPlayStreak } from '@hyperplay/utils'
 import { useEffect, useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
-import { injected, useAccount, useConnect } from 'wagmi'
+import { injected, useAccount, useConnect, useDisconnect } from 'wagmi'
 import { within, expect, waitFor, fn } from '@storybook/test'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import {
@@ -689,6 +689,10 @@ export const TestConnectButton: Story = {
   ],
   render: (args) => {
     const { connect } = useConnect()
+    const { disconnect } = useDisconnect()
+    useEffect(() => {
+      disconnect()
+    }, [])
     const activeWallet = window.ethereum.address
     return (
       <QuestDetailsWrapper

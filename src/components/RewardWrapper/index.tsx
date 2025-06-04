@@ -228,6 +228,7 @@ export function RewardWrapper({
         accountAddress: account.address,
         contractAddress: reward.contract_address,
         logError,
+        rewardChainId: reward.chain_id,
         config
       })
 
