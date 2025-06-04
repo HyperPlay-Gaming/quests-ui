@@ -357,9 +357,10 @@ export function RewardWrapper({
       connectionHasSwitchChain = !!currentConnection?.connector.switchChain
     }
 
-    const notOnTheRightChain = currentChain !== undefined && currentChain !== reward.chain_id
-    if (notOnTheRightChain){
-      if (connectionHasSwitchChain){
+    const notOnTheRightChain =
+      currentChain !== undefined && currentChain !== reward.chain_id
+    if (notOnTheRightChain) {
+      if (connectionHasSwitchChain) {
         await switchChain(config, { chainId: reward.chain_id })
       } else {
         throw 'Not on correct chain and cannot switch chain'
