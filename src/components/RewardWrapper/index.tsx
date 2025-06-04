@@ -35,6 +35,8 @@ import {
 } from '@/helpers/claimErrors'
 import { useGetListingByProjectId } from '@/hooks/useGetListingById'
 import { checkIsFirstTimeHolder } from '@/helpers/checkIsFirstTimeHolder'
+import { useGetExistingSignature } from '@/hooks/useGetExistingSignature'
+import { ExistingSignatureError } from '../ExistingSignatureError'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -105,6 +107,16 @@ export function RewardWrapper({
     projectId ?? null,
     getListingById
   )
+
+  const {
+    data: existingSignature,
+    isLoading: isExistingSignatureLoading,
+    invalidate: invalidateExistingSignature
+  } = useGetExistingSignature({
+    questId,
+    rewardId: reward.id
+  })
+
   const gameName = listingData.data?.project_meta?.name
 
   const [claimError, setClaimError] = useState<Error | WarningError | null>(
@@ -204,6 +216,7 @@ export function RewardWrapper({
 
   const postClaimRewardInvalidation = async (reward: UseGetRewardsData) => {
     await invalidateCanClaimQuery(questMeta.id)
+    await invalidateExistingSignature()
 
     if (questId !== null) {
       await queryClient.invalidateQueries({
@@ -479,15 +492,34 @@ export function RewardWrapper({
     networkName = chainMap[reward.chain_id.toString()].chain?.name ?? ''
   }
 
+  const isLoading =
+    isExistingSignatureLoading ||
+    claimRewardMutation.isPending ||
+    isCanClaimLoading
+
+  let shouldShowExistingSignatureError = false
+
+  if (
+    existingSignature &&
+    account.address &&
+    existingSignature.gameplayWallet.walletAddress.toLowerCase() !==
+      account.address.toLowerCase()
+  ) {
+    shouldShowExistingSignatureError = true
+  }
+
   const canClaim =
-    isQuestTypeClaimable && isQuestTypeClaimable && canClaimReward
+    isQuestTypeClaimable &&
+    isQuestTypeClaimable &&
+    canClaimReward &&
+    !shouldShowExistingSignatureError
 
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
         reward={{
           ...reward,
-          claimPending: claimRewardMutation.isPending || isCanClaimLoading
+          claimPending: isLoading
         }}
         key={reward.title}
         onClaim={async () => onClaim(reward)}
@@ -502,6 +534,13 @@ export function RewardWrapper({
           onOpenDiscordLink={openDiscordLink}
           gameName={gameName}
           maxNumOfClaims={reward.num_claims_per_device}
+        />
+      ) : null}
+      {shouldShowExistingSignatureError && existingSignature ? (
+        <ExistingSignatureError
+          existingSignatureAddress={
+            existingSignature.gameplayWallet.walletAddress
+          }
         />
       ) : null}
     </div>

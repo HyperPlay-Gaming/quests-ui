@@ -14,6 +14,13 @@ import { TFunction } from 'i18next'
 import { TrackEventFn } from './analytics'
 import { Listing } from '@valist/sdk/dist/typesApi'
 
+export type ExistingSignature = {
+  signature: string
+  gameplayWallet: {
+    walletAddress: string
+  }
+}
+
 export type UseGetRewardsData = QuestReward & Reward
 
 export type ExternalEligibilityWithQuestId = ExternalEligibility & {
@@ -105,4 +112,8 @@ export interface QuestWrapperContextValue {
   onRewardClaimed?: (reward: Reward) => void
   onShowMetaMaskPopup?: () => void
   getListingById?: (projectId: string) => Promise<Listing>
+  getExistingSignature: (
+    questId: number,
+    rewardId: number
+  ) => Promise<ExistingSignature | null>
 }

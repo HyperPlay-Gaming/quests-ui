@@ -203,6 +203,9 @@ export const defaultQuestWrapperProps: QuestDetailsWrapperProps = {
       console.error('Error getting active wallet signature', error)
       throw error
     }
+  },
+  getExistingSignature: async () => {
+    return null
   }
 }
 

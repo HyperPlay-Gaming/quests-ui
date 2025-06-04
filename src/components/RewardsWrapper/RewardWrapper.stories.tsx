@@ -170,3 +170,52 @@ export const EligibleButQuestTypeClaimDisabled: Story = {
     expect(canvas.getByRole('button', { name: 'Claim' })).toBeDisabled()
   }
 }
+
+export const EligibleButHasExistingSignature: Story = {
+  decorators: [
+    createQuestWrapperDecorator({
+      flags: {
+        ...defaultQuestWrapperProps.flags,
+        questTypeClaimable: {
+          LEADERBOARD: false,
+          PLAYSTREAK: true,
+          'REPUTATIONAL-AIRDROP': true
+        }
+      },
+      getExternalEligibility: async () => {
+        return {
+          walletOrEmail: '0x123',
+          amount: '100000000000000000000',
+          questId: mockQuest.id
+        }
+      },
+      getActiveWallet: async () => {
+        return '0x123'
+      },
+      getQuest: async () => {
+        return {
+          ...mockQuest,
+          status: 'CLAIMABLE',
+          type: 'LEADERBOARD',
+          rewards: mockReward
+        }
+      },
+      getExistingSignature: async () => {
+        return {
+          signature: '0x123',
+          gameplayWallet: {
+            walletAddress: '0xD5aC06EFef1416447318784B6f4E78BB9f05d667'
+          }
+        }
+      }
+    })
+  ],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForElementToBeRemoved(() =>
+      canvas.getByLabelText('loading rewards')
+    )
+    expect(canvas.getByText('+100 MNT')).toBeInTheDocument()
+    expect(canvas.getByRole('button', { name: 'Claim' })).toBeDisabled()
+  }
+}

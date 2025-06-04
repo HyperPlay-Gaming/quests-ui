@@ -7,6 +7,7 @@ export const getQuestQueryKeyPrefix = 'getQuest'
 export const syncPlaysessionQueryKeyPrefix = 'syncPlaysession'
 export const getQuestLogInfoQueryKeyPrefix = 'getQuestLogInfo'
 export const getListingByIdQueryKeyPrefix = 'getListing'
+export const getExistingSignatureQueryKeyPrefix = 'existingSignature'
 
 export function getGetQuestQueryKey(questId: number | null) {
   return [getQuestQueryKeyPrefix, questId]
@@ -34,6 +35,13 @@ export function getCanClaimRewardQueryKey(questId: number | null) {
 
 export function getGetListingByIdQueryKey(projectId: string | null) {
   return [getListingByIdQueryKeyPrefix, projectId]
+}
+
+export function getGetExistingSignatureQueryKey(
+  questId: number | null,
+  rewardId: number
+) {
+  return [getExistingSignatureQueryKeyPrefix, questId, rewardId]
 }
 
 // make ts force us to add a new query key when a new quest type is added
