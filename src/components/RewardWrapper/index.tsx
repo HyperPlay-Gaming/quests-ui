@@ -499,27 +499,23 @@ export function RewardWrapper({
     networkName = chainMap[reward.chain_id.toString()].chain?.name ?? ''
   }
 
-  const isLoading =
-    isExistingSignatureLoading ||
-    claimRewardMutation.isPending ||
-    isCanClaimLoading
-
-  let shouldShowExistingSignatureError = false
+  let hasPendingSignature = false
 
   if (
+    !isExistingSignatureLoading &&
     existingSignature &&
     account.address &&
     existingSignature.gameplayWallet.walletAddress.toLowerCase() !==
       account.address.toLowerCase()
   ) {
-    shouldShowExistingSignatureError = true
+    hasPendingSignature = true
   }
 
   const canClaim =
     isQuestTypeClaimable &&
     isQuestTypeClaimable &&
     canClaimReward &&
-    !shouldShowExistingSignatureError
+    !hasPendingSignature
 
   const shouldShowClaimError =
     claimError &&
@@ -531,7 +527,7 @@ export function RewardWrapper({
       <RewardUi
         reward={{
           ...reward,
-          claimPending: isLoading
+          claimPending: claimRewardMutation.isPending || isCanClaimLoading
         }}
         key={reward.title}
         onClaim={async () => onClaim(reward)}
@@ -555,7 +551,7 @@ export function RewardWrapper({
           maxNumOfClaims={reward.num_claims_per_device}
         />
       ) : null}
-      {shouldShowExistingSignatureError && existingSignature ? (
+      {hasPendingSignature && existingSignature ? (
         <ExistingSignatureError
           existingSignatureAddress={
             existingSignature.gameplayWallet.walletAddress
