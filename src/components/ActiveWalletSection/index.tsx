@@ -12,8 +12,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { useGetActiveWallet } from '@/hooks/useGetActiveWallet'
 import {
   canClaimRewardQueryKeyPrefix,
-  eligibilityQueryKeyPrefixes,
-  getExistingSignatureQueryKeyPrefix
+  eligibilityQueryKeyPrefixes
 } from '@/helpers/getQueryKeys'
 import { getAddress } from 'viem'
 
@@ -131,8 +130,7 @@ export default function ActiveWalletSection() {
         Object.values(eligibilityQueryKeyPrefixes).includes(
           query.queryKey[0] as string
         ) ||
-        query.queryKey[0] === canClaimRewardQueryKeyPrefix ||
-        query.queryKey[0] === getExistingSignatureQueryKeyPrefix
+        query.queryKey[0] === canClaimRewardQueryKeyPrefix
     })
   }
 
