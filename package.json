@@ -1,6 +1,6 @@
 {
   "name": "@hyperplay/quests-ui",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -35,8 +35,8 @@
     "@hyperplay/utils": "0.3.16",
     "@mantine/core": "^7.12.0",
     "@mantine/hooks": "^7.12.0",
-    "@reown/appkit": "^1.6.2",
-    "@reown/appkit-adapter-wagmi": "^1.6.2",
+    "@reown/appkit": "^1.7.8",
+    "@reown/appkit-adapter-wagmi": "^1.7.8",
     "@storybook/addon-essentials": "^8.3.4",
     "@storybook/addon-interactions": "^8.3.4",
     "@storybook/addon-links": "^8.3.4",
@@ -103,7 +103,7 @@
     "wagmi": "^2.14.12"
   },
   "dependencies": {
-    "@valist/sdk": "^2.10.5",
+    "@valist/sdk": "^2.10.14",
     "classnames": "^2.5.1"
   },
   "eslintConfig": {
@@ -111,5 +111,10 @@
       "plugin:storybook/recommended"
     ]
   },
-  "packageManager": "pnpm@9.14.4+sha256.26a726b633b629a3fabda006f696ae4260954a3632c8054112d7ae89779e5f9a"
+  "packageManager": "pnpm@9.14.4+sha256.26a726b633b629a3fabda006f696ae4260954a3632c8054112d7ae89779e5f9a",
+  "pnpm": {
+    "patchedDependencies": {
+      "@reown/appkit-common": "patches/@reown__appkit-common.patch"
+    }
+  }
 }
