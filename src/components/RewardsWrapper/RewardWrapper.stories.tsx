@@ -179,7 +179,6 @@ const windowEth = new InjectedProviderMock()
 export const EligibleButHasExistingSignature: Story = {
   decorators: [
     (Story) => {
-      // @ts-expect-error - window.ethereum is not typed
       window.ethereum = windowEth
       return <Story />
     },
