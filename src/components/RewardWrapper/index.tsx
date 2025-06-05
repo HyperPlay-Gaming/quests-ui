@@ -370,8 +370,7 @@ export function RewardWrapper({
 
     if (
       existingSignature &&
-      existingSignature.gameplayWallet.walletAddress.toLowerCase() !==
-        address.toLowerCase()
+      existingSignature.wallet.toLowerCase() !== address.toLowerCase()
     ) {
       throw new ExistingSignatureError(existingSignature)
     }

@@ -213,9 +213,7 @@ export const EligibleButHasExistingSignature: Story = {
       getExistingSignature: async () => {
         return {
           signature: '0x123',
-          gameplayWallet: {
-            walletAddress: '0xD5aC06EFef1416447318784B6f4E78BB9f05d667'
-          }
+          wallet: '0xD5aC06EFef1416447318784B6f4E78BB9f05d667'
         }
       }
     })

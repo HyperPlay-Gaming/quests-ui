@@ -56,9 +56,7 @@ export const ClaimErrorAlert = ({
   if (error instanceof ExistingSignatureError) {
     return (
       <ExistingSignatureErrorAlert
-        existingSignatureAddress={
-          error.existingSignature.gameplayWallet.walletAddress
-        }
+        existingSignatureAddress={error.existingSignature.wallet}
       />
     )
   }

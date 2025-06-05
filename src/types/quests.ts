@@ -16,9 +16,7 @@ import { Listing } from '@valist/sdk/dist/typesApi'
 
 export type ExistingSignature = {
   signature: string
-  gameplayWallet: {
-    walletAddress: string
-  }
+  wallet: string
 }
 
 export type UseGetRewardsData = QuestReward & Reward
