@@ -14,6 +14,8 @@ import {
   waitFor
 } from '@storybook/test'
 import { InjectedProviderMock } from '@/mocks/injectedProvider'
+import { injected, useConnect } from 'wagmi'
+import { useEffect } from 'react'
 
 const mockReward: Quest['rewards'] = [
   {
@@ -218,15 +220,25 @@ export const EligibleButHasExistingSignature: Story = {
       }
     })
   ],
+  render: (args) => {
+    const { connect } = useConnect()
+    useEffect(() => {
+      connect({ connector: injected() })
+    }, [])
+    return (
+      <div style={{ padding: '20px', background: 'black', borderRadius: 8 }}>
+        <RewardsWrapper {...args} />
+      </div>
+    )
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await waitForElementToBeRemoved(() =>
       canvas.getByLabelText('loading rewards')
     )
-    // TODO: fix this
-    // await waitFor(() => {
-    //   expect(canvas.findByRole('button', { name: 'Claim' })).toBeInTheDocument()
-    // })
-    // expect(canvas.getByRole('button', { name: 'Claim' })).toBeDisabled()
+    await waitFor(() => {
+      expect(canvas.getByText(/Wrong Wallet\. Switch to/)).toBeInTheDocument()
+    })
+    expect(canvas.getByRole('button', { name: 'Claim' })).toBeDisabled()
   }
 }
