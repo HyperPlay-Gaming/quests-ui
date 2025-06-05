@@ -111,5 +111,10 @@
       "plugin:storybook/recommended"
     ]
   },
-  "packageManager": "pnpm@9.14.4+sha256.26a726b633b629a3fabda006f696ae4260954a3632c8054112d7ae89779e5f9a"
+  "packageManager": "pnpm@9.14.4+sha256.26a726b633b629a3fabda006f696ae4260954a3632c8054112d7ae89779e5f9a",
+  "pnpm": {
+    "patchedDependencies": {
+      "@reown/appkit-common": "patches/@reown__appkit-common.patch"
+    }
+  }
 }
