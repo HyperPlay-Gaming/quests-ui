@@ -98,9 +98,9 @@ export function RewardWrapper({
   } = useQuestWrapper()
 
   /**
-   * @dev We don’t handle loading here, so if the hook is still fetching, the claim‑exceeded message may briefly omit game details.
+   * @dev We don't handle loading here, so if the hook is still fetching, the claim‑exceeded message may briefly omit game details.
    * To prevent this, we pass external claims into useGetRewards to keep the rewards section in its loading state until all data (eligibility, etc.) arrives.
-   * This is low risk since the message only appears after the user clicks “claim.”
+   * This is low risk since the message only appears after the user clicks "claim."
    */
   const projectId = questMeta.project_id
   const { data: listingData } = useGetListingByProjectId(
@@ -237,11 +237,11 @@ export function RewardWrapper({
   const claimRewardMutation = useMutation({
     mutationFn: async (params: UseGetRewardsData) => {
       const firstTimeHolderResult = await checkIsFirstTimeHolder({
-        rewardType: reward.reward_type,
+        rewardType: params.reward_type,
         accountAddress: account.address,
-        contractAddress: reward.contract_address,
+        contractAddress: params.contract_address,
         logError,
-        rewardChainId: reward.chain_id,
+        rewardChainId: params.chain_id,
         config
       })
 
@@ -502,7 +502,6 @@ export function RewardWrapper({
   let hasPendingSignature = false
 
   if (
-    !isExistingSignatureLoading &&
     existingSignature &&
     account.address &&
     existingSignature.gameplayWallet.walletAddress.toLowerCase() !==
@@ -513,8 +512,9 @@ export function RewardWrapper({
 
   const canClaim =
     isQuestTypeClaimable &&
-    isQuestTypeClaimable &&
+    isRewardTypeClaimable &&
     canClaimReward &&
+    !isExistingSignatureLoading &&
     !hasPendingSignature
 
   const shouldShowClaimError =
