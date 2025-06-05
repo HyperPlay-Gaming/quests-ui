@@ -163,6 +163,9 @@ const mockProps: QuestDetailsWrapperProps = {
       message: '0',
       signature: '0'
     }
+  },
+  getExistingSignature: async () => {
+    return null
   }
 }
 

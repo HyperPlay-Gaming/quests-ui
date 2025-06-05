@@ -11,8 +11,12 @@ import {
   within,
   expect,
   waitForElementToBeRemoved,
-  waitFor
+  waitFor,
+  userEvent
 } from '@storybook/test'
+import { InjectedProviderMock } from '@/mocks/injectedProvider'
+import { injected, useConnect } from 'wagmi'
+import { useEffect } from 'react'
 
 const mockReward: Quest['rewards'] = [
   {
@@ -168,5 +172,74 @@ export const EligibleButQuestTypeClaimDisabled: Story = {
     )
     expect(canvas.getByText('+100 MNT')).toBeInTheDocument()
     expect(canvas.getByRole('button', { name: 'Connect' })).toBeDisabled()
+  }
+}
+
+const windowEth = new InjectedProviderMock()
+
+export const EligibleButHasExistingSignature: Story = {
+  decorators: [
+    (Story) => {
+      window.ethereum = windowEth
+      return <Story />
+    },
+    createQuestWrapperDecorator({
+      flags: {
+        ...defaultQuestWrapperProps.flags,
+        questTypeClaimable: {
+          LEADERBOARD: true,
+          PLAYSTREAK: true,
+          'REPUTATIONAL-AIRDROP': true
+        }
+      },
+      getExternalEligibility: async () => {
+        return {
+          walletOrEmail: '0x123',
+          amount: '100000000000000000000',
+          questId: mockQuest.id
+        }
+      },
+      getActiveWallet: async () => {
+        return '0x123'
+      },
+      getQuest: async () => {
+        return {
+          ...mockQuest,
+          status: 'CLAIMABLE',
+          type: 'LEADERBOARD',
+          rewards: mockReward
+        }
+      },
+      getExistingSignature: async () => {
+        return {
+          signature: '0x123',
+          wallet: '0xD5aC06EFef1416447318784B6f4E78BB9f05d667'
+        }
+      }
+    })
+  ],
+  render: (args) => {
+    const { connect } = useConnect()
+    useEffect(() => {
+      connect({ connector: injected() })
+    }, [])
+    return (
+      <div style={{ padding: '20px', background: 'black', borderRadius: 8 }}>
+        <RewardsWrapper {...args} />
+      </div>
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await waitForElementToBeRemoved(() =>
+      canvas.getByLabelText('loading rewards')
+    )
+    await waitFor(() => {
+      expect(canvas.getByRole('button', { name: 'Claim' })).toBeEnabled()
+    })
+    userEvent.click(canvas.getByRole('button', { name: 'Claim' }))
+    await waitFor(() => {
+      expect(canvas.getByText(/Wrong Wallet\. Switch to/)).toBeInTheDocument()
+    })
   }
 }
