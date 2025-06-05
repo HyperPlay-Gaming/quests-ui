@@ -11,7 +11,8 @@ import {
   within,
   expect,
   waitForElementToBeRemoved,
-  waitFor
+  waitFor,
+  userEvent
 } from '@storybook/test'
 import { InjectedProviderMock } from '@/mocks/injectedProvider'
 import { injected, useConnect } from 'wagmi'
@@ -186,7 +187,7 @@ export const EligibleButHasExistingSignature: Story = {
       flags: {
         ...defaultQuestWrapperProps.flags,
         questTypeClaimable: {
-          LEADERBOARD: false,
+          LEADERBOARD: true,
           PLAYSTREAK: true,
           'REPUTATIONAL-AIRDROP': true
         }
@@ -236,8 +237,11 @@ export const EligibleButHasExistingSignature: Story = {
       canvas.getByLabelText('loading rewards')
     )
     await waitFor(() => {
+      expect(canvas.getByRole('button', { name: 'Claim' })).toBeEnabled()
+    })
+    userEvent.click(canvas.getByRole('button', { name: 'Claim' }))
+    await waitFor(() => {
       expect(canvas.getByText(/Wrong Wallet\. Switch to/)).toBeInTheDocument()
     })
-    expect(canvas.getByRole('button', { name: 'Claim' })).toBeDisabled()
   }
 }

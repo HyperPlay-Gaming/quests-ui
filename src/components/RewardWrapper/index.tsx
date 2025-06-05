@@ -6,7 +6,8 @@ import {
   NotEnoughGasError,
   UseGetRewardsData,
   NoAccountConnectedError,
-  WarningError
+  WarningError,
+  ExistingSignatureError
 } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { Reward as RewardUi } from '@hyperplay/ui'
@@ -35,8 +36,6 @@ import {
 } from '@/helpers/claimErrors'
 import { useGetListingByProjectId } from '@/hooks/useGetListingById'
 import { checkIsFirstTimeHolder } from '@/helpers/checkIsFirstTimeHolder'
-import { useGetExistingSignature } from '@/hooks/useGetExistingSignature'
-import { ExistingSignatureError } from '../ExistingSignatureError'
 
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -94,7 +93,8 @@ export function RewardWrapper({
     onShowMetaMaskPopup,
     getActiveWallet,
     getListingById,
-    openWalletConnectionModal
+    openWalletConnectionModal,
+    getExistingSignature
   } = useQuestWrapper()
 
   /**
@@ -107,15 +107,6 @@ export function RewardWrapper({
     projectId ?? null,
     getListingById
   )
-
-  const {
-    data: existingSignature,
-    isLoading: isExistingSignatureLoading,
-    invalidate: invalidateExistingSignature
-  } = useGetExistingSignature({
-    questId,
-    rewardId: reward.id
-  })
 
   const gameName = listingData.data?.project_meta?.name
 
@@ -214,7 +205,6 @@ export function RewardWrapper({
 
   const postClaimRewardInvalidation = async (reward: UseGetRewardsData) => {
     await invalidateCanClaimQuery(questMeta.id)
-    await invalidateExistingSignature()
 
     if (questId !== null) {
       await queryClient.invalidateQueries({
@@ -373,6 +363,19 @@ export function RewardWrapper({
       throw Error('no address found when trying to mint')
     }
 
+    const existingSignature = await getExistingSignature(
+      questMeta.id,
+      reward.id
+    )
+
+    if (
+      existingSignature &&
+      existingSignature.gameplayWallet.walletAddress.toLowerCase() !==
+        address.toLowerCase()
+    ) {
+      throw new ExistingSignatureError(existingSignature)
+    }
+
     await switchChain(config, { chainId: reward.chain_id })
 
     const gasNeeded = await getRewardClaimGasEstimation(reward, logInfo)
@@ -499,23 +502,8 @@ export function RewardWrapper({
     networkName = chainMap[reward.chain_id.toString()].chain?.name ?? ''
   }
 
-  let hasPendingSignature = false
-
-  if (
-    existingSignature &&
-    account.address &&
-    existingSignature.gameplayWallet.walletAddress.toLowerCase() !==
-      account.address.toLowerCase()
-  ) {
-    hasPendingSignature = true
-  }
-
   const canClaim =
-    isQuestTypeClaimable &&
-    isRewardTypeClaimable &&
-    canClaimReward &&
-    !isExistingSignatureLoading &&
-    !hasPendingSignature
+    isQuestTypeClaimable && isRewardTypeClaimable && canClaimReward
 
   const shouldShowClaimError =
     claimError &&
@@ -549,13 +537,6 @@ export function RewardWrapper({
           onOpenDiscordLink={openDiscordLink}
           gameName={gameName}
           maxNumOfClaims={reward.num_claims_per_device}
-        />
-      ) : null}
-      {hasPendingSignature && existingSignature ? (
-        <ExistingSignatureError
-          existingSignatureAddress={
-            existingSignature.gameplayWallet.walletAddress
-          }
         />
       ) : null}
     </div>

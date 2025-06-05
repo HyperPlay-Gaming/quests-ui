@@ -46,6 +46,13 @@ export class WarningError extends Error {
   }
 }
 
+export class ExistingSignatureError extends Error {
+  constructor(public existingSignature: ExistingSignature) {
+    super('Existing signature found for different wallet')
+    this.name = 'ExistingSignatureError'
+  }
+}
+
 export class NotEnoughGasError extends Error {
   constructor() {
     super('Not enough balance')

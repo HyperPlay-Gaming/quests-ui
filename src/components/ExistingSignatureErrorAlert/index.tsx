@@ -7,7 +7,7 @@ const formatMessage = (existingSignature: string) => {
   return `${address.slice(0, 4)}...${address.slice(-4)}`
 }
 
-export function ExistingSignatureError({
+export function ExistingSignatureErrorAlert({
   existingSignatureAddress
 }: {
   existingSignatureAddress: string
