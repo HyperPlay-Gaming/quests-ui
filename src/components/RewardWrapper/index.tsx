@@ -237,11 +237,11 @@ export function RewardWrapper({
   const claimRewardMutation = useMutation({
     mutationFn: async (params: UseGetRewardsData) => {
       const firstTimeHolderResult = await checkIsFirstTimeHolder({
-        rewardType: params.reward_type,
+        rewardType: reward.reward_type,
         accountAddress: account.address,
-        contractAddress: params.contract_address,
+        contractAddress: reward.contract_address,
         logError,
-        rewardChainId: params.chain_id,
+        rewardChainId: reward.chain_id,
         config
       })
 
