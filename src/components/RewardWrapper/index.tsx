@@ -262,6 +262,15 @@ export function RewardWrapper({
     onError: (error) => {
       setClaimError(error)
 
+      if (error instanceof ExistingSignatureError) {
+        logInfo(`Existing signature found for different wallet: ${error}`)
+        trackEvent({
+          event: 'Existing signature found for different wallet',
+          properties: getClaimEventProperties(reward, questId)
+        })
+        return
+      }
+
       if (error instanceof NoAccountConnectedError) {
         // we called the appkit or other wallet onboarding modal so no rewards were claimed
         logInfo('No account connected, requesting user to connect wallet')
