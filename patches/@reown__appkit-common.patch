@@ -1,0 +1,13 @@
+diff --git a/dist/esm/src/utils/DateUtil.js b/dist/esm/src/utils/DateUtil.js
+index 9d0b963abac603eeb50f68e1448157f12022b791..d542438739f608c7f32b64366beec943575197d4 100644
+--- a/dist/esm/src/utils/DateUtil.js
++++ b/dist/esm/src/utils/DateUtil.js
+@@ -37,7 +37,7 @@ const MONTH_NAMES = [
+     'November',
+     'December'
+ ];
+-dayjs.locale('en-web3-modal', localeObject);
++// dayjs.locale('en-web3-modal', localeObject);
+ export const DateUtil = {
+     getMonthNameByIndex(monthIndex) {
+         return MONTH_NAMES[monthIndex];
