@@ -20,6 +20,7 @@ import {
   createPublicClient,
   getAddress,
   http,
+  SwitchChainError,
   UserRejectedRequestError
 } from 'viem'
 import { useAccount, useConfig, useWatchAsset } from 'wagmi'
@@ -334,20 +335,7 @@ export function RewardWrapper({
 
     let address: `0x${string}` | undefined
 
-    /**
-     * handles https://github.com/HyperPlay-Gaming/product-management/issues/801
-     * Sometimes wagmi does not establish a connection but useAccount returns the address.
-     * We need to check that the switch chain method exists before proceeding with claiming.
-     */
-    let connectionHasSwitchChain = false
-    if (config.state.current) {
-      const currentConnection = config.state.connections.get(
-        config.state.current
-      )
-      connectionHasSwitchChain = !!currentConnection?.connector.switchChain
-    }
-
-    if (account.address && connectionHasSwitchChain) {
+    if (account.address) {
       address = getAddress(account.address)
     } else {
       logInfo('connecting to wallet...')
@@ -356,11 +344,32 @@ export function RewardWrapper({
       throw new NoAccountConnectedError()
     }
 
-    if (!address) {
-      throw Error('no address found when trying to mint')
+    /**
+     * handles https://github.com/HyperPlay-Gaming/product-management/issues/801
+     * Sometimes wagmi does not establish a connection but useAccount returns the address.
+     * We need to check that the switch chain method exists before proceeding with claiming.
+     */
+    let connectionHasSwitchChain = false
+    let currentChain = undefined
+    if (config.state.current) {
+      const currentConnection = config.state.connections.get(
+        config.state.current
+      )
+      currentChain = currentConnection?.chainId
+      connectionHasSwitchChain = !!currentConnection?.connector.switchChain
     }
 
-    await switchChain(config, { chainId: reward.chain_id })
+    const notOnTheRightChain =
+      currentChain !== undefined && currentChain !== reward.chain_id
+    if (notOnTheRightChain) {
+      if (connectionHasSwitchChain) {
+        await switchChain(config, { chainId: reward.chain_id })
+      } else {
+        throw new SwitchChainError(
+          new Error('Connection does not have switch chain')
+        )
+      }
+    }
 
     const gasNeeded = await getRewardClaimGasEstimation(reward, logInfo)
     const chainMetadata = chainMap[reward.chain_id]
