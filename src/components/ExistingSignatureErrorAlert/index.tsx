@@ -1,11 +1,7 @@
 import { AlertCard, Images } from '@hyperplay/ui'
 import { getAddress } from 'viem'
 import { useTranslation } from 'react-i18next'
-
-const formatMessage = (existingSignature: string) => {
-  const address = getAddress(existingSignature)
-  return `${address.slice(0, 4)}...${address.slice(-4)}`
-}
+import { truncateEthAddress } from '../truncateAddress'
 
 export function ExistingSignatureErrorAlert({
   existingSignatureAddress
@@ -20,7 +16,7 @@ export function ExistingSignatureErrorAlert({
       title={t(
         'quest.existingSignatureErrorTitle',
         'Wrong Wallet. Switch to {{address}}',
-        { address: formatMessage(existingSignatureAddress) }
+        { address: truncateEthAddress(getAddress(existingSignatureAddress)) }
       )}
       message={t(
         'quest.existingSignatureErrorMessage',
