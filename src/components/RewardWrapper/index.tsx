@@ -356,6 +356,18 @@ export function RewardWrapper({
       throw new NoAccountConnectedError()
     }
 
+    const existingSignature = await getExistingSignature(
+      questMeta.id,
+      reward.id
+    )
+
+    if (
+      existingSignature &&
+      existingSignature.wallet.toLowerCase() !== address.toLowerCase()
+    ) {
+      throw new ExistingSignatureError(existingSignature)
+    }
+
     /**
      * handles https://github.com/HyperPlay-Gaming/product-management/issues/801
      * Sometimes wagmi does not establish a connection but useAccount returns the address.
@@ -381,18 +393,6 @@ export function RewardWrapper({
           new Error('Connection does not have switch chain')
         )
       }
-    }
-
-    const existingSignature = await getExistingSignature(
-      questMeta.id,
-      reward.id
-    )
-
-    if (
-      existingSignature &&
-      existingSignature.wallet.toLowerCase() !== address.toLowerCase()
-    ) {
-      throw new ExistingSignatureError(existingSignature)
     }
 
     await switchChain(config, { chainId: reward.chain_id })
