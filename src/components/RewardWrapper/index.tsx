@@ -517,16 +517,13 @@ export function RewardWrapper({
   }, [questId])
 
   useEffect(() => {
-    if (
-      claimRewardMutation.error &&
-      isExistingSignatureError(claimRewardMutation.error)
-    ) {
-      const matchingWallet = claimRewardMutation.error.existingSignature.wallet
+    if (claimError && isExistingSignatureError(claimError)) {
+      const matchingWallet = claimError.existingSignature.wallet
       if (matchingWallet.toLowerCase() === account.address?.toLowerCase()) {
         setClaimError(null)
       }
     }
-  }, [account, claimRewardMutation.error])
+  }, [account, claimError])
 
   let networkName = 'Unknown Chain'
 
