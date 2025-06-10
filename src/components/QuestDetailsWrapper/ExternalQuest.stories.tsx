@@ -32,7 +32,7 @@ const mockQuest: Quest = {
       image_url: '/images/mantle-icon.png',
       token_ids: [],
       numClaimsLeft: '2357',
-      amount_per_user: 2000000000000000000000,
+      amount_per_user: '2000000000000000000000',
       chain_id: 5000,
       reward_type: 'ERC20',
       marketplace_url: 'https://test.com',

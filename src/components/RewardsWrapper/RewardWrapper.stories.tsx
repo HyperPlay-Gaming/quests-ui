@@ -1,4 +1,4 @@
-import { Meta, StoryFn, StoryContext, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
 import { RewardsWrapper } from './'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import {
@@ -27,7 +27,7 @@ const mockReward: Quest['rewards'] = [
     image_url: '/images/mantle-icon.png',
     token_ids: [],
     numClaimsLeft: '1000',
-    amount_per_user: 200000000000000000000000,
+    amount_per_user: '200000000000000000000000',
     chain_id: 5000,
     reward_type: 'ERC20',
     marketplace_url: 'https://hyperplay.xyz',
@@ -40,7 +40,7 @@ const meta: Meta<typeof RewardsWrapper> = {
   component: RewardsWrapper,
   decorators: [
     createQueryClientDecorator,
-    (Story: StoryFn, context: StoryContext) => {
+    (Story, context) => {
       return (
         <div style={{ padding: '20px', background: 'black', borderRadius: 8 }}>
           <Story {...context.args} />
