@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { injected, useAccount, useConnect, useDisconnect } from 'wagmi'
-import { within, expect, waitFor, fn } from '@storybook/test'
+import { within, expect, waitFor, fn } from 'storybook/test'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import {
   expectAllCTAsToBeDisabled,

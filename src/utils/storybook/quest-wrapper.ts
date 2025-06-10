@@ -3,7 +3,7 @@ import {
   waitForElementToBeRemoved,
   within,
   expect
-} from '@storybook/test'
+} from 'storybook/test'
 
 export async function waitForLoadingSpinnerToDisappear(
   canvas: ReturnType<typeof within>

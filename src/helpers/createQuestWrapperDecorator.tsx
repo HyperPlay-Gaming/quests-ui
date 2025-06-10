@@ -2,7 +2,7 @@ import { QuestDetailsWrapperProps } from '@/components/QuestDetailsWrapper'
 import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { QuestWrapperContextValue } from '@/types/quests'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
-import { Decorator } from '@storybook/react'
+import { Decorator } from '@storybook/react-vite'
 import { BrowserProvider } from 'ethers'
 import { SiweMessage, generateNonce } from 'siwe'
 

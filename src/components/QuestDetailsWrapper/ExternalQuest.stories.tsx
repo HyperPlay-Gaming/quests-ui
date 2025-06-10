@@ -1,11 +1,11 @@
 import { Quest } from '@hyperplay/utils'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import styles from './story-styles.module.scss'
 import dayjs from 'dayjs'
 import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
-import { within, expect, waitFor } from '@storybook/test'
+import { within, expect, waitFor } from 'storybook/test'
 
 const mockQuest: Quest = {
   id: 1,

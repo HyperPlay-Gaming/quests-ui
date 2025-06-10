@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react-vite'
 import { RewardsWrapper } from './'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import {
@@ -13,7 +13,7 @@ import {
   waitForElementToBeRemoved,
   waitFor,
   userEvent
-} from '@storybook/test'
+} from 'storybook/test'
 import { InjectedProviderMock } from '@/mocks/injectedProvider'
 import { injected, useConnect } from 'wagmi'
 import { useEffect } from 'react'

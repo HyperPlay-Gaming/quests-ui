@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react-vite'
 import { ClaimErrorAlert } from './index'
 import { NotEnoughGasError, WarningError } from '@/types/quests'
 import { mantle, mainnet } from 'viem/chains'
