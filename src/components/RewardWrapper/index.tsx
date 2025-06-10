@@ -6,7 +6,8 @@ import {
   NotEnoughGasError,
   UseGetRewardsData,
   NoAccountConnectedError,
-  WarningError
+  WarningError,
+  ExistingSignatureError
 } from '@/types/quests'
 import { chainMap, parseChainMetadataToViemChain } from '@hyperplay/chains'
 import { Reward as RewardUi } from '@hyperplay/ui'
@@ -93,19 +94,21 @@ export function RewardWrapper({
     onShowMetaMaskPopup,
     getActiveWallet,
     getListingById,
-    openWalletConnectionModal
+    openWalletConnectionModal,
+    getExistingSignature
   } = useQuestWrapper()
 
   /**
-   * @dev We don’t handle loading here, so if the hook is still fetching, the claim‑exceeded message may briefly omit game details.
+   * @dev We don't handle loading here, so if the hook is still fetching, the claim‑exceeded message may briefly omit game details.
    * To prevent this, we pass external claims into useGetRewards to keep the rewards section in its loading state until all data (eligibility, etc.) arrives.
-   * This is low risk since the message only appears after the user clicks “claim.”
+   * This is low risk since the message only appears after the user clicks "claim."
    */
   const projectId = questMeta.project_id
   const { data: listingData } = useGetListingByProjectId(
     projectId ?? null,
     getListingById
   )
+
   const gameName = listingData.data?.project_meta?.name
 
   const [claimError, setClaimError] = useState<Error | WarningError | null>(
@@ -260,6 +263,15 @@ export function RewardWrapper({
     onError: (error) => {
       setClaimError(error)
 
+      if (error instanceof ExistingSignatureError) {
+        logInfo(`Existing signature found for different wallet: ${error}`)
+        trackEvent({
+          event: 'Existing signature found for different wallet',
+          properties: getClaimEventProperties(reward, questId)
+        })
+        return
+      }
+
       if (error instanceof NoAccountConnectedError) {
         // we called the appkit or other wallet onboarding modal so no rewards were claimed
         logInfo('No account connected, requesting user to connect wallet')
@@ -344,6 +356,18 @@ export function RewardWrapper({
       throw new NoAccountConnectedError()
     }
 
+    const existingSignature = await getExistingSignature(
+      questMeta.id,
+      reward.id
+    )
+
+    if (
+      existingSignature &&
+      existingSignature.wallet.toLowerCase() !== address.toLowerCase()
+    ) {
+      throw new ExistingSignatureError(existingSignature)
+    }
+
     /**
      * handles https://github.com/HyperPlay-Gaming/product-management/issues/801
      * Sometimes wagmi does not establish a connection but useAccount returns the address.
@@ -370,6 +394,8 @@ export function RewardWrapper({
         )
       }
     }
+
+    await switchChain(config, { chainId: reward.chain_id })
 
     const gasNeeded = await getRewardClaimGasEstimation(reward, logInfo)
     const chainMetadata = chainMap[reward.chain_id]
@@ -496,7 +522,7 @@ export function RewardWrapper({
   }
 
   const canClaim =
-    isQuestTypeClaimable && isQuestTypeClaimable && canClaimReward
+    isQuestTypeClaimable && isRewardTypeClaimable && canClaimReward
 
   const shouldShowClaimError =
     claimError &&

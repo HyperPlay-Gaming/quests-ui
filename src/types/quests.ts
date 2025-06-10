@@ -14,6 +14,11 @@ import { TFunction } from 'i18next'
 import { TrackEventFn } from './analytics'
 import { Listing } from '@valist/sdk/dist/typesApi'
 
+export type ExistingSignature = {
+  signature: string
+  wallet: string
+}
+
 export type UseGetRewardsData = QuestReward & Reward
 
 export type ExternalEligibilityWithQuestId = ExternalEligibility & {
@@ -36,6 +41,13 @@ export class WarningError extends Error {
   ) {
     super(message)
     this.name = 'WarningError'
+  }
+}
+
+export class ExistingSignatureError extends Error {
+  constructor(public existingSignature: ExistingSignature) {
+    super('Existing signature found for different wallet')
+    this.name = 'ExistingSignatureError'
   }
 }
 
@@ -112,5 +124,9 @@ export interface QuestWrapperContextValue {
   onRewardClaimed?: (reward: Reward) => void
   onShowMetaMaskPopup?: () => void
   getListingById?: (projectId: string) => Promise<Listing>
+  getExistingSignature: (
+    questId: number,
+    rewardId: number
+  ) => Promise<ExistingSignature | null>
   openWalletConnectionModal?: () => void
 }

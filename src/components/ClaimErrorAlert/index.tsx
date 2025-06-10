@@ -1,10 +1,16 @@
 import { AlertCard, Button, Images } from '@hyperplay/ui'
 import { useTranslation } from 'react-i18next'
 import { Chain, mantle } from 'viem/chains'
-import { ClaimError, NotEnoughGasError, WarningError } from '@/types/quests'
+import {
+  ClaimError,
+  ExistingSignatureError,
+  NotEnoughGasError,
+  WarningError
+} from '@/types/quests'
 import { errorIsSwitchChainError } from '@/helpers/claimErrors'
 
 import styles from './index.module.scss'
+import { ExistingSignatureErrorAlert } from '../ExistingSignatureErrorAlert'
 
 const { AlertOctagon, WarningIcon } = Images
 
@@ -43,6 +49,14 @@ export const ClaimErrorAlert = ({
         message={error.message}
         variant="warning"
         noBorderLeft={true}
+      />
+    )
+  }
+
+  if (error instanceof ExistingSignatureError) {
+    return (
+      <ExistingSignatureErrorAlert
+        existingSignatureAddress={error.existingSignature.wallet}
       />
     )
   }

@@ -121,6 +121,7 @@ export function useGetRewards({
             // need to override this for leaderboard quests
             amount_per_user: amountToClaim
           }
+          // TODO: fix type error here
           rewards.push(questReward_i)
         }
       }
