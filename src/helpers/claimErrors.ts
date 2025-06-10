@@ -1,4 +1,4 @@
-import { NoAccountConnectedError } from '@/types/quests'
+import { ExistingSignatureError, NoAccountConnectedError } from '@/types/quests'
 import { SwitchChainError, UserRejectedRequestError } from 'viem'
 
 export function errorIsSwitchChainError(
@@ -17,4 +17,10 @@ export function errorIsNoAccountConnectedError(
   error: Error
 ): error is NoAccountConnectedError {
   return error instanceof NoAccountConnectedError
+}
+
+export function isExistingSignatureError(
+  error: Error
+): error is ExistingSignatureError {
+  return error instanceof ExistingSignatureError
 }

@@ -33,7 +33,8 @@ import { ClaimErrorAlert } from '../ClaimErrorAlert'
 import {
   errorIsSwitchChainError,
   errorIsUserRejected,
-  errorIsNoAccountConnectedError
+  errorIsNoAccountConnectedError,
+  isExistingSignatureError
 } from '@/helpers/claimErrors'
 import { useGetListingByProjectId } from '@/hooks/useGetListingById'
 import { checkIsFirstTimeHolder } from '@/helpers/checkIsFirstTimeHolder'
@@ -514,6 +515,18 @@ export function RewardWrapper({
   useEffect(() => {
     setClaimError(null)
   }, [questId])
+
+  useEffect(() => {
+    if (
+      claimRewardMutation.error &&
+      isExistingSignatureError(claimRewardMutation.error)
+    ) {
+      const matchingWallet = claimRewardMutation.error.existingSignature.wallet
+      if (matchingWallet.toLowerCase() === account.address?.toLowerCase()) {
+        setClaimError(null)
+      }
+    }
+  }, [account, claimRewardMutation.error])
 
   let networkName = 'Unknown Chain'
 
