@@ -637,7 +637,6 @@ export const TestConnectButton: Story = {
   }
 }
 
-
 const windowEth = new InjectedProviderMock()
 
 const logErrorMock = fn()
