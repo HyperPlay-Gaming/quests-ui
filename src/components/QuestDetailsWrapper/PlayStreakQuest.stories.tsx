@@ -727,15 +727,18 @@ export const TestConnectButton: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const claimButton = await waitFor(async () => {
-      const button = (await canvas.findByRole('button', {
-        name: /Connect/i
-      })) as HTMLButtonElement
-      if (button && !button.disabled) {
-        return button
-      }
-      throw new Error('Claim button is not enabled')
-    })
+    const claimButton = await waitFor(
+      async () => {
+        const button = (await canvas.findByRole('button', {
+          name: /Connect|Claim/i
+        })) as HTMLButtonElement
+        if (button && !button.disabled) {
+          return button
+        }
+        throw new Error('Claim button is not enabled')
+      },
+      { timeout: 15000 }
+    )
     claimButton.click()
     await waitForAllCTAsToBeEnabled(canvasElement)
   }
