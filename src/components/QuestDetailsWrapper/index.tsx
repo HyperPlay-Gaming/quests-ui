@@ -245,7 +245,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       endDate: questMeta.end_date,
       title: questMeta.name,
       description: (
-        <MarkdownDescription classNames={{ root: styles.markdownDescription }}>
+        <MarkdownDescription>
           {questMeta.description}
         </MarkdownDescription>
       ),
