@@ -3,10 +3,11 @@
   width: 100%;
   max-width: 576px;
   padding: var(--space-2lg);
-}
 
-.markdownDescription {
-  white-space: normal;
+  p {
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+  }
 }
 
 .syncSuccess {
