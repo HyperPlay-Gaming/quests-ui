@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import styles from './story-styles.module.scss'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { verifyMessage, BrowserProvider } from 'ethers'
 import { generateNonce, SiweMessage } from 'siwe'
 import { injected, useAccount, useConnect, useDisconnect } from 'wagmi'
-import { within, expect, waitFor, fn } from '@storybook/test'
+import { within, expect, waitFor, fn } from 'storybook/test'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import {
   expectAllCTAsToBeDisabled,
@@ -58,7 +58,7 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
         'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
       token_ids: [],
       numClaimsLeft: '2357',
-      amount_per_user: 200000000000000000000000,
+      amount_per_user: '200000000000000000000000',
       chain_id: 84532,
       reward_type: 'ERC20',
       marketplace_url: 'https://hyperplay.xyz',
@@ -71,7 +71,7 @@ Rise among Craft World's top ranks. 🚀 Join now and make your mark before the 
       decimals: 18,
       image_url: 'https://gateway-b3.valist.io/hyperplay/game7passport.png',
       token_ids: [],
-      amount_per_user: 100000000000000000000000,
+      amount_per_user: '100000000000000000000000',
       chain_id: 84532,
       reward_type: 'EXTERNAL-TASKS',
       marketplace_url: 'https://hyperplay.xyz',
@@ -571,6 +571,72 @@ export const ActiveWalletSwitchWalletExistingWalletSkipSignature: Story = {
   }
 }
 
+const windowEth2 = new InjectedProviderMock()
+
+export const TestConnectButton: Story = {
+  args: {
+    ...mockProps
+  },
+  decorators: [
+    (Story) => {
+      window.ethereum = windowEth2
+      return <Story />
+    }
+  ],
+  render: (args) => {
+    const { connect } = useConnect()
+    const activeWallet = window.ethereum.address
+    const { disconnect } = useDisconnect()
+    useEffect(() => {
+      disconnect()
+    }, [])
+    return (
+      <QuestDetailsWrapper
+        {...args}
+        getActiveWallet={async () => Promise.resolve(activeWallet)}
+        getGameplayWallets={async () => [
+          { id: 1, wallet_address: activeWallet ?? '' }
+        ]}
+        getUserPlayStreak={async (): Promise<UserPlayStreak> => {
+          return {
+            current_playstreak_in_days: 5,
+            completed_counter: 3,
+            accumulated_playtime_today_in_seconds: 1800,
+            last_play_session_completed_datetime: new Date().toISOString()
+          }
+        }}
+        getQuest={async () => {
+          const mockQuestOneApeChainReward: Quest = {
+            ...mockQuest,
+            rewards: mockQuest.rewards?.slice(0, 1)
+          }
+          return mockQuestOneApeChainReward
+        }}
+        openWalletConnectionModal={() => {
+          connect({ connector: injected() })
+        }}
+      />
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const claimButton = await waitFor(
+      async () => {
+        const button = (await canvas.findByRole('button', {
+          name: /Connect/i
+        })) as HTMLButtonElement
+        if (button && !button.disabled) {
+          return button
+        }
+        throw new Error('Claim button is not enabled')
+      },
+      { timeout: 15000 }
+    )
+    claimButton.click()
+    await waitForAllCTAsToBeEnabled(canvasElement)
+  }
+}
+
 const windowEth = new InjectedProviderMock()
 
 const logErrorMock = fn()
@@ -628,7 +694,7 @@ export const TestSwitchToChainNoEIP3085: Story = {
                   'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
                 token_ids: [],
                 numClaimsLeft: '2357',
-                amount_per_user: 200000000000000000000000,
+                amount_per_user: '200000000000000000000000',
                 chain_id: 33139,
                 reward_type: 'ERC20',
                 marketplace_url: 'https://hyperplay.xyz',
@@ -647,7 +713,6 @@ export const TestSwitchToChainNoEIP3085: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await waitForLoadingSpinnerToDisappear(canvas)
     const claimButton = await waitFor(async () => {
       const button = (await canvas.findByRole('button', {
         name: /Claim/i
@@ -675,68 +740,5 @@ export const TestSwitchToChainNoEIP3085: Story = {
         'Please switch to ApeChain within your wallet, or try again with MetaMask.'
       )
     })
-  }
-}
-
-const windowEth2 = new InjectedProviderMock()
-
-export const TestConnectButton: Story = {
-  args: {
-    ...mockProps
-  },
-  decorators: [
-    (Story) => {
-      window.ethereum = windowEth2
-      return <Story />
-    }
-  ],
-  render: (args) => {
-    const { connect } = useConnect()
-    const { disconnect } = useDisconnect()
-    useEffect(() => {
-      disconnect()
-    }, [])
-    const activeWallet = window.ethereum.address
-    return (
-      <QuestDetailsWrapper
-        {...args}
-        getActiveWallet={async () => Promise.resolve(activeWallet)}
-        getGameplayWallets={async () => [
-          { id: 1, wallet_address: activeWallet ?? '' }
-        ]}
-        getUserPlayStreak={async (): Promise<UserPlayStreak> => {
-          return {
-            current_playstreak_in_days: 5,
-            completed_counter: 3,
-            accumulated_playtime_today_in_seconds: 1800,
-            last_play_session_completed_datetime: new Date().toISOString()
-          }
-        }}
-        getQuest={async () => {
-          const mockQuestOneApeChainReward: Quest = {
-            ...mockQuest,
-            rewards: mockQuest.rewards?.slice(0, 1)
-          }
-          return mockQuestOneApeChainReward
-        }}
-        openWalletConnectionModal={() => {
-          connect({ connector: injected() })
-        }}
-      />
-    )
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const claimButton = await waitFor(async () => {
-      const button = (await canvas.findByRole('button', {
-        name: /Connect/i
-      })) as HTMLButtonElement
-      if (button && !button.disabled) {
-        return button
-      }
-      throw new Error('Claim button is not enabled')
-    })
-    claimButton.click()
-    await waitForAllCTAsToBeEnabled(canvasElement)
   }
 }

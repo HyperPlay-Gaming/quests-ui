@@ -1,6 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react-vite'
 import { ExternalEligibility } from './'
-import { within, expect } from '@storybook/test'
+import { within, expect } from 'storybook/test'
 
 const meta: Meta<typeof ExternalEligibility> = {
   title: 'Components/ExternalEligibility',

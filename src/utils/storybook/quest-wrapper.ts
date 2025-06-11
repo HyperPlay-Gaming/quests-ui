@@ -3,7 +3,7 @@ import {
   waitForElementToBeRemoved,
   within,
   expect
-} from '@storybook/test'
+} from 'storybook/test'
 
 export async function waitForLoadingSpinnerToDisappear(
   canvas: ReturnType<typeof within>
@@ -32,8 +32,10 @@ export async function waitForAllCTAsToBeEnabled(canvasElement: HTMLElement) {
   const canvas = within(canvasElement)
   // await for the claim button to be enabled
   await waitFor(() => {
-    canvas.getAllByRole('button', { name: /Connect/i }).forEach((button) => {
-      expect(button).toBeEnabled()
-    })
+    canvas
+      .getAllByRole('button', { name: /Connect|Claim/i })
+      .forEach((button) => {
+        expect(button).toBeEnabled()
+      })
   })
 }

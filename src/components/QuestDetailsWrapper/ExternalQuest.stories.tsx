@@ -1,11 +1,11 @@
 import { Quest } from '@hyperplay/utils'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { QuestDetailsWrapper, QuestDetailsWrapperProps } from './index'
 import { createQueryClientDecorator } from '@/helpers/createQueryClientDecorator'
 import styles from './story-styles.module.scss'
 import dayjs from 'dayjs'
 import { waitForLoadingSpinnerToDisappear } from '@/utils/storybook/quest-wrapper'
-import { within, expect, waitFor } from '@storybook/test'
+import { within, expect, waitFor } from 'storybook/test'
 
 const mockQuest: Quest = {
   id: 1,
@@ -32,7 +32,7 @@ const mockQuest: Quest = {
       image_url: '/images/mantle-icon.png',
       token_ids: [],
       numClaimsLeft: '2357',
-      amount_per_user: 2000000000000000000000,
+      amount_per_user: '2000000000000000000000',
       chain_id: 5000,
       reward_type: 'ERC20',
       marketplace_url: 'https://test.com',

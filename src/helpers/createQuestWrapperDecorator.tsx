@@ -2,7 +2,7 @@ import { QuestDetailsWrapperProps } from '@/components/QuestDetailsWrapper'
 import { QuestWrapperProvider } from '@/state/QuestWrapperProvider'
 import { QuestWrapperContextValue } from '@/types/quests'
 import { Quest, UserPlayStreak } from '@hyperplay/utils'
-import { StoryContext, StoryFn } from '@storybook/react'
+import { Decorator } from '@storybook/react-vite'
 import { BrowserProvider } from 'ethers'
 import { SiweMessage, generateNonce } from 'siwe'
 
@@ -32,7 +32,7 @@ export const mockQuest: Quest = {
         'https://gateway.valist.io/ipfs/bafkreicwp22quggyljn3b4km2we2asaq256yyfa2qyxrapu7qnuasbbnrq',
       token_ids: [],
       numClaimsLeft: '2357',
-      amount_per_user: 200000000000000000000000,
+      amount_per_user: '200000000000000000000000',
       chain_id: 84532,
       reward_type: 'ERC20',
       marketplace_url: 'https://hyperplay.xyz',
@@ -45,7 +45,7 @@ export const mockQuest: Quest = {
       decimals: 18,
       image_url: 'https://gateway-b3.valist.io/hyperplay/game7passport.png',
       token_ids: [],
-      amount_per_user: 100000000000000000000000,
+      amount_per_user: '100000000000000000000000',
       chain_id: 84532,
       reward_type: 'EXTERNAL-TASKS',
       marketplace_url: 'https://hyperplay.xyz',
@@ -211,8 +211,8 @@ export const defaultQuestWrapperProps: QuestDetailsWrapperProps = {
 
 export const createQuestWrapperDecorator = (
   props: Partial<QuestWrapperContextValue> = {}
-) => {
-  return (Story: StoryFn, context: StoryContext) => {
+): Decorator => {
+  return (Story, context) => {
     return (
       <QuestWrapperProvider {...defaultQuestWrapperProps} {...props}>
         <Story {...context.args} />
