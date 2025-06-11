@@ -245,9 +245,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       endDate: questMeta.end_date,
       title: questMeta.name,
       description: (
-        <MarkdownDescription>
-          {questMeta.description}
-        </MarkdownDescription>
+        <MarkdownDescription>{questMeta.description}</MarkdownDescription>
       ),
       onSignInClick: openSignInModal,
       onConnectSteamAccountClick: signInWithSteamAccount,
