@@ -730,7 +730,7 @@ export const TestConnectButton: Story = {
     const claimButton = await waitFor(
       async () => {
         const button = (await canvas.findByRole('button', {
-          name: /Connect|Claim/i
+          name: /Connect/i
         })) as HTMLButtonElement
         if (button && !button.disabled) {
           return button

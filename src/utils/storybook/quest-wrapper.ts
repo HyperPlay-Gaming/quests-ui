@@ -32,7 +32,7 @@ export async function waitForAllCTAsToBeEnabled(canvasElement: HTMLElement) {
   const canvas = within(canvasElement)
   // await for the claim button to be enabled
   await waitFor(() => {
-    canvas.getAllByRole('button', { name: /Connect/i }).forEach((button) => {
+    canvas.getAllByRole('button', { name: /Connect|Claim/i }).forEach((button) => {
       expect(button).toBeEnabled()
     })
   })
