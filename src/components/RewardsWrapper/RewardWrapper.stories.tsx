@@ -243,3 +243,25 @@ export const EligibleButHasExistingSignature: Story = {
     })
   }
 }
+
+export const PointsReward: Story = {
+  decorators: [
+    createQuestWrapperDecorator({
+      getQuest: async () => {
+        return {
+          ...mockQuest,
+          type: 'LEADERBOARD',
+          rewards: [ {...mockReward[0], reward_type: 'POINTS'} ]
+        }
+      }
+    })
+  ],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    // await for the claim button to be enabled
+    await waitFor(() => {
+      expect(canvas
+        .getAllByRole('button', { name: /Claim/i }).length).toBeGreaterThan(0)
+    })
+  }
+}

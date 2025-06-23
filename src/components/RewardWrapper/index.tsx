@@ -39,6 +39,17 @@ import {
 import { useGetListingByProjectId } from '@/hooks/useGetListingById'
 import { checkIsFirstTimeHolder } from '@/helpers/checkIsFirstTimeHolder'
 
+const rewardDoesNotNeedAConnectedWallet: Record<
+  Reward['reward_type'],
+  boolean
+> = {
+  ERC20: false,
+  ERC721: false,
+  ERC1155: false,
+  POINTS: true,
+  'EXTERNAL-TASKS': true
+}
+
 const getClaimEventProperties = (reward: Reward, questId: number | null) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const {
@@ -539,6 +550,14 @@ export function RewardWrapper({
     !errorIsUserRejected(claimError) &&
     !errorIsNoAccountConnectedError(claimError)
 
+  let claimText = 'Connect'
+  if (
+    account.isConnected ||
+    rewardDoesNotNeedAConnectedWallet[reward.reward_type]
+  ) {
+    claimText = 'Claim'
+  }
+
   return (
     <div className={styles.rewardContainer}>
       <RewardUi
@@ -554,7 +573,7 @@ export function RewardWrapper({
           claimsLeft: 'Claims left',
           viewReward: 'View Reward',
           claimed: 'Claimed',
-          claim: account.isConnected ? 'Claim' : 'Connect',
+          claim: claimText,
           claimNotAvailable: "This reward isn't available to claim right now."
         }}
       />
