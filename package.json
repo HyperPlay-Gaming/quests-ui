@@ -1,6 +1,6 @@
 {
   "name": "@hyperplay/quests-ui",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -33,7 +33,7 @@
     "@chromatic-com/storybook": "^4.0.1",
     "@hyperplay/chains": "^0.6.5",
     "@hyperplay/ui": "^1.30.0",
-    "@hyperplay/utils": "^0.3.17",
+    "@hyperplay/utils": "^0.3.19",
     "@mantine/core": "^8.1.0",
     "@mantine/hooks": "^8.1.0",
     "@reown/appkit": "^1.7.8",
