@@ -33,8 +33,8 @@ importers:
         specifier: ^1.30.0
         version: 1.30.0(@mantine/carousel@7.17.8(@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.7)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.1.0(react@19.1.0))(embla-carousel-react@8.6.0(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.7)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/dropzone@7.17.8(@mantine/core@8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.7)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.1.0(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mantine/hooks@8.1.0(react@19.1.0))(dayjs@1.11.13)(embla-carousel-autoplay@8.6.0(embla-carousel@8.6.0))(embla-carousel-react@8.6.0(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react-markdown@10.1.0(@types/react@19.1.7)(react@19.1.0))(react@19.1.0)
       '@hyperplay/utils':
-        specifier: ^0.3.17
-        version: 0.3.17
+        specifier: ^0.3.19
+        version: 0.3.19
       '@mantine/core':
         specifier: ^8.1.0
         version: 8.1.0(@mantine/hooks@8.1.0(react@19.1.0))(@types/react@19.1.7)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -823,8 +823,8 @@ packages:
       react-dom: ^19.1.0
       react-markdown: 10.1.0
 
-  '@hyperplay/utils@0.3.17':
-    resolution: {integrity: sha512-TuD0aX1IDgMmw7FpjutkbU7A2oBOtwGv3eFSjPxL3zjhULI9TIzCkJab2LkXXUmuJVY+yu2+R1G4GuDBPfegQg==}
+  '@hyperplay/utils@0.3.19':
+    resolution: {integrity: sha512-7xqoyWG5uviZb3YDErMXA8rArChBgBjCMgnpDkn8etTLnwybHNakwLEGSI6XUpfeAiG4R70ZogjD4cK8IuvcvA==}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -6857,7 +6857,7 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
       react-markdown: 10.1.0(@types/react@19.1.7)(react@19.1.0)
 
-  '@hyperplay/utils@0.3.17':
+  '@hyperplay/utils@0.3.19':
     dependencies:
       bignumber.js: 9.3.0
 
