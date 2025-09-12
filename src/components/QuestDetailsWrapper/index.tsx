@@ -33,6 +33,7 @@ export interface QuestDetailsWrapperProps extends QuestWrapperContextValue {
   hideClaim?: boolean
   streakIsProgressing?: boolean
   classNames?: QuestDetailsProps['classNames']
+  onBackClick?: () => void
 }
 
 export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
@@ -56,7 +57,8 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
     hideEligibilitySection,
     hideClaim,
     flags,
-    getActiveWallet
+    getActiveWallet,
+    onBackClick
   } = props
 
   const { connector } = useAccount()
@@ -249,11 +251,7 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       ),
       onSignInClick: openSignInModal,
       onConnectSteamAccountClick: signInWithSteamAccount,
-      onBackClick: () => {
-        // Your back navigation logic here
-        console.log('Back button clicked!')
-        // e.g., router.back(), setState, etc.
-      }, // ✅ ADD THIS LINE
+      onBackClick: onBackClick,
       ctaDisabled,
       showSync: showResyncButton,
       onSyncClick: () => {
