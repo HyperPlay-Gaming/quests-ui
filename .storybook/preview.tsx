@@ -10,6 +10,8 @@ import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
 import '@mantine/core/styles.css'
+import '@hyperplay/ui/fonts.css'
+import '@hyperplay/ui/styles'
 import '@hyperplay/ui/style.css'
 import { ConnectWallet } from '../src/components/ConnectWallet'
 
