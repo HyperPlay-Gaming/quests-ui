@@ -32,7 +32,7 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^4.0.1",
     "@hyperplay/chains": "^0.6.5",
-    "@hyperplay/ui": "^1.30.0",
+    "@hyperplay/ui": "^1.36.5",
     "@hyperplay/utils": "^0.3.19",
     "@mantine/core": "^8.1.0",
     "@mantine/hooks": "^8.1.0",
@@ -84,7 +84,7 @@
   },
   "peerDependencies": {
     "@hyperplay/chains": "^0.6.5",
-    "@hyperplay/ui": "^1.30.0",
+    "@hyperplay/ui": "^1.36.5",
     "@hyperplay/utils": "^0.3.17",
     "@mantine/core": "^8.1.0",
     "@mantine/hooks": "^8.1.0",
