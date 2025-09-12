@@ -249,6 +249,11 @@ export function QuestDetailsWrapper(props: QuestDetailsWrapperProps) {
       ),
       onSignInClick: openSignInModal,
       onConnectSteamAccountClick: signInWithSteamAccount,
+      onBackClick: () => {
+        // Your back navigation logic here
+        console.log('Back button clicked!')
+        // e.g., router.back(), setState, etc.
+      }, // ✅ ADD THIS LINE
       ctaDisabled,
       showSync: showResyncButton,
       onSyncClick: () => {
